@@ -7,9 +7,12 @@ public class Bouton {
 	protected int hits;
 	protected PVector location;
 	protected int width;
+	protected int height;
 	protected int alpha;
 	protected int a_speed;
 	protected int couleur;
+	
+	protected SmartPoint lastSelector;
 	
 	private boolean isRect;
 	
@@ -27,25 +30,41 @@ public class Bouton {
 		
 	}
 	
-	public Bouton(PApplet _pApplet, float _x, float _y, int _width, boolean isRect) {
+	public Bouton(PApplet _pApplet, float _x, float _y, int _width, int _height, boolean _isRect) {
 		
 		pApplet = _pApplet;
 				
 		location = new PVector(_x, _y);
 		width = _width;
-				
+		height = _height;
+		
 		couleur = pApplet.color(255, 133, 18);
 		
 		alpha = 0;
 		a_speed = 5;
 		
+		isRect = _isRect;
+		
 	}
 	
 	protected void testCollision(SmartPoint _sp){
 		
-		float distance = PApplet.dist(location.x, location.y, _sp.location.x, _sp.location.y);
-		if(distance <= width) hits++;
+		if(!_sp.isTaken){
 		
+			if(!isRect){
+				float distance = PApplet.dist(location.x, location.y, _sp.location.x, _sp.location.y);
+				if(distance <= width) collisionWith(_sp);
+			} else {
+				if(_sp.location.x > location.x &&  _sp.location.x < location.x + width &&
+				   _sp.location.y > location.y &&  _sp.location.y < location.y + height){
+					collisionWith(_sp);
+				}
+			}
+		}
+	}
+	protected void collisionWith(SmartPoint _sp){
+		hits++;
+		lastSelector = _sp;
 	}
 	protected void deactivate(){
 		if(alpha>0)alpha -= a_speed;

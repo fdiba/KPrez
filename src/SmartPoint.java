@@ -6,6 +6,7 @@ public class SmartPoint {
 	private int maxDepth;
 	private int actualDepth;
 	private int couleur;
+	protected boolean isTaken;
 	
 	protected HandControl parent;
 	protected PVector location;
@@ -19,6 +20,12 @@ public class SmartPoint {
 		
 		maxDepth = 5000;
 		
+	}
+	protected void take(Bouton btn){
+		isTaken = true;
+	}
+	protected void free(Bouton btn){
+		isTaken = false;
 	}
 	protected void update(int userId, int memberId) {
 		

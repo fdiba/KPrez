@@ -22,10 +22,16 @@ public class DDScene {
 		if (parent.isTracked) {
 			
 			for (int i = 0; i < images.length; i++){
-				images[i].hits = 0;
-				images[i].testCollision(parent.handControl.rightHand);
-				images[i].testCollision(parent.handControl.leftHand);
-				images[i].update();
+				
+				if(!images[i].isDragged){
+				
+					images[i].hits = 0;
+					images[i].testCollision(parent.handControl.rightHand);
+					images[i].testCollision(parent.handControl.leftHand);
+					images[i].update();
+				} else {
+					images[i].followSmartPoint();
+				}
 			}
 			
 		} else {
