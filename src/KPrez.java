@@ -19,6 +19,8 @@ public class KPrez extends PApplet {
 	
 	public boolean isTracked;
 	
+	private Background bgrd;
+	
 	public static void main(String[] args) {
 		
 		PApplet.main(KPrez.class.getSimpleName());
@@ -46,6 +48,7 @@ public class KPrez extends PApplet {
 			
 			menu = new Menu(this);
 			handControl = new HandControl(this);
+			bgrd = new Background(this, 610, 2025, "userImage");
 			
 			//userList = new IntVector();
 			takeControl = 0;
@@ -61,7 +64,6 @@ public class KPrez extends PApplet {
 		background(0);
 		context.update();
 		
-		//image(context.depthImage(), 0, 0);	
 		//image(context.userImage(), context.depthWidth(), 0);
 		
 		//if(!isTracked)selectAndTrackSkeleton();
@@ -72,25 +74,24 @@ public class KPrez extends PApplet {
 		
 		switch (sceneId) {
 		case 0:
-			image(context.userImage(), 0, 0);
-			
-			handControl.update();
-			//image(context.userImage(), 0, 0);
-			handControl.display();
-			
+			handControl.update();			
+			bgrd.update();
 			menu.testCollision();
-			menu.display();
 			
+			bgrd.display();
+			menu.display();
+			handControl.display();
 			break;
 		case 1:
 			handControl.update();
-			//image(context.userImage(), 0, 0);
 			
+			if(bgrd.imgType != "depthImage") bgrd.imgType = "depthImage";
 			
-			ddScene.update();
+			bgrd.update();
 			ddScene.testCollision();
-			ddScene.display();
 			
+			bgrd.display();
+			ddScene.display();
 			handControl.display();
 			break;
 		default:
@@ -170,26 +171,6 @@ public class KPrez extends PApplet {
 			}
 		}
 	}
-	/*private void selectAndTrackSkeleton(){
-		
-		
-		context.getUsers(userList);
-		
-		if(userList.size() > 0) {
-			
-			userId = userList.get(sl_user);
-			
-			if(context.isTrackingSkeleton(userId)){
-				
-				isTracked = true;
-				
-			} else {
-				isTracked = false;
-			}
-		} else {
-			isTracked = false;
-		}
-	}*/
 	
 	// SimpleOpenNI events
 	public void onNewUser(SimpleOpenNI curContext, int userId) {

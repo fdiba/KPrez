@@ -53,7 +53,7 @@ public class Bouton {
 		
 			if(!isRect){
 				float distance = PApplet.dist(location.x, location.y, _sp.location.x, _sp.location.y);
-				if(distance <= width) collisionWith(_sp);
+				if(distance <= width/2) collisionWith(_sp);
 			} else {
 				if(_sp.location.x > location.x &&  _sp.location.x < location.x + width &&
 				   _sp.location.y > location.y &&  _sp.location.y < location.y + height){

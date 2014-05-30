@@ -8,7 +8,7 @@ public class Menu {
 	private PVector location;
 	
 	private MBouton[] menu = new MBouton[3];
-	
+		
 	public Menu(KPrez _parent){
 		
 		parent = _parent;
@@ -32,6 +32,7 @@ public class Menu {
 			}
 		}
 	}
+	
 	protected void testCollision(){
 		
 		if (parent.isTracked) {
