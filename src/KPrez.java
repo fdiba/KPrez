@@ -5,9 +5,9 @@ import processing.core.*;
 @SuppressWarnings("serial")
 public class KPrez extends PApplet {
 	
-	SimpleOpenNI context;
-	Menu menu;
-	HandControl handControl;
+	protected SimpleOpenNI context;
+	protected Menu menu;
+	protected HandControl handControl;
 	
 	private int sl_user;
 	//private IntVector userList;
@@ -18,7 +18,7 @@ public class KPrez extends PApplet {
 	protected int userId;
 	
 	public boolean isTracked;
-
+	
 	public static void main(String[] args) {
 		
 		PApplet.main(KPrez.class.getSimpleName());
@@ -41,8 +41,8 @@ public class KPrez extends PApplet {
 			context.enableDepth();		
 			context.enableUser();
 			
-			//sceneId = 0;
-			sceneId = 1;
+			sceneId = 0;
+			//sceneId = 1;
 			
 			menu = new Menu(this);
 			handControl = new HandControl(this);
@@ -67,11 +67,13 @@ public class KPrez extends PApplet {
 		//if(!isTracked)selectAndTrackSkeleton();
 		
 		translate(width/2-640/2, height/2-480/2);
-		image(context.userImage(), 0, 0);
+		
 		selectAndTrackUsers();
 		
 		switch (sceneId) {
 		case 0:
+			image(context.userImage(), 0, 0);
+			
 			handControl.update();
 			//image(context.userImage(), 0, 0);
 			handControl.display();
@@ -84,6 +86,8 @@ public class KPrez extends PApplet {
 			handControl.update();
 			//image(context.userImage(), 0, 0);
 			
+			
+			ddScene.update();
 			ddScene.testCollision();
 			ddScene.display();
 			
@@ -151,7 +155,7 @@ public class KPrez extends PApplet {
 			
 			noStroke();
 			fill(255, 0, 0, map(takeControl, 0, 75, 50, 255));
-			float diam = 25;
+			float diam = 35;
 			
 			ellipse(rightHand2d.x, rightHand2d.y, diam, diam);
 			

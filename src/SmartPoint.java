@@ -11,6 +11,8 @@ public class SmartPoint {
 	protected HandControl parent;
 	protected PVector location;
 	
+	private int lowestValue;
+	
 	public SmartPoint(HandControl _parent){
 		parent = _parent;
 		couleur = parent.parent.color(242, 162, 32);
@@ -19,6 +21,7 @@ public class SmartPoint {
 		location = cp_raw_location.get();
 		
 		maxDepth = 5000;
+		lowestValue = 610; //0
 		
 	}
 	protected void take(Bouton btn){
@@ -45,11 +48,13 @@ public class SmartPoint {
 		int mapWidth = parent.parent.context.depthWidth();
 		int mapHeight = parent.parent.context.depthHeight();
 		
-		for(int y=0; y<mapHeight; y++){
-			for(int x=0; x<mapWidth; x++){
+		for(int y = 0; y < mapHeight; y++){
+			for(int x = 0; x < mapWidth; x++){
+				
 				int i = x + y * mapWidth;
 				int currentDepthValue = depthValues[i];
-				if(currentDepthValue>0 && currentDepthValue<actualDepth){
+				
+				if(currentDepthValue > lowestValue && currentDepthValue < actualDepth){
 					actualDepth = currentDepthValue;
 					cp_raw_location.set(x, y);
 				}

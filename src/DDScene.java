@@ -1,13 +1,23 @@
+import processing.core.PImage;
+
 public class DDScene {
 	
 	private KPrez parent;
 	private String[] paths = {"a.jpg", "b.jpg", "c.jpg"};
 	private ISprite[] images;
 	
+	private PImage image;
+	
+	private int lowestValue;
+	private int highestValue;
+	
 	public DDScene(KPrez _parent){
 		
 		parent = _parent;
 		images = new ISprite[paths.length];
+		
+		lowestValue = 610;
+		highestValue = 1525;
 		
 		for(int i=0; i<paths.length; i++){
 			
@@ -16,6 +26,23 @@ public class DDScene {
 			
 		}
 	
+	}
+	protected void update() {
+		
+		int[] depthValues = parent.context.depthMap();
+		image = parent.context.depthImage();
+		int mapWidth = parent.context.depthWidth();
+		int mapHeight = parent.context.depthHeight();
+		
+		for (int x = 0; x < mapWidth; x++) {
+			for (int y = 0; y < mapHeight; y++) {
+				int i = x + y * mapWidth;
+				int currentDepthValue = depthValues[i];
+				if (currentDepthValue < lowestValue || currentDepthValue > highestValue) {
+					image.pixels[i] = 0;
+				}
+		    }
+		}
 	}
 	protected void testCollision(){
 		
@@ -43,6 +70,8 @@ public class DDScene {
 		}
 	}
 	protected void display(){
+		
+		parent.image(image, 0, 0);
 		
 		for(int i=0; i<paths.length; i++){
 			
