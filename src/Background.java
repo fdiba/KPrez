@@ -1,3 +1,4 @@
+import processing.core.PApplet;
 import processing.core.PImage;
 
 public class Background {
@@ -51,7 +52,7 @@ public class Background {
 	protected void display() {
 		parent.noFill();
 		parent.stroke(255);
-		
+		parent.rectMode(PApplet.CORNER);
 		parent.rect(0, 0, img.width, img.height);
 		
 		parent.image(img, 0, 0);

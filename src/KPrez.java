@@ -20,6 +20,8 @@ public class KPrez extends PApplet {
 	public boolean isTracked;
 	
 	private Background bgrd;
+	private boolean isTakingControl;
+	private PVector rightHand2d;
 	
 	public static void main(String[] args) {
 		
@@ -64,23 +66,13 @@ public class KPrez extends PApplet {
 		background(0);
 		context.update();
 		
-		//image(context.userImage(), context.depthWidth(), 0);
-		
-		//if(!isTracked)selectAndTrackSkeleton();
-		
 		translate(width/2-640/2, height/2-480/2);
 		
 		selectAndTrackUsers();
 		
 		switch (sceneId) {
 		case 0:
-			handControl.update();			
-			bgrd.update();
-			menu.testCollision();
-			
-			bgrd.display();
-			menu.display();
-			handControl.display();
+			firstScene();
 			break;
 		case 1:
 			handControl.update();
@@ -93,15 +85,22 @@ public class KPrez extends PApplet {
 			bgrd.display();
 			ddScene.display();
 			handControl.display();
+			if(isTakingControl)displayControler();
 			break;
 		default:
-			handControl.display();
-			
-			menu.testCollision();
-			menu.display();
-			
+			firstScene();
 			break;
 		}
+	}
+	private void firstScene(){
+		handControl.update();			
+		bgrd.update();
+		menu.testCollision();
+		
+		bgrd.display();
+		menu.display();
+		handControl.display();
+		if(isTakingControl)displayControler();
 	}
 	private void selectAndTrackUsers() {
 		
@@ -134,7 +133,6 @@ public class KPrez extends PApplet {
 	}
 	private void isTakingControl(int _id, int i) {
 		
-		
 		PVector head = new PVector();
 		context.getJointPositionSkeleton(_id, SimpleOpenNI.SKEL_HEAD, head);
 		PVector rightHand = new PVector();
@@ -142,23 +140,15 @@ public class KPrez extends PApplet {
 		PVector leftHand = new PVector();
 		context.getJointPositionSkeleton(_id, SimpleOpenNI.SKEL_LEFT_HAND, leftHand);
 		
-		
-		PVector rightHand2d = new PVector();	
+		rightHand2d = new PVector();	
 		context.convertRealWorldToProjective(rightHand, rightHand2d);
 		
 		int distance = 150;
-		
-		//println(takeControl);
-				
+						
 		if(rightHand.y > head.y + distance && leftHand.y + distance < head.y) {
 
+			isTakingControl = true;
 			takeControl++;
-			
-			noStroke();
-			fill(255, 0, 0, map(takeControl, 0, 75, 50, 255));
-			float diam = 35;
-			
-			ellipse(rightHand2d.x, rightHand2d.y, diam, diam);
 			
 			if(takeControl > 75){
 				sl_user = i;
@@ -168,8 +158,26 @@ public class KPrez extends PApplet {
 				userId = userList.get(sl_user);
 				
 				takeControl = 0;
+				isTakingControl = false;
 			}
+		} else {
+			isTakingControl = false;
 		}
+	}
+	private void displayControler(){
+		
+		float diam = 35;
+		
+		rectMode(CENTER);
+		pushMatrix();
+			stroke(255, 0, 0);
+			noFill();
+			//fill(255, 0, 0, map(takeControl, 0, 75, 50, 255));
+			translate(rightHand2d.x, rightHand2d.y);
+			rotate(takeControl);
+			rect(0, 0, diam, diam);
+		popMatrix();
+		
 	}
 	
 	// SimpleOpenNI events
