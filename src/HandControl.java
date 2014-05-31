@@ -25,12 +25,15 @@ public class HandControl {
 		}
 	}
 	protected void display() {
-	
 		if(parent.gi.isTracked){			
 			rightHand.display();
 			leftHand.display();
 		} else {
 			cp.display();
 		}	
+	}
+	protected void displayExit(int timeToExit) {		
+		rightHand.displayExit(timeToExit);
+		leftHand.displayExit(timeToExit);
 	}
 }

@@ -6,13 +6,11 @@ public class KPrez extends PApplet {
 	
 	protected SimpleOpenNI context;
 	protected Menu menu;
-	protected HandControl handControl;
 	
 	private int sceneId;
 	private DDScene ddScene;
 	
 	private Background bgrd;
-	
 	
 	protected GesturalInterface gi;
 	
@@ -23,6 +21,9 @@ public class KPrez extends PApplet {
 	}
 	public void editScene(int _sceneId) {
 		sceneId = _sceneId;
+	}
+	protected int sceneId(){
+		return sceneId;
 	}
 	public void setup(){
 		size(640*2, 520);
@@ -44,7 +45,7 @@ public class KPrez extends PApplet {
 			gi = new GesturalInterface(this);
 			
 			menu = new Menu(this);
-			handControl = new HandControl(this);
+			
 			bgrd = new Background(this, 610, 8025, "userImage");
 						
 			//scene 1
@@ -58,24 +59,22 @@ public class KPrez extends PApplet {
 		
 		translate(width/2-640/2, height/2-480/2);
 		
-		gi.selectAndTrackUsers();
+		gi.update();
 		
 		switch (sceneId) {
 		case 0:
 			firstScene();
 			break;
 		case 1:
-			handControl.update();
 			
 			if(bgrd.imgType != "depthImage") bgrd.imgType = "depthImage";
 			
 			bgrd.update();
-			gi.update();
+			
 			ddScene.testCollision();
 			
 			bgrd.display();
 			ddScene.display();
-			handControl.display();
 			gi.display();
 			
 			break;
@@ -85,14 +84,11 @@ public class KPrez extends PApplet {
 		}
 	}
 	private void firstScene(){
-		handControl.update();			
 		bgrd.update();
-		gi.update();
 		menu.testCollision();
 		
 		bgrd.display();
 		menu.display();
-		handControl.display();
 		gi.display();
 	}
 	

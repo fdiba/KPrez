@@ -12,11 +12,12 @@ public class SmartPoint {
 	protected PVector location;
 	
 	private int lowestValue;
+	protected int width;
 	
 	public SmartPoint(HandControl _parent){
 		parent = _parent;
 		couleur = parent.parent.color(242, 162, 32);
-		
+		width = 20;
 		cp_raw_location = new PVector();
 		location = cp_raw_location.get();
 		
@@ -37,7 +38,7 @@ public class SmartPoint {
 		
 		parent.parent.context.getJointPositionSkeleton(userId, memberId, handVector);
 		parent.parent.context.convertRealWorldToProjective(handVector, handVector2d);
-		
+		//work in 2D only for now !!!!
 		location.set(handVector2d);
 	
 	}
@@ -68,6 +69,11 @@ public class SmartPoint {
 	protected void display() {
 		parent.parent.noStroke();
 		parent.parent.fill(couleur);
-		parent.parent.ellipse(location.x, location.y, 20, 20);
+		parent.parent.ellipse(location.x, location.y, width, width);
+	}
+	protected void displayExit(int timeToExit) {
+		parent.parent.noFill();
+		parent.parent.stroke(couleur);
+		parent.parent.ellipse(location.x, location.y, width + timeToExit, width + timeToExit);
 	}
 }

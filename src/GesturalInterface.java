@@ -10,34 +10,86 @@ public class GesturalInterface {
 	private int takeControl;
 	protected int userId;
 	private int sl_user;
-	private PVector rightHand2d;
+	private PVector rightHand2dOutsider;
 	protected boolean isTracked;
+	private boolean isQuitting;
+	private PVector rightHand2d;
+	private PVector leftHand2d;
+	private int exitDistance;
+	private int timeToExit;
+	private int timeToExitMax;
+	
+	protected HandControl handControl;
 	
 	public GesturalInterface(KPrez _parent){
 		parent = _parent;
+		timeToExitMax = 60;
+		timeToExit = timeToExitMax;
+		handControl = new HandControl(parent);
 		takeControl = 0;
 		sl_user = 0;
+		exitDistance = 40;
 	}
 	protected void update() {
 		
+		selectAndTrackUsers();
+		handControl.update();
+		
+		int sceneId = parent.sceneId();
+		if(isTracked && sceneId!=0) isQuitting();
 		
 	}
-	protected void display() {
-		if(isTakingControl) displayControler();
+	private void isQuitting(){
+		
+		rightHand2d = handControl.rightHand.location.get();
+		leftHand2d = handControl.leftHand.location.get();
+		
+		//float distance = PApplet.dist(rightHand.x, rightHand.y, rightHand.z, leftHand.x, leftHand.y, leftHand.z);
+		float distance = PApplet.dist(rightHand2d.x, rightHand2d.y, leftHand2d.x, leftHand2d.y);
+
+		if(distance < exitDistance){
+			isQuitting = true;
+			timeToExit--;
+			
+			if (timeToExit <= 0) {
+				timeToExit = timeToExitMax;
+				isQuitting = false;
+				parent.editScene(0);
+			}
+			
+		} else {
+			isQuitting = false;
+			if(timeToExit < timeToExitMax) timeToExit++;
+		}
 	}
-	private void displayControler(){
+	protected void display() {
+		
+		if(isQuitting){
+			drawLine();
+			handControl.displayExit(timeToExit);
+		} else {
+			handControl.display();
+		}
+		if(isTakingControl) displayControler(rightHand2dOutsider);
+	}
+	private void drawLine(){
+		parent.strokeWeight(2);
+		parent.stroke(255,0,0);
+		parent.line(rightHand2d.x, rightHand2d.y, leftHand2d.x, leftHand2d.y);
+	}
+	private void displayControler(PVector pVector){
 		
 		float diam = 35;
 		
 		parent.rectMode(PApplet.CENTER);
 		parent.pushMatrix();
-		parent.stroke(255, 0, 0);
-		parent.noFill();
+			parent.stroke(255, 0, 0);
+			parent.noFill();
 			//fill(255, 0, 0, map(takeControl, 0, 75, 50, 255));
-			parent.translate(rightHand2d.x, rightHand2d.y);
+			parent.translate(pVector.x, pVector.y);
 			parent.rotate(takeControl);
 			parent.rect(0, 0, diam, diam);
-			parent.popMatrix();
+		parent.popMatrix();
 		
 	}
 	private void isTakingControl(int _id, int i) {
@@ -49,8 +101,8 @@ public class GesturalInterface {
 		PVector leftHand = new PVector();
 		parent.context.getJointPositionSkeleton(_id, SimpleOpenNI.SKEL_LEFT_HAND, leftHand);
 		
-		rightHand2d = new PVector();	
-		parent.context.convertRealWorldToProjective(rightHand, rightHand2d);
+		rightHand2dOutsider = new PVector();	
+		parent.context.convertRealWorldToProjective(rightHand, rightHand2dOutsider);
 		
 		int distance = 150;
 						
@@ -73,7 +125,7 @@ public class GesturalInterface {
 			isTakingControl = false;
 		}
 	}
-	protected void selectAndTrackUsers() {
+	private void selectAndTrackUsers() {
 		
 		IntVector userList = new IntVector();	
 		parent.context.getUsers(userList);

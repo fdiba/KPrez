@@ -39,15 +39,15 @@ public class Menu {
 			
 			for (int i = 0; i < menu.length; i++){
 				menu[i].hits = 0;
-				menu[i].testCollision(parent.handControl.rightHand);
-				menu[i].testCollision(parent.handControl.leftHand);
+				menu[i].testCollision(parent.gi.handControl.rightHand);
+				menu[i].testCollision(parent.gi.handControl.leftHand);
 				menu[i].update();
 			}
 			
 		} else {
 			for (int i = 0; i < menu.length; i++){
 				menu[i].hits = 0;
-				menu[i].testCollision(parent.handControl.cp);
+				menu[i].testCollision(parent.gi.handControl.cp);
 				menu[i].update();
 			}
 		}	

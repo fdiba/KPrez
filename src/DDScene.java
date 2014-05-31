@@ -26,8 +26,8 @@ public class DDScene {
 				if(!images[i].isDragged){
 				
 					images[i].hits = 0;
-					images[i].testCollision(parent.handControl.rightHand);
-					images[i].testCollision(parent.handControl.leftHand);
+					images[i].testCollision(parent.gi.handControl.rightHand);
+					images[i].testCollision(parent.gi.handControl.leftHand);
 					images[i].update();
 				} else {
 					images[i].followSmartPoint();
@@ -37,7 +37,7 @@ public class DDScene {
 		} else {
 			for (int i = 0; i < images.length; i++){
 				images[i].hits = 0;
-				images[i].testCollision(parent.handControl.cp);
+				images[i].testCollision(parent.gi.handControl.cp);
 				images[i].update();
 			}
 		}
