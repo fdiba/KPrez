@@ -17,16 +17,16 @@ public class HandControl {
 		cp = new SmartPoint(this);
 	}
 	protected void update() {
-		if(parent.isTracked){
-			rightHand.update(parent.userId, SimpleOpenNI.SKEL_RIGHT_HAND);
-			leftHand.update(parent.userId, SimpleOpenNI.SKEL_LEFT_HAND);
+		if(parent.gi.isTracked){
+			rightHand.update(parent.gi.userId, SimpleOpenNI.SKEL_RIGHT_HAND);
+			leftHand.update(parent.gi.userId, SimpleOpenNI.SKEL_LEFT_HAND);
 		} else {
 			cp.updateClosestPoint();
 		}
 	}
 	protected void display() {
 	
-		if(parent.isTracked){			
+		if(parent.gi.isTracked){			
 			rightHand.display();
 			leftHand.display();
 		} else {

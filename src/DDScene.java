@@ -19,7 +19,7 @@ public class DDScene {
 	}
 	protected void testCollision(){
 		
-		if (parent.isTracked) {
+		if (parent.gi.isTracked) {
 			
 			for (int i = 0; i < images.length; i++){
 				
