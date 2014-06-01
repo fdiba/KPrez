@@ -18,7 +18,7 @@ public class ISprite extends Bouton{
 		img = pApplet.loadImage(path);
 		width = img.width;
 		height = img.height;
-		couleur = pApplet.color(0);
+		couleur = pApplet.color(232, 187, 131);
 		
 		lastLocation = location.get();
 	}
@@ -70,7 +70,16 @@ public class ISprite extends Bouton{
 		
 		//pApplet.noFill();
 		pApplet.fill(255, 0, 0, alpha);
-		pApplet.strokeWeight(3);
+		
+		int strokeWeight;
+		
+		if(isDragged){
+			strokeWeight = 3;
+		} else {
+			strokeWeight = 1;
+		}
+		
+		pApplet.strokeWeight(strokeWeight);
 		pApplet.stroke(couleur);
 		pApplet.rect(location.x, location.y, width, height);
 		

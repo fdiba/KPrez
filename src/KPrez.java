@@ -22,8 +22,9 @@ public class KPrez extends PApplet {
 		PApplet.main( new String[] { "--display=1", KPrez.class.getSimpleName() });
 		//PApplet.main( new String[] { "--present", KPrez.class.getSimpleName() });
 	}
-	public void editScene(int _sceneId) {
+	public void editScene(int _sceneId, String _mode) {
 		sceneId = _sceneId;
+		gi.setWorld(_mode);
 	}
 	protected int sceneId(){
 		return sceneId;
@@ -45,10 +46,10 @@ public class KPrez extends PApplet {
 			context.enableUser();
 			
 			sceneId = 0;
-			//sceneId = 3;
+			//sceneId = 1;
 			
 			scale = 1.5f;
-			gi = new GesturalInterface(this);
+			gi = new GesturalInterface(this, "2D");
 			
 			menu = new Menu(this);
 			
@@ -74,7 +75,7 @@ public class KPrez extends PApplet {
 			firstScene();
 			break;
 		case 1:	
-			gi.update("2D");
+			gi.update();
 			bgrd.update("depthImage");
 			ddScene.testCollision();
 			
@@ -83,7 +84,7 @@ public class KPrez extends PApplet {
 			gi.display();
 			break;
 		case 3:
-			gi.update("3D");
+			gi.update();
 			bgrd.update("3D");
 			ptp.update();
 			
@@ -106,7 +107,7 @@ public class KPrez extends PApplet {
 		}
 	}
 	private void firstScene(){
-		gi.update("2D");
+		gi.update();
 		bgrd.update("userImage");
 		menu.testCollision();
 		

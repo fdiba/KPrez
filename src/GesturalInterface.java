@@ -27,18 +27,16 @@ public class GesturalInterface {
 	
 	protected HandControl handControl;
 	
-	public GesturalInterface(KPrez _parent){
+	public GesturalInterface(KPrez _parent, String _world){
 		parent = _parent;
 		timeToExitMax = 24;
 		timeToExit = timeToExitMax;
 		handControl = new HandControl(parent);
 		takeControl = 0;
 		sl_user = 0;
-	}
-	protected void update(String _world) {
-		
-		//need to be set only once - need to be rewritten
 		world = _world;
+	}
+	protected void update() {
 		
 		selectAndTrackUsers();
 		handControl.update();
@@ -48,6 +46,9 @@ public class GesturalInterface {
 	}
 	protected String getWorld() {
 		return world;
+	}
+	protected void setWorld(String _world) {
+		world = _world;
 	}
 	private void isQuitting(){
 		
@@ -74,7 +75,7 @@ public class GesturalInterface {
 			if (timeToExit <= 0) {
 				timeToExit = timeToExitMax;
 				isQuitting = false;
-				parent.editScene(0);
+				parent.editScene(0, "2D");
 			}
 			
 		} else {

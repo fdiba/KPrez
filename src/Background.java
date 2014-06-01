@@ -99,11 +99,7 @@ public class Background {
 	private void display3DPoints(){
 		
 		parent.pushMatrix();
-		
-			//parent.translate(parent.width/2, parent.height/2, -1000);
-			//parent.rotateX(PApplet.radians(180));
-		
-			//parent.translate(0, 0, scale * - 1000);
+
 			parent.stroke(255, 192, 0);
 		    parent.strokeWeight(1);
 		    
