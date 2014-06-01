@@ -3,7 +3,6 @@ import processing.core.PVector;
 public class SmartPoint {
 	
 	private PVector cp_raw_location;
-	private int maxDepth;
 	private int actualDepth;
 	private int couleur;
 	protected boolean isTaken;
@@ -11,7 +10,6 @@ public class SmartPoint {
 	protected HandControl parent;
 	protected PVector location;
 	
-	private int lowestValue;
 	protected int width;
 	
 	public SmartPoint(HandControl _parent){
@@ -20,9 +18,6 @@ public class SmartPoint {
 		width = 20;
 		cp_raw_location = new PVector();
 		location = cp_raw_location.get();
-		
-		maxDepth = 5000;
-		lowestValue = 610; //0
 		
 	}
 	protected void take(Bouton btn){
@@ -43,7 +38,7 @@ public class SmartPoint {
 	
 	}
 	protected void updateClosestPoint() {
-		actualDepth = maxDepth;
+		actualDepth = parent.parent.bgrd.getHighestValue();
 		
 		int[]depthValues = parent.parent.context.depthMap();
 		int mapWidth = parent.parent.context.depthWidth();
@@ -54,6 +49,8 @@ public class SmartPoint {
 				
 				int i = x + y * mapWidth;
 				int currentDepthValue = depthValues[i];
+				
+				int lowestValue = parent.parent.bgrd.getLowestValue();
 				
 				if(currentDepthValue > lowestValue && currentDepthValue < actualDepth){
 					actualDepth = currentDepthValue;

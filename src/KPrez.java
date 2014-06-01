@@ -10,7 +10,7 @@ public class KPrez extends PApplet {
 	private int sceneId;
 	private DDScene ddScene;
 	
-	private Background bgrd;
+	protected Background bgrd;
 	
 	protected GesturalInterface gi;
 	
@@ -46,7 +46,7 @@ public class KPrez extends PApplet {
 			
 			menu = new Menu(this);
 			
-			bgrd = new Background(this, 610, 8025, "userImage");
+			bgrd = new Background(this, 1700, 3300, "userImage");
 						
 			//scene 1
 			ddScene = new DDScene(this);
@@ -91,7 +91,15 @@ public class KPrez extends PApplet {
 		menu.display();
 		gi.display();
 	}
-	
+	public void keyPressed() {
+		if (key == 'l') {
+			bgrd.toggleValue();
+		} else if (keyCode == UP) {
+			bgrd.setSelectedValue(+50);
+		} else if (keyCode == DOWN) {
+			bgrd.setSelectedValue(-50);
+		}
+	}
 	// SimpleOpenNI events
 	public void onNewUser(SimpleOpenNI curContext, int userId) {
 	  println("onNewUser - userId: " + userId);
