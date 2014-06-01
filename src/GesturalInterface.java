@@ -23,12 +23,12 @@ public class GesturalInterface {
 	
 	public GesturalInterface(KPrez _parent){
 		parent = _parent;
-		timeToExitMax = 60;
+		timeToExitMax = 24;
 		timeToExit = timeToExitMax;
 		handControl = new HandControl(parent);
 		takeControl = 0;
 		sl_user = 0;
-		exitDistance = 40;
+		exitDistance = 42;
 	}
 	protected void update() {
 		
@@ -66,7 +66,7 @@ public class GesturalInterface {
 		
 		if(isQuitting){
 			drawLine();
-			handControl.displayExit(timeToExit);
+			handControl.displayExit(timeToExit*3);
 		} else {
 			handControl.display();
 		}

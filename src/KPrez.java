@@ -13,10 +13,12 @@ public class KPrez extends PApplet {
 	protected Background bgrd;
 	
 	protected GesturalInterface gi;
+	private PointsToPics ptp;
 	
 	public static void main(String[] args) {
 		
-		PApplet.main(KPrez.class.getSimpleName());
+		//PApplet.main(KPrez.class.getSimpleName());
+		PApplet.main( new String[] { "--display=1", KPrez.class.getSimpleName() });
 		//PApplet.main( new String[] { "--present", KPrez.class.getSimpleName() });
 	}
 	public void editScene(int _sceneId) {
@@ -25,9 +27,11 @@ public class KPrez extends PApplet {
 	protected int sceneId(){
 		return sceneId;
 	}
+
 	public void setup(){
-		size(640*2, 520);
+		size(640*2, 520, OPENGL);
 		//size(displayWidth, displayHeight);
+		
 		context = new SimpleOpenNI(this);
 		if (context.isInit() == false) {
 			println("Can't init SimpleOpenNI, maybe the camera is not connected!"); 
@@ -46,10 +50,14 @@ public class KPrez extends PApplet {
 			
 			menu = new Menu(this);
 			
-			bgrd = new Background(this, 1700, 3300, "userImage");
+			//bureau
+			bgrd = new Background(this, 600, 2300, "userImage");
+			//salon
+			//bgrd = new Background(this, 1700, 3300, "userImage");
 						
 			//scene 1
 			ddScene = new DDScene(this);
+			ptp = new PointsToPics(this);
 		
 		}
 	}
@@ -65,18 +73,20 @@ public class KPrez extends PApplet {
 		case 0:
 			firstScene();
 			break;
-		case 1:
-			
-			if(bgrd.imgType != "depthImage") bgrd.imgType = "depthImage";
-			
-			bgrd.update();
-			
+		case 1:	
+			bgrd.update("depthImage");
 			ddScene.testCollision();
 			
 			bgrd.display();
 			ddScene.display();
 			gi.display();
+			break;
+		case 3:
+			bgrd.update("3D");
+			ptp.update();
 			
+			bgrd.display();
+			ptp.display();
 			break;
 		default:
 			firstScene();
@@ -84,7 +94,7 @@ public class KPrez extends PApplet {
 		}
 	}
 	private void firstScene(){
-		bgrd.update();
+		bgrd.update("userImage");
 		menu.testCollision();
 		
 		bgrd.display();

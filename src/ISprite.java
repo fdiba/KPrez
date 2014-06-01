@@ -40,7 +40,7 @@ public class ISprite extends Bouton{
 		location.y = lastSelector.location.y - height/2;
 		
 		float distance = PApplet.dist(location.x, location.y, lastLocation.x, lastLocation.y);
-		PApplet.println(distance + "    " + timeToMove);
+		//PApplet.println(distance + "    " + timeToMove);
 		
 		if(distance < 5){
 			timeToMove -=5;

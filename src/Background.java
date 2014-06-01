@@ -1,5 +1,6 @@
 import processing.core.PApplet;
 import processing.core.PImage;
+import processing.core.PVector;
 
 public class Background {
 	
@@ -9,6 +10,9 @@ public class Background {
 	private boolean switchValue;
 	protected KPrez parent;
 	private PImage img;
+	//3D
+	private PVector[] depthMapRealWorld;
+	private float scale;
 	
 	public Background(KPrez _parent, int _lowestValue, int _highestValue, String _imgType) {
 		
@@ -16,6 +20,7 @@ public class Background {
 		lowestValue = _lowestValue;
 		highestValue = _highestValue;
 		imgType = _imgType;
+		scale = 1.5f;
 	}
 	protected void toggleValue() {
 		switchValue = !switchValue;
@@ -54,19 +59,31 @@ public class Background {
 	protected void setImg(String _imgType) {
 		imgType = _imgType;
 	}
-	protected void update() {
+	protected void update(String _imgType) {
+		
+		imgType = _imgType;
+		
+		if(imgType != "3D") {
+		
+			switch (imgType) {
+			case "depthImage":
+				img = parent.context.depthImage();
+				break;
+			case "userImage":
+				img = parent.context.userImage();
+				break;
+			default:
+				img = parent.context.depthImage();
+				break;
+			}
+			draw2DBackground();
+		} else {
+			depthMapRealWorld = parent.context.depthMapRealWorld();
+		}
+	}
+	private void draw2DBackground(){
 		
 		int[] depthValues = parent.context.depthMap();
-		
-		switch (imgType) {
-		case "userImage":
-			img = parent.context.userImage();
-			break;
-		default:
-			img = parent.context.depthImage();
-			break;
-		}
-		
 		int mapWidth = parent.context.depthWidth();
 		int mapHeight = parent.context.depthHeight();
 		
@@ -80,12 +97,39 @@ public class Background {
 		    }
 		}
 	}
-	protected void display() {
-		parent.noFill();
-		parent.stroke(255);
-		parent.rectMode(PApplet.CORNER);
-		parent.rect(0, 0, img.width, img.height);
+	private void display3DPoints(){
 		
-		parent.image(img, 0, 0);
+		parent.pushMatrix();
+		
+			parent.translate(parent.width/2, parent.height/2, -1000);
+			parent.rotateX(PApplet.radians(180));
+		
+			parent.translate(0, 0, scale * - 1000);
+			parent.stroke(255, 192, 0);
+		    parent.strokeWeight(1);
+		    
+		    for (int i = 0; i < depthMapRealWorld.length; i += 10) {
+		    	
+		    	PVector currentPoint = depthMapRealWorld[i];
+		        if (currentPoint.z > lowestValue && currentPoint.z < highestValue) {
+		        	parent.point(currentPoint.x, currentPoint.y, currentPoint.z);
+		        }
+		      }
+	
+		parent.popMatrix();
+		
+	}
+	protected void display() {
+		
+		if(imgType != "3D") {
+			parent.noFill();
+			parent.stroke(255);
+			parent.rectMode(PApplet.CORNER);
+			parent.rect(0, 0, img.width, img.height);
+			
+			parent.image(img, 0, 0);
+		} else {
+			display3DPoints();
+		}
 	}
 }
