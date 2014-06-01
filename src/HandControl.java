@@ -17,20 +17,38 @@ public class HandControl {
 		cp = new SmartPoint(this);
 	}
 	protected void update() {
-		if(parent.gi.isTracked){
-			rightHand.update(parent.gi.userId, SimpleOpenNI.SKEL_RIGHT_HAND);
-			leftHand.update(parent.gi.userId, SimpleOpenNI.SKEL_LEFT_HAND);
-		} else {
-			cp.updateClosestPoint();
+		
+		if (parent.gi.getWorld() == "2D") {
+			
+			if(parent.gi.isTracked){
+				updateHandsLocation();
+			} else {
+				cp.updateClosestPoint();
+			}
+		} else {	
+			if(parent.gi.isTracked) updateHandsLocation();
 		}
 	}
+	private void updateHandsLocation(){
+		rightHand.update(parent.gi.userId, SimpleOpenNI.SKEL_RIGHT_HAND);
+		leftHand.update(parent.gi.userId, SimpleOpenNI.SKEL_LEFT_HAND);		
+	}
 	protected void display() {
-		if(parent.gi.isTracked){			
-			rightHand.display();
-			leftHand.display();
+		
+		if (parent.gi.getWorld() == "2D") {
+			if(parent.gi.isTracked){			
+				rightHand.display();
+				leftHand.display();
+			} else {
+				cp.display();
+			}
 		} else {
-			cp.display();
-		}	
+			if(parent.gi.isTracked){			
+				rightHand.display();
+				leftHand.display();
+			}
+		}
+		
 	}
 	protected void displayExit(int timeToExit) {		
 		rightHand.displayExit(timeToExit);

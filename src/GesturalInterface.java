@@ -11,13 +11,19 @@ public class GesturalInterface {
 	protected int userId;
 	private int sl_user;
 	private PVector rightHand2dOutsider;
+	private PVector rightHandOutsider;
 	protected boolean isTracked;
 	private boolean isQuitting;
+	
+	private PVector rightHand;
+	private PVector leftHand;
 	private PVector rightHand2d;
 	private PVector leftHand2d;
+	
 	private int exitDistance;
 	private int timeToExit;
 	private int timeToExitMax;
+	private String world;
 	
 	protected HandControl handControl;
 	
@@ -28,25 +34,39 @@ public class GesturalInterface {
 		handControl = new HandControl(parent);
 		takeControl = 0;
 		sl_user = 0;
-		exitDistance = 42;
 	}
-	protected void update() {
+	protected void update(String _world) {
+		
+		//need to be set only once - need to be rewritten
+		world = _world;
 		
 		selectAndTrackUsers();
 		handControl.update();
-		
 		int sceneId = parent.sceneId();
 		if(isTracked && sceneId!=0) isQuitting();
 		
 	}
+	protected String getWorld() {
+		return world;
+	}
 	private void isQuitting(){
 		
-		rightHand2d = handControl.rightHand.location.get();
-		leftHand2d = handControl.leftHand.location.get();
+		float distance;
 		
-		//float distance = PApplet.dist(rightHand.x, rightHand.y, rightHand.z, leftHand.x, leftHand.y, leftHand.z);
-		float distance = PApplet.dist(rightHand2d.x, rightHand2d.y, leftHand2d.x, leftHand2d.y);
+		if(world =="2D"){
+			exitDistance = 42;
+			rightHand2d = handControl.rightHand.location.get();
+			leftHand2d = handControl.leftHand.location.get();			
+			distance = PApplet.dist(rightHand2d.x, rightHand2d.y, leftHand2d.x, leftHand2d.y);
+		} else {
+			exitDistance = 150;
+			rightHand = handControl.rightHand.location3d.get();
+			leftHand = handControl.leftHand.location3d.get();
+			distance = PApplet.dist(rightHand.x, rightHand.y, rightHand.z, leftHand.x, leftHand.y, leftHand.z);
+		}
 
+		//PApplet.println(distance);
+		
 		if(distance < exitDistance){
 			isQuitting = true;
 			timeToExit--;
@@ -70,43 +90,54 @@ public class GesturalInterface {
 		} else {
 			handControl.display();
 		}
-		if(isTakingControl) displayControler(rightHand2dOutsider);
+		if(isTakingControl) displayControler();
+		
 	}
 	private void drawLine(){
 		parent.strokeWeight(2);
 		parent.stroke(255,0,0);
-		parent.line(rightHand2d.x, rightHand2d.y, leftHand2d.x, leftHand2d.y);
+		if(world == "2D"){
+			parent.line(rightHand2d.x, rightHand2d.y, leftHand2d.x, leftHand2d.y);
+		} else {
+			parent.line(rightHand.x, rightHand.y, rightHand.z, leftHand.x, leftHand.y, leftHand.z);
+		}
 	}
-	private void displayControler(PVector pVector){
+	private void displayControler(){
 		
 		float diam = 35;
-		
 		parent.rectMode(PApplet.CENTER);
+		
 		parent.pushMatrix();
-			parent.stroke(255, 0, 0);
-			parent.noFill();
-			//fill(255, 0, 0, map(takeControl, 0, 75, 50, 255));
-			parent.translate(pVector.x, pVector.y);
-			parent.rotate(takeControl);
-			parent.rect(0, 0, diam, diam);
+		parent.stroke(255, 0, 0);
+		parent.noFill();
+		
+		if(world == "2D"){
+			rightHand2dOutsider = new PVector();	
+			parent.context.convertRealWorldToProjective(rightHandOutsider, rightHand2dOutsider);
+			parent.translate(rightHand2dOutsider.x, rightHand2dOutsider.y);
+		} else {
+			parent.translate(rightHandOutsider.x, rightHandOutsider.y, rightHandOutsider.z);
+		}
+		
+		parent.rotate(takeControl);
+		parent.rect(0, 0, diam, diam);
 		parent.popMatrix();
 		
 	}
 	private void isTakingControl(int _id, int i) {
 		
-		PVector head = new PVector();
-		parent.context.getJointPositionSkeleton(_id, SimpleOpenNI.SKEL_HEAD, head);
-		PVector rightHand = new PVector();
-		parent.context.getJointPositionSkeleton(_id, SimpleOpenNI.SKEL_RIGHT_HAND, rightHand);
-		PVector leftHand = new PVector();
-		parent.context.getJointPositionSkeleton(_id, SimpleOpenNI.SKEL_LEFT_HAND, leftHand);
+		PVector headOutsider = new PVector();
+		parent.context.getJointPositionSkeleton(_id, SimpleOpenNI.SKEL_HEAD, headOutsider);
 		
-		rightHand2dOutsider = new PVector();	
-		parent.context.convertRealWorldToProjective(rightHand, rightHand2dOutsider);
+		rightHandOutsider = new PVector();
+		parent.context.getJointPositionSkeleton(_id, SimpleOpenNI.SKEL_RIGHT_HAND, rightHandOutsider);
+		
+		PVector leftHandOutsider = new PVector();
+		parent.context.getJointPositionSkeleton(_id, SimpleOpenNI.SKEL_LEFT_HAND, leftHandOutsider);
 		
 		int distance = 150;
-						
-		if(rightHand.y > head.y + distance && leftHand.y + distance < head.y) {
+		
+		if(rightHandOutsider.y > headOutsider.y + distance && leftHandOutsider.y + distance < headOutsider.y) {
 
 			isTakingControl = true;
 			takeControl++;
@@ -121,6 +152,7 @@ public class GesturalInterface {
 				takeControl = 0;
 				isTakingControl = false;
 			}
+			
 		} else {
 			isTakingControl = false;
 		}

@@ -14,6 +14,7 @@ public class KPrez extends PApplet {
 	
 	protected GesturalInterface gi;
 	private PointsToPics ptp;
+	private float scale;
 	
 	public static void main(String[] args) {
 		
@@ -44,8 +45,9 @@ public class KPrez extends PApplet {
 			context.enableUser();
 			
 			sceneId = 0;
-			//sceneId = 1;
+			//sceneId = 3;
 			
+			scale = 1.5f;
 			gi = new GesturalInterface(this);
 			
 			menu = new Menu(this);
@@ -67,13 +69,12 @@ public class KPrez extends PApplet {
 		
 		translate(width/2-640/2, height/2-480/2);
 		
-		gi.update();
-		
 		switch (sceneId) {
 		case 0:
 			firstScene();
 			break;
 		case 1:	
+			gi.update("2D");
 			bgrd.update("depthImage");
 			ddScene.testCollision();
 			
@@ -82,11 +83,22 @@ public class KPrez extends PApplet {
 			gi.display();
 			break;
 		case 3:
+			gi.update("3D");
 			bgrd.update("3D");
 			ptp.update();
 			
-			bgrd.display();
-			ptp.display();
+			
+			pushMatrix();
+			
+				translate(width/2, height/2, -1000);
+				rotateX(PApplet.radians(180));
+				translate(0, 0, scale * - 1000);
+				
+				bgrd.display();
+				ptp.display();
+				gi.display();
+			
+			popMatrix();
 			break;
 		default:
 			firstScene();
@@ -94,6 +106,7 @@ public class KPrez extends PApplet {
 		}
 	}
 	private void firstScene(){
+		gi.update("2D");
 		bgrd.update("userImage");
 		menu.testCollision();
 		
