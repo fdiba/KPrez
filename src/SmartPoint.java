@@ -75,7 +75,14 @@ public class SmartPoint {
 		parent.parent.noStroke();
 		
 		if (parent.parent.gi.getWorld() == "2D") {
-			parent.parent.fill(couleur);
+			
+			
+			if(isTaken){
+				parent.parent.noFill();
+			} else {
+				parent.parent.fill(couleur);
+			}
+			
 			parent.parent.ellipse(location.x, location.y, width, width);
 		} else {
 			parent.parent.pushMatrix();

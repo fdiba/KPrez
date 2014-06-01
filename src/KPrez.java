@@ -46,7 +46,7 @@ public class KPrez extends PApplet {
 			context.enableUser();
 			
 			sceneId = 0;
-			//sceneId = 1;
+			//sceneId = 3;
 			
 			scale = 1.5f;
 			gi = new GesturalInterface(this, "2D");
@@ -85,6 +85,7 @@ public class KPrez extends PApplet {
 			break;
 		case 3:
 			gi.update();
+			gi.testScreenDisplay();
 			bgrd.update("3D");
 			ptp.update();
 			
@@ -98,6 +99,7 @@ public class KPrez extends PApplet {
 				bgrd.display();
 				ptp.display();
 				gi.display();
+				if(gi.getScreenAvailable()) gi.displayMiddlePoint();
 			
 			popMatrix();
 			break;

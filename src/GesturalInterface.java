@@ -26,6 +26,8 @@ public class GesturalInterface {
 	private String world;
 	
 	protected HandControl handControl;
+	private PVector middlePoint;
+	private boolean screenAvailable;
 	
 	public GesturalInterface(KPrez _parent, String _world){
 		parent = _parent;
@@ -35,14 +37,13 @@ public class GesturalInterface {
 		takeControl = 0;
 		sl_user = 0;
 		world = _world;
+		//middlePoint = new PVector();
 	}
 	protected void update() {
-		
 		selectAndTrackUsers();
 		handControl.update();
 		int sceneId = parent.sceneId();
 		if(isTracked && sceneId!=0) isQuitting();
-		
 	}
 	protected String getWorld() {
 		return world;
@@ -186,5 +187,39 @@ public class GesturalInterface {
 				}
 			}
 		}
+	}
+	public void testScreenDisplay() {
+		
+		float distance = PApplet.dist(rightHand.x, rightHand.y, rightHand.z, leftHand.x, leftHand.y, leftHand.z);
+		//PApplet.println(distance);
+		
+		PVector leftHip = new PVector();
+		parent.context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_LEFT_HIP, leftHip);
+		
+		if(distance > 750 && distance < 850 &&
+		  (rightHand.y - leftHand.y < 10 || leftHand.y - rightHand.y < 10) &&
+		  leftHand.y > leftHip.y + 100 ) {
+			
+			screenAvailable = true;
+			middlePoint = rightHand.get();
+			PVector pVector = PVector.sub(leftHand, rightHand);
+			pVector.div(2);
+			middlePoint.add(pVector);
+			
+		} else {
+			screenAvailable = false;
+		}
+	}
+	protected boolean getScreenAvailable(){
+		return screenAvailable;
+	}
+	public void displayMiddlePoint() {
+		parent.pushMatrix();
+			parent.noStroke();
+			parent.fill(255,0,0);
+			parent.translate(middlePoint.x, middlePoint.y, middlePoint.z);
+			parent.ellipse(0, 0, 50, 50);
+		parent.popMatrix();
+		
 	}
 }
