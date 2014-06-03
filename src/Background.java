@@ -12,6 +12,10 @@ public class Background {
 	private PImage img;
 	//3D
 	private PVector[] depthMapRealWorld;
+	private int couleur1;
+	private int couleur2;
+	private int couleur;
+	private boolean hasJumpALine;
 	
 	public Background(KPrez _parent, int _lowestValue, int _highestValue, String _imgType) {
 		
@@ -19,7 +23,9 @@ public class Background {
 		lowestValue = _lowestValue;
 		highestValue = _highestValue;
 		imgType = _imgType;
-		
+		couleur1 = parent.color(255, 0, 0);
+		couleur2 = parent.color(0,255,0);
+		couleur = couleur1;
 	}
 	protected void toggleValue() {
 		switchValue = !switchValue;
@@ -100,12 +106,48 @@ public class Background {
 		
 		parent.pushMatrix();
 
-			parent.stroke(255, 192, 0);
-		    parent.strokeWeight(1);
+			parent.stroke(couleur);
+		    parent.strokeWeight(2);
+		    
+		    int mapWidth = parent.context.depthWidth();
+		    
+		    int oldLineId = 0;
+		    int j=0;
+		    
+		    //PApplet.println(depthMapRealWorld.length + " " + mapWidth*mapHeight);
 		    
 		    for (int i = 0; i < depthMapRealWorld.length; i += 10) {
 		    	
-		    	PVector currentPoint = depthMapRealWorld[i];
+		    	int newLineId = i/mapWidth;
+		    	//PApplet.println(newLineId);
+		    	
+		    	if(newLineId % 2 == 1){
+		    		j= i;		    		
+		    	} else {
+		    		j =i+5;
+		    	}
+		    	
+		    	//new line
+		    	if(oldLineId != newLineId) {
+		    		
+		    		//----- create space between between each line of dots -----//
+		    		if(!hasJumpALine){
+		    		
+		    			//jump a line
+		    			if(i+mapWidth*2 < depthMapRealWorld.length){
+		    				i+=mapWidth*2;
+		    				j=i;
+		    			}
+		    		} else {
+		    			parent.stroke(toogleColor());
+		    		}
+		    		hasJumpALine();
+		    		//------------------------------------//
+		    	}
+		    	
+		    	oldLineId = newLineId;
+		    	
+		    	PVector currentPoint = depthMapRealWorld[j];
 		        if (currentPoint.z > lowestValue && currentPoint.z < highestValue) {
 		        	parent.point(currentPoint.x, currentPoint.y, currentPoint.z);
 		        }
@@ -114,6 +156,21 @@ public class Background {
 		parent.popMatrix();
 		
 	}
+	private void hasJumpALine(){
+		hasJumpALine = !hasJumpALine;
+	}
+	private int toogleColor(){
+		
+		if(couleur == couleur1){
+			couleur = couleur2;
+		} else if(couleur == couleur2){
+			couleur = couleur1;
+		}
+		return couleur;
+
+		
+	}
+	
 	protected void display() {
 		
 		if(imgType != "3D") {

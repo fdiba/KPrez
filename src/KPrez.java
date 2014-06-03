@@ -18,8 +18,8 @@ public class KPrez extends PApplet {
 	
 	public static void main(String[] args) {
 		
-		PApplet.main(KPrez.class.getSimpleName());
-		//PApplet.main( new String[] { "--display=1", KPrez.class.getSimpleName() });
+		//PApplet.main(KPrez.class.getSimpleName());
+		PApplet.main( new String[] { "--display=1", KPrez.class.getSimpleName() });
 		//PApplet.main( new String[] { "--present", KPrez.class.getSimpleName() });
 	}
 	public void editScene(int _sceneId, String _mode) {
@@ -32,6 +32,7 @@ public class KPrez extends PApplet {
 
 	public void setup(){
 		size(640*2, 520, OPENGL);
+		//frameRate(1);
 		//size(displayWidth, displayHeight);
 		
 		context = new SimpleOpenNI(this);
@@ -55,9 +56,9 @@ public class KPrez extends PApplet {
 			menu = new Menu(this);
 			
 			//bureau
-			//bgrd = new Background(this, 600, 2300, "userImage");
+			bgrd = new Background(this, 600, 2300, "userImage");
 			//salon
-			bgrd = new Background(this, 1700, 3300, "userImage");
+			//bgrd = new Background(this, 1700, 3300, "userImage");
 						
 			//scene 1
 			ddScene = new DDScene(this);
