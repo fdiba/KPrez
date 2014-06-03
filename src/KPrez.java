@@ -18,8 +18,8 @@ public class KPrez extends PApplet {
 	
 	public static void main(String[] args) {
 		
-		//PApplet.main(KPrez.class.getSimpleName());
-		PApplet.main( new String[] { "--display=1", KPrez.class.getSimpleName() });
+		PApplet.main(KPrez.class.getSimpleName());
+		//PApplet.main( new String[] { "--display=1", KPrez.class.getSimpleName() });
 		//PApplet.main( new String[] { "--present", KPrez.class.getSimpleName() });
 	}
 	public void editScene(int _sceneId, String _mode) {
@@ -45,18 +45,19 @@ public class KPrez extends PApplet {
 			context.enableDepth();		
 			context.enableUser();
 			
-			sceneId = 0;
-			//sceneId = 3;
+			//sceneId = 0;
+			sceneId = 3;
 			
 			scale = 1.5f;
-			gi = new GesturalInterface(this, "2D");
+			//gi = new GesturalInterface(this, "2D");
+			gi = new GesturalInterface(this, "3D");
 			
 			menu = new Menu(this);
 			
 			//bureau
-			bgrd = new Background(this, 600, 2300, "userImage");
+			//bgrd = new Background(this, 600, 2300, "userImage");
 			//salon
-			//bgrd = new Background(this, 1700, 3300, "userImage");
+			bgrd = new Background(this, 1700, 3300, "userImage");
 						
 			//scene 1
 			ddScene = new DDScene(this);
@@ -85,9 +86,9 @@ public class KPrez extends PApplet {
 			break;
 		case 3:
 			gi.update();
-			gi.testScreenDisplay();
+			if(gi.isTracked) gi.testScreenDisplay();
 			bgrd.update("3D");
-			ptp.update();
+			//ptp.update();
 			
 			
 			pushMatrix();
@@ -97,9 +98,9 @@ public class KPrez extends PApplet {
 				translate(0, 0, scale * - 1000);
 				
 				bgrd.display();
-				ptp.display();
+				//ptp.display();
 				gi.display();
-				if(gi.getScreenAvailable()) gi.displayMiddlePoint();
+				if(gi.getScreenAvailable() && gi.isTracked) gi.displayMiddlePoint();
 			
 			popMatrix();
 			break;

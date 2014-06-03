@@ -38,6 +38,8 @@ public class GesturalInterface {
 		sl_user = 0;
 		world = _world;
 		//middlePoint = new PVector();
+		//rightHand = new PVector();
+		//leftHand = new PVector();
 	}
 	protected void update() {
 		selectAndTrackUsers();
