@@ -101,7 +101,10 @@ public class KPrez extends PApplet {
 				bgrd.display();
 				//ptp.display();
 				gi.display();
-				if(gi.getScreenAvailable() && gi.isTracked) gi.displayMiddlePoint();
+				if(gi.getScreenAvailable() && gi.isTracked) {
+					gi.displayMiddlePoint();
+					ptp.displayScreen(gi.getMiddlePoint());
+				}
 			
 			popMatrix();
 			break;

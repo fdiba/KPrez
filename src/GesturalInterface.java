@@ -28,6 +28,7 @@ public class GesturalInterface {
 	protected HandControl handControl;
 	private PVector middlePoint;
 	private boolean screenAvailable;
+	private PVector torso;
 	
 	public GesturalInterface(KPrez _parent, String _world){
 		parent = _parent;
@@ -37,9 +38,20 @@ public class GesturalInterface {
 		takeControl = 0;
 		sl_user = 0;
 		world = _world;
+		
+		initVectors();
+	}
+	private void initVectors(){
+		//-- init elsewhere ------------//
 		//middlePoint = new PVector();
 		//rightHand = new PVector();
 		//leftHand = new PVector();
+		
+		//-- user ----------------------//
+		torso = new PVector();
+		
+		//-- candidate -----------------//
+		rightHandOutsider = new PVector();
 	}
 	protected void update() {
 		selectAndTrackUsers();
@@ -68,9 +80,7 @@ public class GesturalInterface {
 			leftHand = handControl.leftHand.location3d.get();
 			distance = PApplet.dist(rightHand.x, rightHand.y, rightHand.z, leftHand.x, leftHand.y, leftHand.z);
 		}
-
 		//PApplet.println(distance);
-		
 		if(distance < exitDistance){
 			isQuitting = true;
 			timeToExit--;
@@ -133,7 +143,6 @@ public class GesturalInterface {
 		PVector headOutsider = new PVector();
 		parent.context.getJointPositionSkeleton(_id, SimpleOpenNI.SKEL_HEAD, headOutsider);
 		
-		rightHandOutsider = new PVector();
 		parent.context.getJointPositionSkeleton(_id, SimpleOpenNI.SKEL_RIGHT_HAND, rightHandOutsider);
 		
 		PVector leftHandOutsider = new PVector();
@@ -192,25 +201,27 @@ public class GesturalInterface {
 	}
 	public void testScreenDisplay() {
 		
-		float distance = PApplet.dist(rightHand.x, rightHand.y, rightHand.z, leftHand.x, leftHand.y, leftHand.z);
+		float distBetweenHands = PApplet.dist(rightHand.x, rightHand.y, rightHand.z, leftHand.x, leftHand.y, leftHand.z);
 		//PApplet.println(distance);
 		
-		PVector leftHip = new PVector();
-		parent.context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_LEFT_HIP, leftHip);
+		parent.context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_TORSO, torso);
 		
-		if(distance > 750 && distance < 850 &&
-		  (rightHand.y - leftHand.y < 10 || leftHand.y - rightHand.y < 10) &&
-		  leftHand.y > leftHip.y + 100 ) {
-			
+		middlePoint = rightHand.get();
+		PVector pVector = PVector.sub(leftHand, rightHand);
+		pVector.div(2);
+		middlePoint.add(pVector);
+		
+		float distFromTorso = PApplet.dist(middlePoint.x, middlePoint.y, middlePoint.z, torso.x, torso.y, torso.z);
+		
+		if(distBetweenHands > 750 && distBetweenHands > 850 && distFromTorso < 250 &&
+		  (rightHand.y - leftHand.y < 10 || leftHand.y - rightHand.y < 10)) {
 			screenAvailable = true;
-			middlePoint = rightHand.get();
-			PVector pVector = PVector.sub(leftHand, rightHand);
-			pVector.div(2);
-			middlePoint.add(pVector);
-			
 		} else {
 			screenAvailable = false;
 		}
+	}
+	protected PVector getMiddlePoint(){
+		return middlePoint;
 	}
 	protected boolean getScreenAvailable(){
 		return screenAvailable;
