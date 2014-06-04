@@ -29,6 +29,7 @@ public class GesturalInterface {
 	private PVector middlePoint;
 	private boolean screenAvailable;
 	private PVector torso;
+	private int timeToBeDisplayed;
 	
 	public GesturalInterface(KPrez _parent, String _world){
 		parent = _parent;
@@ -215,9 +216,16 @@ public class GesturalInterface {
 		
 		if(distBetweenHands > 750 && distBetweenHands > 850 && distFromTorso < 250 &&
 		  (rightHand.y - leftHand.y < 10 || leftHand.y - rightHand.y < 10)) {
-			screenAvailable = true;
+			if(!screenAvailable){
+				screenAvailable = true;
+				timeToBeDisplayed = 60;
+			}
 		} else {
-			screenAvailable = false;
+			timeToBeDisplayed--;
+			if(timeToBeDisplayed<=0 && screenAvailable){
+				screenAvailable = false;
+				parent.ptp.nextDisplay();
+			}
 		}
 	}
 	protected PVector getMiddlePoint(){

@@ -13,7 +13,7 @@ public class KPrez extends PApplet {
 	protected Background bgrd;
 	
 	protected GesturalInterface gi;
-	private PointsToPics ptp;
+	protected PointsToPics ptp;
 	private float scale;
 	
 	public static void main(String[] args) {
@@ -102,8 +102,8 @@ public class KPrez extends PApplet {
 				//ptp.display();
 				gi.display();
 				if(gi.getScreenAvailable() && gi.isTracked) {
-					gi.displayMiddlePoint();
 					ptp.displayScreen(gi.getMiddlePoint());
+					gi.displayMiddlePoint();
 				}
 			
 			popMatrix();
