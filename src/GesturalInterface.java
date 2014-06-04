@@ -17,6 +17,9 @@ public class GesturalInterface {
 	
 	private PVector rightHand;
 	private PVector leftHand;
+	private PVector middlePoint;
+	private PVector torso;
+	
 	private PVector rightHand2d;
 	private PVector leftHand2d;
 	
@@ -26,11 +29,7 @@ public class GesturalInterface {
 	private String world;
 	
 	protected HandControl handControl;
-	private PVector middlePoint;
-	private boolean screenAvailable;
-	private PVector torso;
-	private int timeToBeDisplayed;
-	
+		
 	public GesturalInterface(KPrez _parent, String _world){
 		parent = _parent;
 		timeToExitMax = 24;
@@ -41,6 +40,23 @@ public class GesturalInterface {
 		world = _world;
 		
 		initVectors();
+	}
+	protected PVector torso(){
+		parent.context.getJointPositionSkeleton(parent.gi.userId, SimpleOpenNI.SKEL_TORSO, torso);
+		return torso;
+	}
+	protected PVector middlePoint(PVector pvector1, PVector pvector2){
+		middlePoint = pvector1.get();
+		PVector pVector = PVector.sub(pvector2, pvector1);
+		pVector.div(2);
+		middlePoint.add(pVector);
+		return middlePoint;
+	}
+	protected PVector rightHand(){
+		return rightHand;
+	}
+	protected PVector leftHand(){
+		return leftHand;
 	}
 	private void initVectors(){
 		//-- init elsewhere ------------//
@@ -200,39 +216,8 @@ public class GesturalInterface {
 			}
 		}
 	}
-	public void testScreenDisplay() {
-		
-		float distBetweenHands = PApplet.dist(rightHand.x, rightHand.y, rightHand.z, leftHand.x, leftHand.y, leftHand.z);
-		//PApplet.println(distance);
-		
-		parent.context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_TORSO, torso);
-		
-		middlePoint = rightHand.get();
-		PVector pVector = PVector.sub(leftHand, rightHand);
-		pVector.div(2);
-		middlePoint.add(pVector);
-		
-		float distFromTorso = PApplet.dist(middlePoint.x, middlePoint.y, middlePoint.z, torso.x, torso.y, torso.z);
-		
-		if(distBetweenHands > 750 && distBetweenHands > 850 && distFromTorso < 250 &&
-		  (rightHand.y - leftHand.y < 10 || leftHand.y - rightHand.y < 10)) {
-			if(!screenAvailable){
-				screenAvailable = true;
-				timeToBeDisplayed = 60;
-			}
-		} else {
-			timeToBeDisplayed--;
-			if(timeToBeDisplayed<=0 && screenAvailable){
-				screenAvailable = false;
-				parent.ptp.nextDisplay();
-			}
-		}
-	}
 	protected PVector getMiddlePoint(){
 		return middlePoint;
-	}
-	protected boolean getScreenAvailable(){
-		return screenAvailable;
 	}
 	public void displayMiddlePoint() {
 		parent.pushMatrix();

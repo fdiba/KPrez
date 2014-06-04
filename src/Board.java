@@ -17,10 +17,10 @@ public class Board {
 	protected void update(){
 		
 	}
-	protected void display(PVector location3d){
+	protected void display(PVector location3d, int alpha){
 		parent.rectMode(PApplet.CENTER);
 		parent.noStroke();
-		parent.fill(couleur);
+		parent.fill(couleur, alpha);
 		parent.translate(location3d.x, location3d.y,location3d.z);
 		parent.rect(0, 0, width, height);
 	}

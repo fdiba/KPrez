@@ -1,5 +1,5 @@
 import java.util.ArrayList;
-
+import processing.core.PApplet;
 import processing.core.PVector;
 
 public class PointsToPics {
@@ -8,6 +8,8 @@ public class PointsToPics {
 	private ArrayList<Board> boards;
 	private int[] colors;
 	private int boardId;
+	private boolean screenAvailable;
+	private int timeToBeDisplayed;
 
 	public PointsToPics(KPrez _parent){
 		
@@ -23,11 +25,42 @@ public class PointsToPics {
 			Board board = new Board(parent, 640, 480, colors[i]);
 			boards.add(board);
 		}
-		
 	}
-	protected void nextDisplay(){
+	protected void testScreenDisplay() {
+		
+		PVector rightHand = parent.gi.rightHand();
+		PVector leftHand = parent.gi.leftHand();
+		PVector torso = parent.gi.torso();
+		
+		float distBetweenHands = PApplet.dist(rightHand.x, rightHand.y, rightHand.z, leftHand.x, leftHand.y, leftHand.z);
+		//PApplet.println(distance);
+		
+		PVector pointBetweenHands = parent.gi.middlePoint(rightHand, leftHand);
+		
+		float distFromTorso = PApplet.dist(pointBetweenHands.x, pointBetweenHands.y, pointBetweenHands.z, torso.x, torso.y, torso.z);
+		
+		if(distBetweenHands > 750 && distBetweenHands > 850 && distFromTorso < 250 &&
+		  (rightHand.y - leftHand.y < 10 || leftHand.y - rightHand.y < 10)) {
+			if(!screenAvailable){
+				screenAvailable = true;
+				timeToBeDisplayed = 255;
+			} else if (screenAvailable && timeToBeDisplayed < 255){
+				timeToBeDisplayed += 5;
+			}
+		} else {
+			timeToBeDisplayed -= 5;
+			if(timeToBeDisplayed <= 0 && screenAvailable){
+				screenAvailable = false;
+				nextDisplay();
+			}
+		}
+	}
+	private void nextDisplay(){
 		boardId++;
 		if(boardId>=boards.size()) boardId=0;
+	}
+	protected boolean screenAvailable(){
+		return screenAvailable;
 	}
 	protected void update() {
 		
@@ -37,6 +70,6 @@ public class PointsToPics {
 	}
 	public void displayScreen(PVector pvector) {
 		Board board = boards.get(boardId);
-		board.display(pvector);
+		board.display(pvector, timeToBeDisplayed);
 	}
 }

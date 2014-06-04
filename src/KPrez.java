@@ -13,7 +13,7 @@ public class KPrez extends PApplet {
 	protected Background bgrd;
 	
 	protected GesturalInterface gi;
-	protected PointsToPics ptp;
+	private PointsToPics ptp;
 	private float scale;
 	
 	public static void main(String[] args) {
@@ -87,7 +87,7 @@ public class KPrez extends PApplet {
 			break;
 		case 3:
 			gi.update();
-			if(gi.isTracked) gi.testScreenDisplay();
+			if(gi.isTracked) ptp.testScreenDisplay();
 			bgrd.update("3D");
 			//ptp.update();
 			
@@ -101,7 +101,7 @@ public class KPrez extends PApplet {
 				bgrd.display();
 				//ptp.display();
 				gi.display();
-				if(gi.getScreenAvailable() && gi.isTracked) {
+				if(ptp.screenAvailable() && gi.isTracked) {
 					ptp.displayScreen(gi.getMiddlePoint());
 					gi.displayMiddlePoint();
 				}
