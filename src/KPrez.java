@@ -18,8 +18,8 @@ public class KPrez extends PApplet {
 	
 	public static void main(String[] args) {
 		
-		//PApplet.main(KPrez.class.getSimpleName());
-		PApplet.main( new String[] { "--display=1", KPrez.class.getSimpleName() });
+		PApplet.main(KPrez.class.getSimpleName());
+		//PApplet.main( new String[] { "--display=1", KPrez.class.getSimpleName() });
 		//PApplet.main( new String[] { "--present", KPrez.class.getSimpleName() });
 	}
 	public void editScene(int _sceneId, String _mode) {
@@ -31,7 +31,7 @@ public class KPrez extends PApplet {
 	}
 
 	public void setup(){
-		size(640*2, 520, OPENGL);
+		size(640, 480, OPENGL);
 		//frameRate(1);
 		//size(displayWidth, displayHeight);
 		
@@ -46,20 +46,22 @@ public class KPrez extends PApplet {
 			context.enableDepth();		
 			context.enableUser();
 			
-			//sceneId = 0;
-			sceneId = 3;
+			sceneId = 0;
+			//sceneId = 3;
 			
 			scale = 1.5f;
-			//gi = new GesturalInterface(this, "2D");
-			gi = new GesturalInterface(this, "3D");
+			gi = new GesturalInterface(this, "2D");
+			//gi = new GesturalInterface(this, "3D");
 			
 			menu = new Menu(this);
 			
 			//bureau
-			bgrd = new Background(this, 600, 2300, "userImage");
+			//bgrd = new Background(this, 600, 2300, "userImage");
 			//salon
 			//bgrd = new Background(this, 1700, 3300, "userImage");
-						
+			//salon capture
+			bgrd = new Background(this, 1700, 2500, "userImage");
+			
 			//scene 1
 			ddScene = new DDScene(this);
 			ptp = new PointsToPics(this);
@@ -102,7 +104,7 @@ public class KPrez extends PApplet {
 				//ptp.display();
 				gi.display();
 				if(ptp.screenAvailable() && gi.isTracked) {
-					ptp.displayScreen(gi.getMiddlePoint());
+					ptp.displayScreen();
 					gi.displayMiddlePoint();
 				}
 			

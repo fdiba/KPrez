@@ -6,7 +6,7 @@ public class PointsToPics {
 	
 	private KPrez parent;
 	private ArrayList<Board> boards;
-	private int[] colors;
+	private String[] images = {"ptp1.jpg", "ptp2.jpg"};
 	private int boardId;
 	private boolean screenAvailable;
 	private int timeToBeDisplayed;
@@ -14,15 +14,12 @@ public class PointsToPics {
 	public PointsToPics(KPrez _parent){
 		
 		parent = _parent;
-		
-		colors = new int[2];
-		colors[0] = parent.color(0, 0, 255);
-		colors[1] = parent.color(0, 255, 0);
+
 		boardId = 0;
 		
 		boards = new ArrayList<Board>();
-		for (int i=0; i < colors.length; i++){
-			Board board = new Board(parent, 640, 480, colors[i]);
+		for (int i=0; i < images.length; i++){
+			Board board = new Board(parent, images[i]);
 			boards.add(board);
 		}
 	}
@@ -68,8 +65,13 @@ public class PointsToPics {
 	protected void display() {
 		
 	}
-	public void displayScreen(PVector pvector) {
+	public void displayScreen() {
+		
 		Board board = boards.get(boardId);
-		board.display(pvector, timeToBeDisplayed);
+		
+		if(timeToBeDisplayed >= 255-55){
+			board.setLocation3d(parent.gi.getMiddlePoint());
+		}
+		board.display(timeToBeDisplayed);
 	}
 }
