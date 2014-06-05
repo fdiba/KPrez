@@ -56,11 +56,11 @@ public class KPrez extends PApplet {
 			menu = new Menu(this);
 			
 			//bureau
-			//bgrd = new Background(this, 600, 2300, "userImage");
+			bgrd = new Background(this, 600, 2300, "userImage");
 			//salon
 			//bgrd = new Background(this, 1700, 3300, "userImage");
 			//salon capture
-			bgrd = new Background(this, 1700, 2500, "userImage");
+			//bgrd = new Background(this, 1700, 2500, "userImage");
 			
 			//scene 1
 			ddScene = new DDScene(this);
