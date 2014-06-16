@@ -10,6 +10,7 @@ public class PointsToPics {
 	private int boardId;
 	private boolean screenAvailable;
 	private int timeToBeDisplayed;
+	protected int counter;
 
 	public PointsToPics(KPrez _parent){
 		
@@ -22,6 +23,9 @@ public class PointsToPics {
 			Board board = new Board(parent, images[i]);
 			boards.add(board);
 		}
+	}
+	protected void init(){
+		counter = 48;
 	}
 	protected void testScreenDisplay() {
 		
@@ -38,7 +42,7 @@ public class PointsToPics {
 		
 		if(parent.gi.isInPlace()){
 			//PApplet.println("ON");
-			if(distBetweenHands > 750 && distBetweenHands > 850 && distFromTorso < 250 &&
+			if(distBetweenHands > 750 && distBetweenHands > 850 && distFromTorso < 350 &&
 			  (rightHand.y - leftHand.y < 10 || leftHand.y - rightHand.y < 10)) {
 				if(!screenAvailable){
 					screenAvailable = true;
@@ -69,7 +73,7 @@ public class PointsToPics {
 		return screenAvailable;
 	}
 	protected void update() {
-		
+		if(counter>0)counter--;
 	}
 	protected void display() {
 		

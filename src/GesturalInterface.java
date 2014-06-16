@@ -99,6 +99,7 @@ public class GesturalInterface {
 		handControl.update();
 		
 		if(isTracked) isInPlace();
+		
 		int sceneId = parent.sceneId();
 		if(isTracked && sceneId!=0) isQuitting();
 	}

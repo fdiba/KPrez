@@ -12,6 +12,7 @@ public class KPrez extends PApplet {
 	protected Menu menu;
 	
 	private int sceneId;
+	private int oldSceneId;
 	private DDScene ddScene;
 	
 	protected Background bgrd;
@@ -102,10 +103,10 @@ public class KPrez extends PApplet {
 			break;
 		case 3:
 			gi.update();
-			if(gi.isTracked) ptp.testScreenDisplay();
+			if (sceneId != oldSceneId) ptp.init();
+			if(gi.isTracked && ptp.counter <= 0) ptp.testScreenDisplay();
 			bgrd.update("3D");
-			//ptp.update();
-			
+			ptp.update();
 			
 			pushMatrix();
 			
@@ -127,6 +128,7 @@ public class KPrez extends PApplet {
 			firstScene();
 			break;
 		}
+		oldSceneId = sceneId;
 	}
 	private void firstScene(){
 		gi.update();
