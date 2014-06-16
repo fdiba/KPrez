@@ -46,7 +46,7 @@ public class SmartPoint {
 		}
 	}
 	protected void updateClosestPoint() {
-		actualDepth = parent.parent.getHighestValue();
+		actualDepth = parent.parent.gi.getHighestValue();
 		
 		int[]depthValues = parent.parent.context.depthMap();
 		int mapWidth = parent.parent.context.depthWidth();
@@ -58,7 +58,7 @@ public class SmartPoint {
 				int i = x + y * mapWidth;
 				int currentDepthValue = depthValues[i];
 				
-				int lowestValue = parent.parent.getLowestValue();
+				int lowestValue = parent.parent.gi.getLowestValue();
 				
 				if(currentDepthValue > lowestValue && currentDepthValue < actualDepth){
 					actualDepth = currentDepthValue;

@@ -50,7 +50,8 @@ public class GesturalInterface {
 		sl_user = 0;
 		world = _world;
 		
-		PApplet.println("depthmap controllers : UP | DOWN | l to toggle");
+		PApplet.println("depthmap controllers : UP | DOWN | l to toggle" + "\n" +
+						"editPositionWithMouse : m to toogle");
 		
 	}
 	protected void setLowestValue(int _lowestValue) {
@@ -58,6 +59,12 @@ public class GesturalInterface {
 	}
 	protected void setHighestValue(int _highestValue) {
 		highestValue = _highestValue;
+	}
+	protected int getLowestValue() {
+		return lowestValue;
+	}
+	protected int getHighestValue() {
+		return highestValue;
 	}
 	protected PVector torso(){
 		parent.context.getJointPositionSkeleton(parent.gi.userId, SimpleOpenNI.SKEL_TORSO, torso);

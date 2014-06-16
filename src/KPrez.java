@@ -13,13 +13,17 @@ public class KPrez extends PApplet {
 	
 	private int sceneId;
 	private int oldSceneId;
+	
 	private DDScene ddScene;
+	protected SoundScene soundScene;
 	
 	protected Background bgrd;
 	
 	protected GesturalInterface gi;
 	private PointsToPics ptp;
 	private float scale;
+	
+	private boolean editPositionWithMouse;
 	
 	public static void main(String[] args) {
 		
@@ -51,8 +55,8 @@ public class KPrez extends PApplet {
 			context.enableDepth();		
 			context.enableUser();
 			
-			sceneId = 0;
-			//sceneId = 3;	
+			//sceneId = 0;
+			sceneId = 2;	
 			
 			scale = 1.5f;
 			
@@ -70,13 +74,15 @@ public class KPrez extends PApplet {
 			//lowestValue = 1700;
 			//highestValue = 2500;
 			
-			gi = new GesturalInterface(this, lowestValue, highestValue, "2D");
-			//gi = new GesturalInterface(this, lowestValue, highestValue, "3D");
+			//gi = new GesturalInterface(this, lowestValue, highestValue, "2D");
+			gi = new GesturalInterface(this, lowestValue, highestValue, "3D");
 			
 			bgrd = new Background(this, lowestValue, highestValue, "userImage");
 			
 			//scene 1
 			ddScene = new DDScene(this);
+			//scene 2
+			soundScene = new SoundScene(this);
 			//scene 3
 			ptp = new PointsToPics(this);
 		
@@ -101,6 +107,18 @@ public class KPrez extends PApplet {
 			ddScene.display();
 			gi.display();
 			break;
+		case 2:
+			gi.update();
+			soundScene.reinit(); //1
+			bgrd.update("3D"); //2
+			
+			pushMatrix();
+				pointAndMoveInTheRightDirection();
+				bgrd.display(); //1
+				soundScene.display(); //2
+				gi.display();
+			popMatrix();
+			break;
 		case 3:
 			gi.update();
 			if (sceneId != oldSceneId) ptp.init();
@@ -110,9 +128,7 @@ public class KPrez extends PApplet {
 			
 			pushMatrix();
 			
-				translate(width/2, height/2, -1000);
-				rotateX(PApplet.radians(180));
-				translate(0, 0, scale * - 1000);
+				pointAndMoveInTheRightDirection();
 				
 				bgrd.display();
 				//ptp.display();
@@ -130,6 +146,17 @@ public class KPrez extends PApplet {
 		}
 		oldSceneId = sceneId;
 	}
+	private void pointAndMoveInTheRightDirection(){
+		translate(width/2, height/2, -1000);
+		rotateX(PApplet.radians(180));
+		translate(0, 0, scale * - 1000);
+		
+		if (editPositionWithMouse) {
+			rotateY(radians(map(mouseX, 0, width, -90, 90)));
+			rotateX(radians(map(mouseY, 0, height, -90, 90)));
+		}
+		
+	}
 	private void firstScene(){
 		gi.update();
 		bgrd.update("userImage");
@@ -142,7 +169,9 @@ public class KPrez extends PApplet {
 	public void keyPressed() {
 		if (key == 'l') {
 			toggleValue();
-		} else if (keyCode == UP) {
+		} else if (key == 'm') {
+			editPositionWithMouse = !editPositionWithMouse;
+		}else if (keyCode == UP) {
 			setSelectedValue(+50);
 		} else if (keyCode == DOWN) {
 			setSelectedValue(-50);
@@ -173,18 +202,6 @@ public class KPrez extends PApplet {
 		} else {
 			return highestValue;
 		}
-	}
-	protected void setLowestValue(int _lowestValue) {
-		lowestValue = _lowestValue;
-	}
-	protected int getLowestValue() {
-		return lowestValue;
-	}
-	protected void setHighestValue(int _highestValue) {
-		highestValue = _highestValue;
-	}
-	protected int getHighestValue() {
-		return highestValue;
 	}
 	// SimpleOpenNI events
 	public void onNewUser(SimpleOpenNI curContext, int userId) {

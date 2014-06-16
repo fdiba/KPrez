@@ -5,7 +5,7 @@ import processing.core.PVector;
 public class Background {
 	
 	protected String imgType;
-	protected KPrez parent;
+	protected KPrez kprez;
 	private PImage img;
 	//3D
 	private PVector[] depthMapRealWorld;
@@ -17,15 +17,15 @@ public class Background {
 	private int lowestValue;
 	private int highestValue;
 	
-	public Background(KPrez _parent, int _lowestValue, int _highestValue, String _imgType) {
+	public Background(KPrez _kprez, int _lowestValue, int _highestValue, String _imgType) {
 		
 		lowestValue = _lowestValue;
 		highestValue = _highestValue;
 		
-		parent = _parent;
+		kprez = _kprez;
 		imgType = _imgType;
-		couleur1 = parent.color(255, 0, 0);
-		couleur2 = parent.color(0,255,0);
+		couleur1 = kprez.color(255, 0, 0);
+		couleur2 = kprez.color(0,255,0);
 		couleur = couleur1;
 	}
 	protected void setImg(String _imgType) {
@@ -39,25 +39,25 @@ public class Background {
 		
 			switch (imgType) {
 			case "depthImage":
-				img = parent.context.depthImage();
+				img = kprez.context.depthImage();
 				break;
 			case "userImage":
-				img = parent.context.userImage();
+				img = kprez.context.userImage();
 				break;
 			default:
-				img = parent.context.depthImage();
+				img = kprez.context.depthImage();
 				break;
 			}
 			draw2DBackground();
 		} else {
-			depthMapRealWorld = parent.context.depthMapRealWorld();
+			depthMapRealWorld = kprez.context.depthMapRealWorld();
 		}
 	}
 	private void draw2DBackground(){
 		
-		int[] depthValues = parent.context.depthMap();
-		int mapWidth = parent.context.depthWidth();
-		int mapHeight = parent.context.depthHeight();
+		int[] depthValues = kprez.context.depthMap();
+		int mapWidth = kprez.context.depthWidth();
+		int mapHeight = kprez.context.depthHeight();
 		
 		for (int x = 0; x < mapWidth; x++) {
 			for (int y = 0; y < mapHeight; y++) {
@@ -71,12 +71,12 @@ public class Background {
 	}
 	private void display3DPoints(){
 		
-		parent.pushMatrix();
+		kprez.pushMatrix();
 
-			parent.stroke(couleur);
-		    parent.strokeWeight(2);
+			kprez.stroke(couleur);
+		    kprez.strokeWeight(2);
 		    
-		    int mapWidth = parent.context.depthWidth();
+		    int mapWidth = kprez.context.depthWidth();
 		    
 		    int oldLineId = 0;
 		    int j=0;
@@ -106,7 +106,7 @@ public class Background {
 		    				j=i;
 		    			}
 		    		} else {
-		    			parent.stroke(toogleColor());
+		    			kprez.stroke(toogleColor());
 		    		}
 		    		hasJumpALine();
 		    		//------------------------------------//
@@ -116,11 +116,19 @@ public class Background {
 		    	
 		    	PVector currentPoint = depthMapRealWorld[j];
 		        if (currentPoint.z > lowestValue && currentPoint.z < highestValue) {
-		        	parent.point(currentPoint.x, currentPoint.y, currentPoint.z);
+		        	kprez.point(currentPoint.x, currentPoint.y, currentPoint.z);
+		        	
+		        	//---- SCENE 2 FEATURE ----//
+		        	if(kprez.sceneId() == 2){
+		        		for (SoundBox s: kprez.soundScene.boxes) {
+		        		     s.isHit(currentPoint);
+		        		}
+		        	}
+		        	
 		        }
 		      }
 	
-		parent.popMatrix();
+		kprez.popMatrix();
 		
 	}
 	private void hasJumpALine(){
@@ -146,12 +154,12 @@ public class Background {
 	protected void display() {
 		
 		if(imgType != "3D") {
-			parent.noFill();
-			parent.stroke(255);
-			parent.rectMode(PApplet.CORNER);
-			parent.rect(0, 0, img.width, img.height);
+			kprez.noFill();
+			kprez.stroke(255);
+			kprez.rectMode(PApplet.CORNER);
+			kprez.rect(0, 0, img.width, img.height);
 			
-			parent.image(img, 0, 0);
+			kprez.image(img, 0, 0);
 		} else {
 			display3DPoints();
 		}
