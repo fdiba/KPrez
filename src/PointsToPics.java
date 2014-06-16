@@ -14,7 +14,7 @@ public class PointsToPics {
 	public PointsToPics(KPrez _parent){
 		
 		parent = _parent;
-
+		
 		boardId = 0;
 		
 		boards = new ArrayList<Board>();
@@ -36,20 +36,29 @@ public class PointsToPics {
 		
 		float distFromTorso = PApplet.dist(pointBetweenHands.x, pointBetweenHands.y, pointBetweenHands.z, torso.x, torso.y, torso.z);
 		
-		if(distBetweenHands > 750 && distBetweenHands > 850 && distFromTorso < 250 &&
-		  (rightHand.y - leftHand.y < 10 || leftHand.y - rightHand.y < 10)) {
-			if(!screenAvailable){
-				screenAvailable = true;
-				timeToBeDisplayed = 255;
-			} else if (screenAvailable && timeToBeDisplayed < 255){
-				timeToBeDisplayed += 5;
+		if(parent.gi.isInPlace()){
+			//PApplet.println("ON");
+			if(distBetweenHands > 750 && distBetweenHands > 850 && distFromTorso < 250 &&
+			  (rightHand.y - leftHand.y < 10 || leftHand.y - rightHand.y < 10)) {
+				if(!screenAvailable){
+					screenAvailable = true;
+					timeToBeDisplayed = 255;
+				} else if (screenAvailable && timeToBeDisplayed < 255){
+					timeToBeDisplayed += 5;
+				}
+			} else {
+				endingScreenDisplay();
 			}
 		} else {
-			timeToBeDisplayed -= 5;
-			if(timeToBeDisplayed <= 0 && screenAvailable){
-				screenAvailable = false;
-				nextDisplay();
-			}
+			//PApplet.println("OFF");
+			endingScreenDisplay();
+		}
+	}
+	private void endingScreenDisplay(){
+		if(timeToBeDisplayed>0) timeToBeDisplayed -= 5;
+		if(timeToBeDisplayed <= 0 && screenAvailable){
+			screenAvailable = false;
+			nextDisplay();
 		}
 	}
 	private void nextDisplay(){

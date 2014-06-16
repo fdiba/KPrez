@@ -19,15 +19,15 @@ public class DDScene {
 	}
 	protected void testCollision(){
 		
-		if (parent.gi.isTracked) {
+		if (parent.gi.isTracked && parent.gi.isInPlace()) {
 			
 			for (int i = 0; i < images.length; i++){
 				
 				if(!images[i].isDragged){
 				
 					images[i].hits = 0;
-					images[i].testCollision(parent.gi.handControl.rightHand);
-					images[i].testCollision(parent.gi.handControl.leftHand);
+					images[i].testCollision(parent.gi.handControl.rightSP);
+					images[i].testCollision(parent.gi.handControl.leftSP);
 					images[i].update();
 				} else {
 					images[i].followSmartPoint();

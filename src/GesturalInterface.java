@@ -28,10 +28,21 @@ public class GesturalInterface {
 	private int timeToExitMax;
 	private String world;
 	
+	private boolean isInPlace;
+	private int lowestValue;
+	private int highestValue;
+	
 	protected HandControl handControl;
 		
-	public GesturalInterface(KPrez _parent, String _world){
+	public GesturalInterface(KPrez _parent, int _lowestValue, int _highestValue, String _world){
+		
 		parent = _parent;
+		
+		initVectors();
+		
+		lowestValue = _lowestValue;
+		highestValue = _highestValue;
+		
 		timeToExitMax = 24;
 		timeToExit = timeToExitMax;
 		handControl = new HandControl(parent);
@@ -39,7 +50,12 @@ public class GesturalInterface {
 		sl_user = 0;
 		world = _world;
 		
-		initVectors();
+	}
+	protected void setLowestValue(int _lowestValue) {
+		lowestValue = _lowestValue;
+	}
+	protected void setHighestValue(int _highestValue) {
+		highestValue = _highestValue;
 	}
 	protected PVector torso(){
 		parent.context.getJointPositionSkeleton(parent.gi.userId, SimpleOpenNI.SKEL_TORSO, torso);
@@ -61,10 +77,10 @@ public class GesturalInterface {
 	private void initVectors(){
 		//-- init elsewhere ------------//
 		//middlePoint = new PVector();
-		//rightHand = new PVector();
-		//leftHand = new PVector();
 		
 		//-- user ----------------------//
+		rightHand = new PVector();
+		leftHand = new PVector();
 		torso = new PVector();
 		
 		//-- candidate -----------------//
@@ -72,9 +88,25 @@ public class GesturalInterface {
 	}
 	protected void update() {
 		selectAndTrackUsers();
+		
+		if(isTracked){
+			parent.context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_RIGHT_HAND, rightHand);
+			parent.context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_LEFT_HAND, leftHand);
+		}
+		
 		handControl.update();
+		
+		if(isTracked) isInPlace();
 		int sceneId = parent.sceneId();
 		if(isTracked && sceneId!=0) isQuitting();
+	}
+	protected boolean isInPlace(){
+		if(rightHand.z >= lowestValue && rightHand.z <= highestValue && leftHand.z >= lowestValue && leftHand.z <= highestValue){
+			isInPlace =  true;
+		} else {
+			isInPlace = false;
+		}
+		return isInPlace;
 	}
 	protected String getWorld() {
 		return world;
@@ -86,32 +118,38 @@ public class GesturalInterface {
 		
 		float distance;
 		
-		if(world =="2D"){
-			exitDistance = 42;
-			rightHand2d = handControl.rightHand.location.get();
-			leftHand2d = handControl.leftHand.location.get();			
-			distance = PApplet.dist(rightHand2d.x, rightHand2d.y, leftHand2d.x, leftHand2d.y);
-		} else {
-			exitDistance = 150;
-			rightHand = handControl.rightHand.location3d.get();
-			leftHand = handControl.leftHand.location3d.get();
-			distance = PApplet.dist(rightHand.x, rightHand.y, rightHand.z, leftHand.x, leftHand.y, leftHand.z);
-		}
-		//PApplet.println(distance);
-		if(distance < exitDistance){
-			isQuitting = true;
-			timeToExit--;
-			
-			if (timeToExit <= 0) {
-				timeToExit = timeToExitMax;
-				isQuitting = false;
-				parent.editScene(0, "2D");
+		if(isInPlace){
+		
+			if(world =="2D"){
+				exitDistance = 42;
+				rightHand2d = handControl.rightSP.location.get();
+				leftHand2d = handControl.leftSP.location.get();			
+				distance = PApplet.dist(rightHand2d.x, rightHand2d.y, leftHand2d.x, leftHand2d.y);
+			} else {
+				exitDistance = 150;
+				distance = PApplet.dist(rightHand.x, rightHand.y, rightHand.z, leftHand.x, leftHand.y, leftHand.z);
 			}
-			
+			//PApplet.println(distance);
+			if(distance < exitDistance){
+				isQuitting = true;
+				timeToExit--;
+				
+				if (timeToExit <= 0) {
+					timeToExit = timeToExitMax;
+					isQuitting = false;
+					parent.editScene(0, "2D");
+				}
+				
+			} else {
+				notQuitting();
+			}
 		} else {
-			isQuitting = false;
-			if(timeToExit < timeToExitMax) timeToExit++;
+			notQuitting();
 		}
+	}
+	private void notQuitting(){
+		isQuitting = false;
+		if(timeToExit < timeToExitMax) timeToExit++;
 	}
 	protected void display() {
 		

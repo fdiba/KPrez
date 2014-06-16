@@ -4,6 +4,10 @@ import processing.core.*;
 @SuppressWarnings("serial")
 public class KPrez extends PApplet {
 	
+	private int lowestValue;
+	private int highestValue;
+	private boolean switchValue;
+	
 	protected SimpleOpenNI context;
 	protected Menu menu;
 	
@@ -18,8 +22,8 @@ public class KPrez extends PApplet {
 	
 	public static void main(String[] args) {
 		
-		PApplet.main(KPrez.class.getSimpleName());
-		//PApplet.main( new String[] { "--display=1", KPrez.class.getSimpleName() });
+		//PApplet.main(KPrez.class.getSimpleName());
+		PApplet.main( new String[] { "--display=1", KPrez.class.getSimpleName() });
 		//PApplet.main( new String[] { "--present", KPrez.class.getSimpleName() });
 	}
 	public void editScene(int _sceneId, String _mode) {
@@ -47,23 +51,32 @@ public class KPrez extends PApplet {
 			context.enableUser();
 			
 			sceneId = 0;
-			//sceneId = 3;
+			//sceneId = 3;	
 			
 			scale = 1.5f;
-			gi = new GesturalInterface(this, "2D");
-			//gi = new GesturalInterface(this, "3D");
 			
 			menu = new Menu(this);
 			
 			//bureau
-			bgrd = new Background(this, 600, 2300, "userImage");
+			lowestValue = 600;
+			highestValue = 2300;
+			
 			//salon
-			//bgrd = new Background(this, 1700, 3300, "userImage");
+			//lowestValue = 1700;
+			//highestValue = 3300;
+			
 			//salon capture
-			//bgrd = new Background(this, 1700, 2500, "userImage");
+			//lowestValue = 1700;
+			//highestValue = 2500;
+			
+			gi = new GesturalInterface(this, lowestValue, highestValue, "2D");
+			//gi = new GesturalInterface(this, lowestValue, highestValue, "3D");
+			
+			bgrd = new Background(this, lowestValue, highestValue, "userImage");
 			
 			//scene 1
 			ddScene = new DDScene(this);
+			//scene 3
 			ptp = new PointsToPics(this);
 		
 		}
@@ -126,12 +139,50 @@ public class KPrez extends PApplet {
 	}
 	public void keyPressed() {
 		if (key == 'l') {
-			bgrd.toggleValue();
+			toggleValue();
 		} else if (keyCode == UP) {
-			bgrd.setSelectedValue(+50);
+			setSelectedValue(+50);
 		} else if (keyCode == DOWN) {
-			bgrd.setSelectedValue(-50);
+			setSelectedValue(-50);
 		}
+	}
+	protected void toggleValue() {
+		switchValue = !switchValue;
+	}
+	protected void setSelectedValue(int value) {		
+		
+		if(switchValue){
+			lowestValue += value;
+			lowestValue = PApplet.constrain(lowestValue, 0, highestValue-100);
+			bgrd.setLowestValue(lowestValue);
+			gi.setLowestValue(lowestValue);
+			PApplet.println(lowestValue);
+		} else {
+			highestValue += value;
+			highestValue = PApplet.constrain(highestValue, lowestValue+100, 7000);
+			bgrd.setHighestValue(highestValue);
+			gi.setHighestValue(highestValue);
+			PApplet.println(highestValue);
+		}
+	}
+	protected int getSelectedValue() {
+		if(switchValue) {
+			return lowestValue;
+		} else {
+			return highestValue;
+		}
+	}
+	protected void setLowestValue(int _lowestValue) {
+		lowestValue = _lowestValue;
+	}
+	protected int getLowestValue() {
+		return lowestValue;
+	}
+	protected void setHighestValue(int _highestValue) {
+		highestValue = _highestValue;
+	}
+	protected int getHighestValue() {
+		return highestValue;
 	}
 	// SimpleOpenNI events
 	public void onNewUser(SimpleOpenNI curContext, int userId) {

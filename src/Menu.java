@@ -35,12 +35,12 @@ public class Menu {
 	
 	protected void testCollision(){
 		
-		if (parent.gi.isTracked) {
+		if (parent.gi.isTracked && parent.gi.isInPlace()) {
 			
 			for (int i = 0; i < menu.length; i++){
 				menu[i].hits = 0;
-				menu[i].testCollision(parent.gi.handControl.rightHand);
-				menu[i].testCollision(parent.gi.handControl.leftHand);
+				menu[i].testCollision(parent.gi.handControl.rightSP);
+				menu[i].testCollision(parent.gi.handControl.leftSP);
 				menu[i].update();
 			}
 			

@@ -6,6 +6,8 @@ public class SmartPoint {
 	private int actualDepth;
 	private int couleur;
 	private int couleur3d;
+	private int alpha;
+	
 	protected boolean isTaken;
 	
 	protected HandControl parent;
@@ -16,6 +18,7 @@ public class SmartPoint {
 	
 	public SmartPoint(HandControl _parent){
 		parent = _parent;
+		alpha = 255;
 		couleur = parent.parent.color(242, 162, 32);
 		couleur3d = parent.parent.color(131, 232, 159);
 		width = 20;
@@ -30,22 +33,20 @@ public class SmartPoint {
 	protected void free(Bouton btn){
 		isTaken = false;
 	}
-	protected void update(int userId, int memberId) {
+	protected void update(PVector _handVector, int _alpha) {
+		
+		alpha = _alpha;
 		
 		if (parent.parent.gi.getWorld() == "2D") {
-			PVector handVector = new PVector();
 			PVector handVector2d = new PVector();
-			parent.parent.context.getJointPositionSkeleton(userId, memberId, handVector);
-			parent.parent.context.convertRealWorldToProjective(handVector, handVector2d);
+			parent.parent.context.convertRealWorldToProjective(_handVector, handVector2d);
 			location.set(handVector2d);
 		} else {
-			PVector handVector = new PVector();
-			parent.parent.context.getJointPositionSkeleton(userId, memberId, handVector);
-			location3d.set(handVector);
+			location3d.set(_handVector);
 		}
 	}
 	protected void updateClosestPoint() {
-		actualDepth = parent.parent.bgrd.getHighestValue();
+		actualDepth = parent.parent.getHighestValue();
 		
 		int[]depthValues = parent.parent.context.depthMap();
 		int mapWidth = parent.parent.context.depthWidth();
@@ -57,7 +58,7 @@ public class SmartPoint {
 				int i = x + y * mapWidth;
 				int currentDepthValue = depthValues[i];
 				
-				int lowestValue = parent.parent.bgrd.getLowestValue();
+				int lowestValue = parent.parent.getLowestValue();
 				
 				if(currentDepthValue > lowestValue && currentDepthValue < actualDepth){
 					actualDepth = currentDepthValue;
@@ -76,17 +77,16 @@ public class SmartPoint {
 		
 		if (parent.parent.gi.getWorld() == "2D") {
 			
-			
 			if(isTaken){
 				parent.parent.noFill();
 			} else {
-				parent.parent.fill(couleur);
+				parent.parent.fill(couleur, alpha);
 			}
 			
 			parent.parent.ellipse(location.x, location.y, width, width);
 		} else {
 			parent.parent.pushMatrix();
-				parent.parent.fill(couleur3d);
+				parent.parent.fill(couleur3d, alpha);
 				parent.parent.translate(location3d.x, location3d.y, location3d.z);
 				parent.parent.ellipse(0, 0, width, width);
 			parent.parent.popMatrix();

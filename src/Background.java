@@ -5,9 +5,6 @@ import processing.core.PVector;
 public class Background {
 	
 	protected String imgType;
-	private int lowestValue;
-	private int highestValue;
-	private boolean switchValue;
 	protected KPrez parent;
 	private PImage img;
 	//3D
@@ -17,49 +14,19 @@ public class Background {
 	private int couleur;
 	private boolean hasJumpALine;
 	
+	private int lowestValue;
+	private int highestValue;
+	
 	public Background(KPrez _parent, int _lowestValue, int _highestValue, String _imgType) {
 		
-		parent = _parent;
 		lowestValue = _lowestValue;
 		highestValue = _highestValue;
+		
+		parent = _parent;
 		imgType = _imgType;
 		couleur1 = parent.color(255, 0, 0);
 		couleur2 = parent.color(0,255,0);
 		couleur = couleur1;
-	}
-	protected void toggleValue() {
-		switchValue = !switchValue;
-	}
-	protected void setSelectedValue(int value) {		
-		
-		if(switchValue){
-			lowestValue += value;
-			lowestValue = PApplet.constrain(lowestValue, 0, highestValue-100);
-			PApplet.println(lowestValue);
-		} else {
-			highestValue += value;
-			highestValue = PApplet.constrain(highestValue, lowestValue+100, 7000);
-			PApplet.println(highestValue);
-		}
-	}
-	protected int getSelectedValue() {
-		if(switchValue) {
-			return lowestValue;
-		} else {
-			return highestValue;
-		}
-	}
-	protected void setLowestValue(int _lowestValue) {
-		lowestValue = _lowestValue;
-	}
-	protected int getLowestValue() {
-		return lowestValue;
-	}
-	protected void setHighestValue(int _highestValue) {
-		highestValue = _highestValue;
-	}
-	protected int getHighestValue() {
-		return highestValue;
 	}
 	protected void setImg(String _imgType) {
 		imgType = _imgType;
@@ -170,7 +137,12 @@ public class Background {
 
 		
 	}
-	
+	protected void setLowestValue(int _lowestValue) {
+		lowestValue = _lowestValue;
+	}
+	protected void setHighestValue(int _highestValue) {
+		highestValue = _highestValue;
+	}
 	protected void display() {
 		
 		if(imgType != "3D") {
