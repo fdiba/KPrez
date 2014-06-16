@@ -3,7 +3,7 @@ import processing.core.PVector;
 
 public class Bouton {
 	
-	protected PApplet pApplet;
+	private KPrez kprez;
 	protected int hits;
 	protected PVector location;
 	protected int width;
@@ -16,29 +16,29 @@ public class Bouton {
 	
 	private boolean isRect;
 	
-	public Bouton(PApplet _pApplet, float _x, float _y, int _width) {
+	public Bouton(KPrez _kprez, float _x, float _y, int _width) {
 		
-		pApplet = _pApplet;
+		kprez = _kprez;
 				
 		location = new PVector(_x, _y);
 		width = _width;
 				
-		couleur = pApplet.color(255, 133, 18);
+		couleur = kprez.color(255, 133, 18);
 		
 		alpha = 0;
 		a_speed = 5;
 		
 	}
 	
-	public Bouton(PApplet _pApplet, float _x, float _y, int _width, int _height, boolean _isRect) {
+	public Bouton(KPrez _kprez, float _x, float _y, int _width, int _height, boolean _isRect) {
 		
-		pApplet = _pApplet;
+		kprez = _kprez;
 				
 		location = new PVector(_x, _y);
 		width = _width;
 		height = _height;
 		
-		couleur = pApplet.color(255, 133, 18);
+		couleur = kprez.color(255, 133, 18);
 		
 		alpha = 0;
 		a_speed = 5;
@@ -53,10 +53,10 @@ public class Bouton {
 		
 			if(!isRect){
 				float distance = PApplet.dist(location.x, location.y, _sp.location.x, _sp.location.y);
-				if(distance <= width/2) collisionWith(_sp);
+				if(distance <= width/2 && kprez.gi.isInPlace()) collisionWith(_sp);
 			} else {
 				if(_sp.location.x > location.x &&  _sp.location.x < location.x + width &&
-				   _sp.location.y > location.y &&  _sp.location.y < location.y + height){
+				   _sp.location.y > location.y &&  _sp.location.y < location.y + height && kprez.gi.isInPlace()){
 					collisionWith(_sp);
 				}
 			}
@@ -88,9 +88,9 @@ public class Bouton {
 		}
 	}
 	protected void display() {
-		pApplet.strokeWeight(3);
-		pApplet.stroke(couleur);
-		pApplet.fill(255, 255, 255, alpha);
-		pApplet.ellipse(location.x, location.y, width, width);
+		kprez.strokeWeight(3);
+		kprez.stroke(couleur);
+		kprez.fill(255, 255, 255, alpha);
+		kprez.ellipse(location.x, location.y, width, width);
 	}
 }

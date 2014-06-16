@@ -23,11 +23,11 @@ public class MBouton extends Bouton {
 	}
 	protected void display() {
 		float rad = PApplet.radians(PApplet.map(alpha, 0, 255, 0, 360));
-		pApplet.strokeWeight(3);
-		pApplet.stroke(couleur);
-		pApplet.fill(255);
-		pApplet.arc(location.x, location.y, width, width, 0-PApplet.HALF_PI, rad-PApplet.HALF_PI);
-		pApplet.noFill();
-		pApplet.ellipse(location.x, location.y, width, width);
+		kprez.strokeWeight(3);
+		kprez.stroke(couleur);
+		kprez.fill(255);
+		kprez.arc(location.x, location.y, width, width, 0-PApplet.HALF_PI, rad-PApplet.HALF_PI);
+		kprez.noFill();
+		kprez.ellipse(location.x, location.y, width, width);
 	}
 }

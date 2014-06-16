@@ -9,16 +9,18 @@ public class ISprite extends Bouton{
 	protected boolean isDragged;
 	private int timeToMove;
 	private PVector lastLocation;
+	private KPrez kprez;
 	
 	public ISprite(KPrez _kprez, float _x, float _y, String _path){
 		
 		super(_kprez, _x, _y, 75, 75, true);
 		
+		kprez = _kprez;
 		path = _path;
-		img = pApplet.loadImage(path);
+		img = kprez.loadImage(path);
 		width = img.width;
 		height = img.height;
-		couleur = pApplet.color(232, 187, 131);
+		couleur = kprez.color(232, 187, 131);
 		
 		lastLocation = location.get();
 	}
@@ -28,7 +30,7 @@ public class ISprite extends Bouton{
 			alpha += a_speed;
 		} else if (alpha >= 255){
 			isDragged = true;
-			couleur = pApplet.color(245, 215, 106);
+			couleur = kprez.color(245, 215, 106);
 			alpha = 0;
 			lastSelector.take(this);
 			timeToMove = 250;
@@ -42,7 +44,7 @@ public class ISprite extends Bouton{
 		float distance = PApplet.dist(location.x, location.y, lastLocation.x, lastLocation.y);
 		//PApplet.println(distance + "    " + timeToMove);
 		
-		if(distance < 5){
+		if(distance < 5 || !kprez.gi.isInPlace()){
 			timeToMove -=5;
 		} else {
 			timeToMove +=5;
@@ -55,21 +57,18 @@ public class ISprite extends Bouton{
 		if(timeToMove <=0){
 			stopfollowSmartPoint();
 		}
-		
-		
-		
 	}
 	protected void stopfollowSmartPoint() {
 		timeToMove = 0;
 		lastSelector.free(this);
 		isDragged = false;
-		couleur = pApplet.color(0);
+		couleur = kprez.color(0);
 	}
 	protected void display(){
-		pApplet.image(img, location.x, location.y);
+		kprez.image(img, location.x, location.y);
 		
 		//pApplet.noFill();
-		pApplet.fill(255, 0, 0, alpha);
+		kprez.fill(255, 0, 0, alpha);
 		
 		int strokeWeight;
 		
@@ -79,10 +78,9 @@ public class ISprite extends Bouton{
 			strokeWeight = 1;
 		}
 		
-		pApplet.strokeWeight(strokeWeight);
-		pApplet.stroke(couleur);
-		pApplet.rect(location.x, location.y, width, height);
+		kprez.strokeWeight(strokeWeight);
+		kprez.stroke(couleur);
+		kprez.rect(location.x, location.y, width, height);
 		
 	}
-
 }

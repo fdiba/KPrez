@@ -50,6 +50,8 @@ public class GesturalInterface {
 		sl_user = 0;
 		world = _world;
 		
+		PApplet.println("depthmap controllers : UP | DOWN | l to toggle");
+		
 	}
 	protected void setLowestValue(int _lowestValue) {
 		lowestValue = _lowestValue;
