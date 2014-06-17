@@ -24,8 +24,8 @@ public class Background {
 		
 		kprez = _kprez;
 		imgType = _imgType;
-		couleur1 = kprez.color(255, 0, 0);
-		couleur2 = kprez.color(0,255,0);
+		couleur1 = kprez.color(255);
+		couleur2 = kprez.color(127);
 		couleur = couleur1;
 	}
 	protected void setImg(String _imgType) {

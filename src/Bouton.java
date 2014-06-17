@@ -17,17 +17,12 @@ public class Bouton {
 	private boolean isRect;
 	
 	public Bouton(KPrez _kprez, float _x, float _y, int _width) {
-		
 		kprez = _kprez;
-				
 		location = new PVector(_x, _y);
 		width = _width;
-				
-		couleur = kprez.color(255, 133, 18);
-		
+		couleur = kprez.colors.get(3);
 		alpha = 0;
 		a_speed = 5;
-		
 	}
 	
 	public Bouton(KPrez _kprez, float _x, float _y, int _width, int _height, boolean _isRect) {

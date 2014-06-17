@@ -1,53 +1,53 @@
 public class HandControl {
 	
 	private int alpha;
-	protected KPrez parent;
+	protected KPrez kprez;
 	
 	protected SmartPoint rightSP;
 	protected SmartPoint leftSP;
 	protected SmartPoint cp;
 	
-	public HandControl(KPrez _parent){
+	public HandControl(KPrez _kprez){
 		
-		parent = _parent;
+		kprez = _kprez;
 		
-		rightSP = new SmartPoint(this);
-		leftSP = new SmartPoint(this);
-		cp = new SmartPoint(this);
+		rightSP = new SmartPoint(kprez);
+		leftSP = new SmartPoint(kprez);
+		cp = new SmartPoint(kprez);
 	}
 	protected void update() {
-		if (parent.gi.getWorld() == "2D") {
-			if(parent.gi.isTracked){
+		if (kprez.gi.getWorld() == "2D") {
+			if(kprez.gi.isTracked){
 				updateHandsLocation();
 			} else {
 				cp.updateClosestPoint();
 			}
 		} else {	
-			if(parent.gi.isTracked)updateHandsLocation();
+			if(kprez.gi.isTracked)updateHandsLocation();
 		}
 	}
 	private void updateHandsLocation(){
 		
-		if(parent.gi.isInPlace()){
+		if(kprez.gi.isInPlace()){
 			alpha = 255;
 		} else {
 			alpha = 75;
 		}
 		
-		rightSP.update(parent.gi.rightHand(), alpha);
-		leftSP.update(parent.gi.leftHand(), alpha);		
+		rightSP.update(kprez.gi.rightHand(), alpha);
+		leftSP.update(kprez.gi.leftHand(), alpha);		
 	}
 	protected void display() {
 		
-		if (parent.gi.getWorld() == "2D") {
-			if(parent.gi.isTracked){			
+		if (kprez.gi.getWorld() == "2D") {
+			if(kprez.gi.isTracked){			
 				rightSP.display();
 				leftSP.display();
 			} else {
 				cp.display();
 			}
 		} else {
-			if(parent.gi.isTracked){			
+			if(kprez.gi.isTracked){			
 				rightSP.display();
 				leftSP.display();
 			}

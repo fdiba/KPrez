@@ -10,17 +10,17 @@ public class SmartPoint {
 	
 	protected boolean isTaken;
 	
-	protected HandControl parent;
+	protected KPrez kprez;
 	protected PVector location;
 	protected PVector location3d;
 	
 	protected int width;
 	
-	public SmartPoint(HandControl _parent){
-		parent = _parent;
+	public SmartPoint(KPrez _kprez){
+		kprez = _kprez;
 		alpha = 255;
-		couleur = parent.parent.color(242, 162, 32);
-		couleur3d = parent.parent.color(131, 232, 159);
+		couleur = kprez.colors.get(3);
+		couleur3d = kprez.colors.get(1);
 		width = 20;
 		cp_raw_location = new PVector();
 		location = cp_raw_location.get();
@@ -37,20 +37,20 @@ public class SmartPoint {
 		
 		alpha = _alpha;
 		
-		if (parent.parent.gi.getWorld() == "2D") {
+		if (kprez.gi.getWorld() == "2D") {
 			PVector handVector2d = new PVector();
-			parent.parent.context.convertRealWorldToProjective(_handVector, handVector2d);
+			kprez.context.convertRealWorldToProjective(_handVector, handVector2d);
 			location.set(handVector2d);
 		} else {
 			location3d.set(_handVector);
 		}
 	}
 	protected void updateClosestPoint() {
-		actualDepth = parent.parent.gi.getHighestValue();
+		actualDepth = kprez.gi.getHighestValue();
 		
-		int[]depthValues = parent.parent.context.depthMap();
-		int mapWidth = parent.parent.context.depthWidth();
-		int mapHeight = parent.parent.context.depthHeight();
+		int[]depthValues = kprez.context.depthMap();
+		int mapWidth = kprez.context.depthWidth();
+		int mapHeight = kprez.context.depthHeight();
 		
 		for(int y = 0; y < mapHeight; y++){
 			for(int x = 0; x < mapWidth; x++){
@@ -58,7 +58,7 @@ public class SmartPoint {
 				int i = x + y * mapWidth;
 				int currentDepthValue = depthValues[i];
 				
-				int lowestValue = parent.parent.gi.getLowestValue();
+				int lowestValue = kprez.gi.getLowestValue();
 				
 				if(currentDepthValue > lowestValue && currentDepthValue < actualDepth){
 					actualDepth = currentDepthValue;
@@ -73,37 +73,37 @@ public class SmartPoint {
 	}
 	protected void display() {
 		
-		parent.parent.noStroke();
+		kprez.noStroke();
 		
-		if (parent.parent.gi.getWorld() == "2D") {
+		if (kprez.gi.getWorld() == "2D") {
 			
 			if(isTaken){
-				parent.parent.noFill();
+				kprez.noFill();
 			} else {
-				parent.parent.fill(couleur, alpha);
+				kprez.fill(couleur, alpha);
 			}
 			
-			parent.parent.ellipse(location.x, location.y, width, width);
+			kprez.ellipse(location.x, location.y, width, width);
 		} else {
-			parent.parent.pushMatrix();
-				parent.parent.fill(couleur3d, alpha);
-				parent.parent.translate(location3d.x, location3d.y, location3d.z);
-				parent.parent.ellipse(0, 0, width, width);
-			parent.parent.popMatrix();
+			kprez.pushMatrix();
+				kprez.fill(couleur3d, alpha);
+				kprez.translate(location3d.x, location3d.y, location3d.z);
+				kprez.ellipse(0, 0, width, width);
+			kprez.popMatrix();
 		}
 	}
 	protected void displayExit(int timeToExit) {
-		parent.parent.noFill();
+		kprez.noFill();
 		
-		if(parent.parent.gi.getWorld() == "2D"){
-			parent.parent.stroke(couleur);
-			parent.parent.ellipse(location.x, location.y, width + timeToExit, width + timeToExit);
+		if(kprez.gi.getWorld() == "2D"){
+			kprez.stroke(kprez.colors.get(1));
+			kprez.ellipse(location.x, location.y, width + timeToExit, width + timeToExit);
 		} else {
-			parent.parent.pushMatrix();
-				parent.parent.stroke(couleur3d);
-				parent.parent.translate(location3d.x, location3d.y, location3d.z);
-				parent.parent.ellipse(0, 0, width + timeToExit, width+ timeToExit);
-			parent.parent.popMatrix();
+			kprez.pushMatrix();
+				kprez.stroke(couleur3d);
+				kprez.translate(location3d.x, location3d.y, location3d.z);
+				kprez.ellipse(0, 0, width + timeToExit, width+ timeToExit);
+			kprez.popMatrix();
 		}
 	}
 }

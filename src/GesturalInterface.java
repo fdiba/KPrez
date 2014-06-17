@@ -6,7 +6,7 @@ import processing.core.PVector;
 public class GesturalInterface {
 	
 	private boolean isTakingControl;
-	private KPrez parent;
+	private KPrez kprez;
 	private int takeControl;
 	protected int userId;
 	private int sl_user;
@@ -34,9 +34,9 @@ public class GesturalInterface {
 	
 	protected HandControl handControl;
 		
-	public GesturalInterface(KPrez _parent, int _lowestValue, int _highestValue, String _world){
+	public GesturalInterface(KPrez _kprez, int _lowestValue, int _highestValue, String _world){
 		
-		parent = _parent;
+		kprez = _kprez;
 		
 		initVectors();
 		
@@ -45,13 +45,12 @@ public class GesturalInterface {
 		
 		timeToExitMax = 24;
 		timeToExit = timeToExitMax;
-		handControl = new HandControl(parent);
+		handControl = new HandControl(kprez);
 		takeControl = 0;
 		sl_user = 0;
 		world = _world;
 		
-		PApplet.println("depthmap controllers : UP | DOWN | l to toggle" + "\n" +
-						"editPositionWithMouse : m to toogle");
+		PApplet.println("depthmap controllers : UP | DOWN | l to toggle");
 		
 	}
 	protected void setLowestValue(int _lowestValue) {
@@ -67,7 +66,7 @@ public class GesturalInterface {
 		return highestValue;
 	}
 	protected PVector torso(){
-		parent.context.getJointPositionSkeleton(parent.gi.userId, SimpleOpenNI.SKEL_TORSO, torso);
+		kprez.context.getJointPositionSkeleton(kprez.gi.userId, SimpleOpenNI.SKEL_TORSO, torso);
 		return torso;
 	}
 	protected PVector middlePoint(PVector pvector1, PVector pvector2){
@@ -99,15 +98,15 @@ public class GesturalInterface {
 		selectAndTrackUsers();
 		
 		if(isTracked){
-			parent.context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_RIGHT_HAND, rightHand);
-			parent.context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_LEFT_HAND, leftHand);
+			kprez.context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_RIGHT_HAND, rightHand);
+			kprez.context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_LEFT_HAND, leftHand);
 		}
 		
 		handControl.update();
 		
 		if(isTracked) isInPlace();
 		
-		int sceneId = parent.sceneId();
+		int sceneId = kprez.sceneId();
 		if(isTracked && sceneId!=0) isQuitting();
 	}
 	protected boolean isInPlace(){
@@ -147,7 +146,7 @@ public class GesturalInterface {
 				if (timeToExit <= 0) {
 					timeToExit = timeToExitMax;
 					isQuitting = false;
-					parent.editScene(0, "2D");
+					kprez.editScene(0, "2D");
 				}
 				
 			} else {
@@ -173,45 +172,45 @@ public class GesturalInterface {
 		
 	}
 	private void drawLine(){
-		parent.strokeWeight(2);
-		parent.stroke(255,0,0);
+		kprez.strokeWeight(2);
+		kprez.stroke(kprez.colors.get(0));
 		if(world == "2D"){
-			parent.line(rightHand2d.x, rightHand2d.y, leftHand2d.x, leftHand2d.y);
+			kprez.line(rightHand2d.x, rightHand2d.y, leftHand2d.x, leftHand2d.y);
 		} else {
-			parent.line(rightHand.x, rightHand.y, rightHand.z, leftHand.x, leftHand.y, leftHand.z);
+			kprez.line(rightHand.x, rightHand.y, rightHand.z, leftHand.x, leftHand.y, leftHand.z);
 		}
 	}
 	private void displayControler(){
 		
 		float diam = 35;
-		parent.rectMode(PApplet.CENTER);
+		kprez.rectMode(PApplet.CENTER);
 		
-		parent.pushMatrix();
-		parent.stroke(255, 0, 0);
-		parent.noFill();
+		kprez.pushMatrix();
+		kprez.stroke(255, 0, 0);
+		kprez.noFill();
 		
 		if(world == "2D"){
 			rightHand2dOutsider = new PVector();	
-			parent.context.convertRealWorldToProjective(rightHandOutsider, rightHand2dOutsider);
-			parent.translate(rightHand2dOutsider.x, rightHand2dOutsider.y);
+			kprez.context.convertRealWorldToProjective(rightHandOutsider, rightHand2dOutsider);
+			kprez.translate(rightHand2dOutsider.x, rightHand2dOutsider.y);
 		} else {
-			parent.translate(rightHandOutsider.x, rightHandOutsider.y, rightHandOutsider.z);
+			kprez.translate(rightHandOutsider.x, rightHandOutsider.y, rightHandOutsider.z);
 		}
 		
-		parent.rotate(takeControl);
-		parent.rect(0, 0, diam, diam);
-		parent.popMatrix();
+		kprez.rotate(takeControl);
+		kprez.rect(0, 0, diam, diam);
+		kprez.popMatrix();
 		
 	}
 	private void isTakingControl(int _id, int i) {
 		
 		PVector headOutsider = new PVector();
-		parent.context.getJointPositionSkeleton(_id, SimpleOpenNI.SKEL_HEAD, headOutsider);
+		kprez.context.getJointPositionSkeleton(_id, SimpleOpenNI.SKEL_HEAD, headOutsider);
 		
-		parent.context.getJointPositionSkeleton(_id, SimpleOpenNI.SKEL_RIGHT_HAND, rightHandOutsider);
+		kprez.context.getJointPositionSkeleton(_id, SimpleOpenNI.SKEL_RIGHT_HAND, rightHandOutsider);
 		
 		PVector leftHandOutsider = new PVector();
-		parent.context.getJointPositionSkeleton(_id, SimpleOpenNI.SKEL_LEFT_HAND, leftHandOutsider);
+		kprez.context.getJointPositionSkeleton(_id, SimpleOpenNI.SKEL_LEFT_HAND, leftHandOutsider);
 		
 		int distance = 150;
 		
@@ -224,7 +223,7 @@ public class GesturalInterface {
 				sl_user = i;
 				
 				IntVector userList = new IntVector();	
-				parent.context.getUsers(userList);
+				kprez.context.getUsers(userList);
 				userId = userList.get(sl_user);
 				
 				takeControl = 0;
@@ -238,7 +237,7 @@ public class GesturalInterface {
 	private void selectAndTrackUsers() {
 		
 		IntVector userList = new IntVector();	
-		parent.context.getUsers(userList);
+		kprez.context.getUsers(userList);
 		
 		if(userList.size() > 0) {
 			 
@@ -246,7 +245,7 @@ public class GesturalInterface {
 			
 			userId = userList.get(sl_user);
 			
-			if(parent.context.isTrackingSkeleton(userId)) {
+			if(kprez.context.isTrackingSkeleton(userId)) {
 				isTracked = true;
 			} else {
 				isTracked = false;
@@ -256,7 +255,7 @@ public class GesturalInterface {
 				
 				int otherId = userList.get(i);
 				
-				if(parent.context.isTrackingSkeleton(otherId)) {
+				if(kprez.context.isTrackingSkeleton(otherId)) {
 					
 					if(sl_user != i) isTakingControl(otherId, i);
 					
@@ -268,12 +267,11 @@ public class GesturalInterface {
 		return middlePoint;
 	}
 	public void displayMiddlePoint() {
-		parent.pushMatrix();
-			parent.noStroke();
-			parent.fill(255,0,0);
-			parent.translate(middlePoint.x, middlePoint.y, middlePoint.z);
-			parent.ellipse(0, 0, 50, 50);
-		parent.popMatrix();
-		
+		kprez.pushMatrix();
+			kprez.noStroke();
+			kprez.fill(kprez.colors.get(0));
+			kprez.translate(middlePoint.x, middlePoint.y, middlePoint.z);
+			kprez.ellipse(0, 0, 50, 50);
+		kprez.popMatrix();	
 	}
 }

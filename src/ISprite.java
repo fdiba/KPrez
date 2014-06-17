@@ -20,7 +20,7 @@ public class ISprite extends Bouton{
 		img = kprez.loadImage(path);
 		width = img.width;
 		height = img.height;
-		couleur = kprez.color(232, 187, 131);
+		couleur = kprez.colors.get(4); //border
 		
 		lastLocation = location.get();
 	}
@@ -30,7 +30,7 @@ public class ISprite extends Bouton{
 			alpha += a_speed;
 		} else if (alpha >= 255){
 			isDragged = true;
-			couleur = kprez.color(245, 215, 106);
+			couleur = kprez.colors.get(3);
 			alpha = 0;
 			lastSelector.take(this);
 			timeToMove = 250;
@@ -62,13 +62,13 @@ public class ISprite extends Bouton{
 		timeToMove = 0;
 		lastSelector.free(this);
 		isDragged = false;
-		couleur = kprez.color(0);
+		couleur = kprez.colors.get(4);
 	}
 	protected void display(){
 		kprez.image(img, location.x, location.y);
 		
 		//pApplet.noFill();
-		kprez.fill(255, 0, 0, alpha);
+		kprez.fill(kprez.colors.get(0), alpha);
 		
 		int strokeWeight;
 		

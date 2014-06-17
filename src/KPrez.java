@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 import SimpleOpenNI.SimpleOpenNI;
 import processing.core.*;
 
@@ -22,11 +24,13 @@ public class KPrez extends PApplet {
 	
 	protected GesturalInterface gi;
 	private PointsToPics ptp;
-	private float scale;
 		
 	protected float rotateYangle;
 	protected float rotateXangle;
+	protected float zPos;
 	
+	protected ArrayList<Integer> colors;
+
 	public static void main(String[] args) {
 		
 		//PApplet.main(KPrez.class.getSimpleName());
@@ -57,11 +61,11 @@ public class KPrez extends PApplet {
 			context.enableDepth();		
 			context.enableUser();
 			
+			setColors();
+			
 			//sceneId = 0;
 			sceneId = 2;	
-			
-			scale = 1.5f;
-			
+						
 			menu = new Menu(this);
 			
 			//bureau
@@ -90,6 +94,14 @@ public class KPrez extends PApplet {
 			ptp = new PointsToPics(this);
 		
 		}
+	}
+	private void setColors(){
+		colors = new ArrayList<Integer>();
+		colors.add(color(240, 65, 50)); //red
+		colors.add(color(135, 205, 137)); //green
+		colors.add(color(40, 135, 145)); //blue
+		colors.add(color(252, 177, 135)); //orange
+		colors.add(color(15, 65, 85)); //dark blue
 	}
 	public void draw() {
 		background(0);
@@ -123,7 +135,7 @@ public class KPrez extends PApplet {
 				soundScene.display(); //2
 				gi.display();
 			popMatrix();
-			
+						
 			bgrdCtrl.display();
 			
 			break;
@@ -157,10 +169,9 @@ public class KPrez extends PApplet {
 		oldSceneId = sceneId;
 	}
 	private void pointAndMoveInTheRightDirection(){
-		translate(width/2, height/2, -1000);
-		rotateX(PApplet.radians(180));
-		translate(0, 0, scale * - 1000);
 		
+		translate(width/2, height/2, zPos);
+		rotateX(PApplet.radians(180));
 		rotateY(radians(rotateYangle));
 		rotateX(radians(rotateXangle));
 	}

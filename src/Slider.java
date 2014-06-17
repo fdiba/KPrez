@@ -14,8 +14,9 @@ public class Slider {
 	private float lowXPos;
 	private float maxYPos;
 	private String param;
+	private int color;
 	
-	public Slider(KPrez _kprez, PVector _location, String _param, float _lowValue, float _maxValue) {
+	public Slider(KPrez _kprez, PVector _location, String _param, float _lowValue, float _maxValue, int _color) {
 		kprez = _kprez;
 		location = _location;
 		width = 100; 
@@ -27,6 +28,8 @@ public class Slider {
 		
 		lowXPos = location.x;
 		maxYPos = location.x + width;
+		
+		color = _color;
 	}
 	protected void update(PVector mousePosition){
 		
@@ -55,7 +58,7 @@ public class Slider {
 	private void editValue(){
 		
 		value = PApplet.map(sliderCtrl.location.x, lowXPos, maxYPos, lowValue, maxValue);
-		//PApplet.println(value);
+		//PApplet.println(param + ": " + value);
 		
 		switch (param) {
 		case "rotateY":
@@ -63,6 +66,9 @@ public class Slider {
 			break;
 		case "rotateX":
 			kprez.rotateXangle = value;
+			break;
+		case "zPos":
+			kprez.zPos = value;
 			break;
 		default:
 			break;
@@ -75,7 +81,7 @@ public class Slider {
 	protected void display(){
 		kprez.rectMode(PApplet.CORNER);
 		kprez.noStroke();
-		kprez.fill(127);
+		kprez.fill(color);
 		kprez.rect(location.x, location.y, width, 10);
 		sliderCtrl.display();
 	}

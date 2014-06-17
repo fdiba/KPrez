@@ -11,8 +11,9 @@ public class BackgroundControllers {
 		kprez = _kprez;
 		location = _location;
 		sliders = new ArrayList<Slider>();
-		sliders.add(new Slider(kprez, location, "rotateY", -90, 90));
-		sliders.add(new Slider(kprez, new PVector(location.x, location.y + 15), "rotateX", -90, 90));
+		sliders.add(new Slider(kprez, location, "rotateY", -180, 180, kprez.colors.get(1)));
+		sliders.add(new Slider(kprez, new PVector(location.x, location.y + 15), "rotateX", -180, 180, kprez.colors.get(0)));
+		sliders.add(new Slider(kprez, new PVector(location.x, location.y + 15*2), "zPos", -5000, 5000, kprez.colors.get(2)));
 	}
 	protected void update(){
 		

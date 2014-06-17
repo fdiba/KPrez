@@ -12,7 +12,7 @@ public class Board {
 	
 	public Board(KPrez _parent, String _imgName) {
 		parent = _parent;
-		couleur = parent.color(255, 133, 18);
+		couleur = parent.colors.get(3);
 		imgName = "assets/" + _imgName;
 		img = parent.loadImage(imgName);
 		float scale = 1.5f;
