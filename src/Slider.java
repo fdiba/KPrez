@@ -44,9 +44,9 @@ public class Slider {
 		} 
 		
 	}
-	protected void editSliderCtrlPosition(int _x){
+	/*protected void editSliderCtrlPosition(int _x){
 		sliderCtrl.location.x = location.x + _x;
-	}
+	}*/
 	protected void followMouse(){
 		if(dragging) {
 			sliderCtrl.location.x = kprez.mouseX;
@@ -75,9 +75,6 @@ public class Slider {
 			break;
 		case "xTrans":
 			kprez.xTrans = value;
-			break;
-		case "resolution":
-			kprez.resolution = (int) value;
 			break;
 		default:
 			break;

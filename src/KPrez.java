@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+
 import ddf.minim.*;
 import SimpleOpenNI.SimpleOpenNI;
 import processing.core.*;
@@ -30,6 +31,10 @@ public class KPrez extends PApplet {
 	protected float rotateXangle;
 	protected float zTrans;
 	protected float xTrans;
+
+	//private int[] resolutions = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+	private int[] resolutions = {1, 2, 4, 5, 7, 9};
+	private int resolutionId;
 	protected int resolution;
 	
 	protected Minim minim;
@@ -50,7 +55,6 @@ public class KPrez extends PApplet {
 	protected int sceneId(){
 		return sceneId;
 	}
-
 	public void setup(){
 		size(640, 480, OPENGL);
 		//frameRate(1);
@@ -69,6 +73,7 @@ public class KPrez extends PApplet {
 			context.enableRGB();
 			
 			setColors();
+			resolutionId = 0;
 			resolution = 1;
 			
 			sceneId = 0;
@@ -104,6 +109,8 @@ public class KPrez extends PApplet {
 			//scene 4
 			fScene = new FaceScene(this);
 		
+			PApplet.println("depthmap controllers : UP | DOWN | l to toggle" + "\n" +
+							"press n for next resolution");
 		}
 	}
 	private void setColors(){
@@ -204,18 +211,6 @@ public class KPrez extends PApplet {
 		menu.display();
 		gi.display();
 	}
-	public void keyPressed() {
-		if (key == 'l') {
-			toggleValue();
-		} else if (keyCode == UP) {
-			setSelectedValue(+50);
-		} else if (keyCode == DOWN) {
-			setSelectedValue(-50);
-		}
-	}
-	public void mouseReleased(){
-		bgrdCtrl.resetSliders();
-	}
 	protected void toggleValue() {
 		switchValue = !switchValue;
 	}
@@ -239,6 +234,29 @@ public class KPrez extends PApplet {
 		} else {
 			return highestValue;
 		}
+	}
+	private void nextResolution(){
+		
+		resolutionId++;
+		if(resolutionId >= resolutions.length) resolutionId = 0;
+		resolution = resolutions[resolutionId];
+		
+	}
+	//---- key ----//
+	public void keyPressed() {
+		if (key == 'l') {
+			toggleValue();
+		} else if (key == 'r') {
+			nextResolution();
+		}else if (keyCode == UP) {
+			setSelectedValue(+50);
+		} else if (keyCode == DOWN) {
+			setSelectedValue(-50);
+		}
+	}
+	//---- mouse ----//
+	public void mouseReleased(){
+		bgrdCtrl.resetSliders();
 	}
 	// SimpleOpenNI events
 	public void onNewUser(SimpleOpenNI curContext, int userId) {

@@ -6,16 +6,12 @@ public class FaceScene {
 	protected KPrez kprez;
 	private PVector[] depthMapRealWorld;
 	private int color;
-	private int color1;
-	private int color2;
 	private boolean hasJumpALine;
 	private PImage rgbImage;
 	
 	public FaceScene(KPrez _kprez) {
 		kprez = _kprez;
-		color1 = kprez.color(255, 0, 0);
-		color2 = kprez.color(127);
-		color = color1;
+		color = kprez.color(255);
 	}
 	protected void update(){
 		depthMapRealWorld = kprez.context.depthMapRealWorld();
