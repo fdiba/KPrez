@@ -18,12 +18,14 @@ public class KPrez extends PApplet {
 	protected SoundScene soundScene;
 	
 	protected Background bgrd;
+	protected BackgroundControllers bgrdCtrl;
 	
 	protected GesturalInterface gi;
 	private PointsToPics ptp;
 	private float scale;
-	
-	private boolean editPositionWithMouse;
+		
+	protected float rotateYangle;
+	protected float rotateXangle;
 	
 	public static void main(String[] args) {
 		
@@ -78,6 +80,7 @@ public class KPrez extends PApplet {
 			gi = new GesturalInterface(this, lowestValue, highestValue, "3D");
 			
 			bgrd = new Background(this, lowestValue, highestValue, "userImage");
+			bgrdCtrl = new BackgroundControllers(this, new PVector(450, 50));
 			
 			//scene 1
 			ddScene = new DDScene(this);
@@ -112,18 +115,24 @@ public class KPrez extends PApplet {
 			soundScene.reinit(); //1
 			bgrd.update("3D"); //2
 			
+			bgrdCtrl.update();
+			
 			pushMatrix();
 				pointAndMoveInTheRightDirection();
 				bgrd.display(); //1
 				soundScene.display(); //2
 				gi.display();
 			popMatrix();
+			
+			bgrdCtrl.display();
+			
 			break;
 		case 3:
 			gi.update();
 			if (sceneId != oldSceneId) ptp.init();
 			if(gi.isTracked && ptp.counter <= 0) ptp.testScreenDisplay();
 			bgrd.update("3D");
+			bgrdCtrl.update();
 			ptp.update();
 			
 			pushMatrix();
@@ -139,6 +148,7 @@ public class KPrez extends PApplet {
 				}
 			
 			popMatrix();
+			bgrdCtrl.display();
 			break;
 		default:
 			firstScene();
@@ -151,11 +161,8 @@ public class KPrez extends PApplet {
 		rotateX(PApplet.radians(180));
 		translate(0, 0, scale * - 1000);
 		
-		if (editPositionWithMouse) {
-			rotateY(radians(map(mouseX, 0, width, -90, 90)));
-			rotateX(radians(map(mouseY, 0, height, -90, 90)));
-		}
-		
+		rotateY(radians(rotateYangle));
+		rotateX(radians(rotateXangle));
 	}
 	private void firstScene(){
 		gi.update();
@@ -169,13 +176,14 @@ public class KPrez extends PApplet {
 	public void keyPressed() {
 		if (key == 'l') {
 			toggleValue();
-		} else if (key == 'm') {
-			editPositionWithMouse = !editPositionWithMouse;
-		}else if (keyCode == UP) {
+		} else if (keyCode == UP) {
 			setSelectedValue(+50);
 		} else if (keyCode == DOWN) {
 			setSelectedValue(-50);
 		}
+	}
+	public void mouseReleased(){
+		bgrdCtrl.resetSliders();
 	}
 	protected void toggleValue() {
 		switchValue = !switchValue;
