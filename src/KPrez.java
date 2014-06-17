@@ -18,6 +18,7 @@ public class KPrez extends PApplet {
 	
 	private DDScene ddScene;
 	protected SoundScene soundScene;
+	private FaceScene fScene;
 	
 	protected Background bgrd;
 	protected BackgroundControllers bgrdCtrl;
@@ -29,6 +30,7 @@ public class KPrez extends PApplet {
 	protected float rotateXangle;
 	protected float zTrans;
 	protected float xTrans;
+	protected int resolution;
 	
 	protected Minim minim;
 	protected AudioPlayer player;
@@ -64,11 +66,13 @@ public class KPrez extends PApplet {
 			context.setMirror(true);
 			context.enableDepth();		
 			context.enableUser();
+			context.enableRGB();
 			
 			setColors();
+			resolution = 1;
 			
-			//sceneId = 0;
-			sceneId = 2;
+			sceneId = 0;
+			//sceneId = 4;
 			
 			minim = new Minim(this);		
 			menu = new Menu(this);
@@ -85,10 +89,10 @@ public class KPrez extends PApplet {
 			//lowestValue = 1700;
 			//highestValue = 2500;
 			
-			//gi = new GesturalInterface(this, lowestValue, highestValue, "2D");
-			gi = new GesturalInterface(this, lowestValue, highestValue, "3D");
+			gi = new GesturalInterface(this, lowestValue, highestValue, "2D");
+			//gi = new GesturalInterface(this, lowestValue, highestValue, "3D");
 			
-			bgrd = new Background(this, lowestValue, highestValue, "userImage");
+			bgrd = new Background(this, "userImage");
 			bgrdCtrl = new BackgroundControllers(this, new PVector(450, 50));
 			
 			//scene 1
@@ -97,6 +101,8 @@ public class KPrez extends PApplet {
 			soundScene = new SoundScene(this);
 			//scene 3
 			ptp = new PointsToPics(this);
+			//scene 4
+			fScene = new FaceScene(this);
 		
 		}
 	}
@@ -167,6 +173,15 @@ public class KPrez extends PApplet {
 			popMatrix();
 			bgrdCtrl.display();
 			break;
+		case 4:
+			fScene.update();
+			bgrdCtrl.update();
+			pushMatrix();
+				pointAndMoveInTheRightDirection();
+				fScene.display();
+			popMatrix();
+			bgrdCtrl.display();
+			break;
 		default:
 			firstScene();
 			break;
@@ -209,13 +224,11 @@ public class KPrez extends PApplet {
 		if(switchValue){
 			lowestValue += value;
 			lowestValue = PApplet.constrain(lowestValue, 0, highestValue-100);
-			bgrd.setLowestValue(lowestValue);
 			gi.setLowestValue(lowestValue);
 			PApplet.println(lowestValue);
 		} else {
 			highestValue += value;
 			highestValue = PApplet.constrain(highestValue, lowestValue+100, 7000);
-			bgrd.setHighestValue(highestValue);
 			gi.setHighestValue(highestValue);
 			PApplet.println(highestValue);
 		}

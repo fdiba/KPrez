@@ -14,14 +14,7 @@ public class Background {
 	private int couleur;
 	private boolean hasJumpALine;
 	
-	private int lowestValue;
-	private int highestValue;
-	
-	public Background(KPrez _kprez, int _lowestValue, int _highestValue, String _imgType) {
-		
-		lowestValue = _lowestValue;
-		highestValue = _highestValue;
-		
+	public Background(KPrez _kprez, String _imgType) {
 		kprez = _kprez;
 		imgType = _imgType;
 		couleur1 = kprez.color(255);
@@ -63,13 +56,18 @@ public class Background {
 			for (int y = 0; y < mapHeight; y++) {
 				int i = x + y * mapWidth;
 				int currentDepthValue = depthValues[i];
-				if (currentDepthValue < lowestValue || currentDepthValue > highestValue) {
+				if (currentDepthValue < kprez.gi.getLowestValue() || currentDepthValue > kprez.gi.getHighestValue()) {
 					img.pixels[i] = 0;
 				}
 		    }
 		}
 	}
 	private void display3DPoints(){
+		
+		couleur = couleur1;
+		int resolution = kprez.resolution;
+		int foo = 10*resolution; //10
+		int bar = foo/2; //5
 		
 		kprez.pushMatrix();
 
@@ -83,15 +81,16 @@ public class Background {
 		    
 		    //PApplet.println(depthMapRealWorld.length + " " + mapWidth*mapHeight);
 		    
-		    for (int i = 0; i < depthMapRealWorld.length; i += 10) {
+		    for (int i = 0; i < depthMapRealWorld.length; i += foo) {
 		    	
 		    	int newLineId = i/mapWidth;
 		    	//PApplet.println(newLineId);
 		    	
+		    	//diagonal effect
 		    	if(newLineId % 2 == 1){
-		    		j= i;		    		
+		    		j = i;		    		
 		    	} else {
-		    		j =i+5;
+		    		j = i+bar;
 		    	}
 		    	
 		    	//new line
@@ -101,9 +100,9 @@ public class Background {
 		    		if(!hasJumpALine){
 		    		
 		    			//jump a line
-		    			if(i+mapWidth*2 < depthMapRealWorld.length){
-		    				i+=mapWidth*2;
-		    				j=i;
+		    			if(i+mapWidth*2*resolution < depthMapRealWorld.length){
+		    				i += mapWidth*2*resolution;
+		    				j = i;
 		    			}
 		    		} else {
 		    			kprez.stroke(toogleColor());
@@ -115,7 +114,7 @@ public class Background {
 		    	oldLineId = newLineId;
 		    	
 		    	PVector currentPoint = depthMapRealWorld[j];
-		        if (currentPoint.z > lowestValue && currentPoint.z < highestValue) {
+		        if (currentPoint.z > kprez.gi.getLowestValue() && currentPoint.z < kprez.gi.getHighestValue()) {
 		        	kprez.point(currentPoint.x, currentPoint.y, currentPoint.z);
 		        	
 		        	//---- SCENE 2 FEATURE ----//
@@ -135,21 +134,12 @@ public class Background {
 		hasJumpALine = !hasJumpALine;
 	}
 	private int toogleColor(){
-		
 		if(couleur == couleur1){
 			couleur = couleur2;
 		} else if(couleur == couleur2){
 			couleur = couleur1;
 		}
 		return couleur;
-
-		
-	}
-	protected void setLowestValue(int _lowestValue) {
-		lowestValue = _lowestValue;
-	}
-	protected void setHighestValue(int _highestValue) {
-		highestValue = _highestValue;
 	}
 	protected void display() {
 		
