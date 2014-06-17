@@ -67,8 +67,11 @@ public class Slider {
 		case "rotateX":
 			kprez.rotateXangle = value;
 			break;
-		case "zPos":
-			kprez.zPos = value;
+		case "zTrans":
+			kprez.zTrans = value;
+			break;
+		case "xTrans":
+			kprez.xTrans = value;
 			break;
 		default:
 			break;

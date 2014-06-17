@@ -21,6 +21,9 @@ public class SoundScene {
 	protected void reinit(){
 		for (SoundBox b : boxes) b.reinit();
 	}
+	protected void update(){
+		for (SoundBox b : boxes) b.update();		
+	}
 	protected void display(){
 		for (SoundBox b : boxes) b.display();		
 	}

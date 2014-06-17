@@ -27,7 +27,8 @@ public class KPrez extends PApplet {
 		
 	protected float rotateYangle;
 	protected float rotateXangle;
-	protected float zPos;
+	protected float zTrans;
+	protected float xTrans;
 	
 	protected ArrayList<Integer> colors;
 
@@ -99,7 +100,7 @@ public class KPrez extends PApplet {
 		colors = new ArrayList<Integer>();
 		colors.add(color(240, 65, 50)); //red
 		colors.add(color(135, 205, 137)); //green
-		colors.add(color(40, 135, 145)); //blue
+		colors.add(color(40, 135, 145)); //blue green
 		colors.add(color(252, 177, 135)); //orange
 		colors.add(color(15, 65, 85)); //dark blue
 	}
@@ -126,12 +127,12 @@ public class KPrez extends PApplet {
 			gi.update();
 			soundScene.reinit(); //1
 			bgrd.update("3D"); //2
-			
 			bgrdCtrl.update();
 			
 			pushMatrix();
 				pointAndMoveInTheRightDirection();
 				bgrd.display(); //1
+				soundScene.update(); //2 update
 				soundScene.display(); //2
 				gi.display();
 			popMatrix();
@@ -170,8 +171,8 @@ public class KPrez extends PApplet {
 	}
 	private void pointAndMoveInTheRightDirection(){
 		
-		translate(width/2, height/2, zPos);
-		rotateX(PApplet.radians(180));
+		translate(width/2 + xTrans, height/2, zTrans);
+		rotateX(radians(180));
 		rotateY(radians(rotateYangle));
 		rotateX(radians(rotateXangle));
 	}
