@@ -17,7 +17,6 @@ public class SoundScene {
 		     boxes[i] = new SoundBox(_parent, pvectors[i], kprez.colors.get(i));
 		}
 	}
-	
 	protected void reinit(){
 		for (SoundBox b : boxes) b.reinit();
 	}

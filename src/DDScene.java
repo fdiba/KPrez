@@ -10,10 +10,8 @@ public class DDScene {
 		images = new ISprite[paths.length];
 
 		for(int i=0; i<paths.length; i++){
-			
 			String path = "assets/" + paths[i];
 			images[i] = new ISprite(parent, parent.random(parent.width/2-75), parent.random(parent.height-75), path);
-			
 		}
 	
 	}

@@ -1,5 +1,5 @@
 import java.util.ArrayList;
-
+import ddf.minim.*;
 import SimpleOpenNI.SimpleOpenNI;
 import processing.core.*;
 
@@ -29,6 +29,9 @@ public class KPrez extends PApplet {
 	protected float rotateXangle;
 	protected float zTrans;
 	protected float xTrans;
+	
+	protected Minim minim;
+	protected AudioPlayer player;
 	
 	protected ArrayList<Integer> colors;
 
@@ -65,8 +68,9 @@ public class KPrez extends PApplet {
 			setColors();
 			
 			//sceneId = 0;
-			sceneId = 2;	
-						
+			sceneId = 2;
+			
+			minim = new Minim(this);		
 			menu = new Menu(this);
 			
 			//bureau
