@@ -76,8 +76,8 @@ public class KPrez extends PApplet {
 			resolutionId = 0;
 			resolution = 1;
 			
-			sceneId = 0;
-			//sceneId = 4;
+			//sceneId = 0;
+			sceneId = 4;
 			
 			minim = new Minim(this);		
 			menu = new Menu(this);
@@ -94,8 +94,8 @@ public class KPrez extends PApplet {
 			//lowestValue = 1700;
 			//highestValue = 2500;
 			
-			gi = new GesturalInterface(this, lowestValue, highestValue, "2D");
-			//gi = new GesturalInterface(this, lowestValue, highestValue, "3D");
+			//gi = new GesturalInterface(this, lowestValue, highestValue, "2D");
+			gi = new GesturalInterface(this, lowestValue, highestValue, "3D");
 			
 			bgrd = new Background(this, "userImage");
 			bgrdCtrl = new BackgroundControllers(this, new PVector(450, 50));
@@ -181,11 +181,13 @@ public class KPrez extends PApplet {
 			bgrdCtrl.display();
 			break;
 		case 4:
+			gi.update();
 			fScene.update();
 			bgrdCtrl.update();
 			pushMatrix();
 				pointAndMoveInTheRightDirection();
 				fScene.display();
+				gi.display();
 			popMatrix();
 			bgrdCtrl.display();
 			break;
