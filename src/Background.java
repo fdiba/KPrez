@@ -69,66 +69,63 @@ public class Background {
 		int foo = 10*resolution; //10
 		int bar = foo/2; //5
 		
-		kprez.pushMatrix();
+		//kprez.pushMatrix();
 
-			kprez.stroke(couleur);
-		    kprez.strokeWeight(2);
-		    
-		    int mapWidth = kprez.context.depthWidth();
-		    
-		    int oldLineId = 0;
-		    int j=0;
-		    
-		    //PApplet.println(depthMapRealWorld.length + " " + mapWidth*mapHeight);
-		    
-		    for (int i = 0; i < depthMapRealWorld.length; i += foo) {
-		    	
-		    	int newLineId = i/mapWidth;
-		    	//PApplet.println(newLineId);
-		    	
-		    	//diagonal effect
-		    	if(newLineId % 2 == 1){
-		    		j = i;		    		
-		    	} else {
-		    		j = i+bar;
-		    	}
-		    	
-		    	//new line
-		    	if(oldLineId != newLineId) {
-		    		
-		    		//----- create space between between each line of dots -----//
-		    		if(!hasJumpALine){
-		    		
-		    			//jump a line
-		    			if(i+mapWidth*2*resolution < depthMapRealWorld.length){
-		    				i += mapWidth*2*resolution;
-		    				j = i;
-		    			}
-		    		} else {
-		    			kprez.stroke(toogleColor());
-		    		}
-		    		hasJumpALine();
-		    		//------------------------------------//
-		    	}
-		    	
-		    	oldLineId = newLineId;
-		    	
-		    	PVector currentPoint = depthMapRealWorld[j];
-		        if (currentPoint.z > kprez.gi.getLowestValue() && currentPoint.z < kprez.gi.getHighestValue()) {
-		        	kprez.point(currentPoint.x, currentPoint.y, currentPoint.z);
-		        	
-		        	//---- SCENE 2 FEATURE ----//
-		        	if(kprez.sceneId() == 2){
-		        		for (SoundBox s: kprez.soundScene.boxes) {
-		        		     s.isHit(currentPoint);
-		        		}
-		        	}
-		        	
-		        }
-		      }
-	
-		kprez.popMatrix();
-		
+		kprez.stroke(couleur);
+	    kprez.strokeWeight(2);
+	    
+	    int mapWidth = kprez.context.depthWidth();
+	    
+	    int oldLineId = 0;
+	    int j=0;
+	    
+	    //PApplet.println(depthMapRealWorld.length + " " + mapWidth*mapHeight);
+	    
+	    for (int i = 0; i < depthMapRealWorld.length; i += foo) {
+	    	
+	    	int newLineId = i/mapWidth;
+	    	//PApplet.println(newLineId);
+	    	
+	    	//diagonal effect
+	    	if(newLineId % 2 == 1){
+	    		j = i;		    		
+	    	} else {
+	    		j = i+bar;
+	    	}
+	    	
+	    	//new line
+	    	if(oldLineId != newLineId) {
+	    		
+	    		//----- create space between between each line of dots -----//
+	    		if(!hasJumpALine){
+	    		
+	    			//jump a line
+	    			if(i+mapWidth*2*resolution < depthMapRealWorld.length){
+	    				i += mapWidth*2*resolution;
+	    				j = i;
+	    			}
+	    		} else {
+	    			kprez.stroke(toogleColor());
+	    		}
+	    		hasJumpALine();
+	    		//------------------------------------//
+	    	}
+	    	
+	    	oldLineId = newLineId;
+	    	
+	    	PVector currentPoint = depthMapRealWorld[j];
+	        if (currentPoint.z > kprez.gi.getLowestValue() && currentPoint.z < kprez.gi.getHighestValue()) {
+	        	kprez.point(currentPoint.x, currentPoint.y, currentPoint.z);
+	        	
+	        	//---- SCENE 2 FEATURE ----//
+	        	if(kprez.sceneId() == 2){
+	        		for (SoundBox s: kprez.soundScene.boxes) {
+	        		     s.isHit(currentPoint);
+	        		}
+	        	}
+	       
+	        }
+	    }	
 	}
 	private void hasJumpALine(){
 		hasJumpALine = !hasJumpALine;
