@@ -77,7 +77,7 @@ public class KPrez extends PApplet {
 			resolution = resolutions[resolutionId];
 			
 			//sceneId = 0;
-			sceneId = 2;
+			sceneId = 4;
 			
 			minim = new Minim(this);		
 			menu = new Menu(this);
