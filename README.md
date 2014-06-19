@@ -1,3 +1,3 @@
-KPrez
+KPrez v alpha by Florent Di Bartolo <http://webodrome.fr/>
 =====
-Gestural Interfaces with Simple OpenNI
+Gesture based Interface experiments
