@@ -1,3 +1,4 @@
+
 import processing.core.PVector;
 
 public class ColorPoint {

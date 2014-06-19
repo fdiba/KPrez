@@ -15,6 +15,8 @@ public class Bouton {
 	protected SmartPoint lastSelector;
 	
 	private boolean isRect;
+	protected boolean isAvailable;
+	protected int spId;
 	
 	public Bouton(KPrez _kprez, float _x, float _y, int _width) {
 		kprez = _kprez;
@@ -23,6 +25,7 @@ public class Bouton {
 		couleur = kprez.colors.get(3);
 		alpha = 0;
 		a_speed = 5;
+		isAvailable = true;
 	}
 	
 	public Bouton(KPrez _kprez, float _x, float _y, int _width, int _height, boolean _isRect) {
@@ -45,14 +48,20 @@ public class Bouton {
 	protected void testCollision(SmartPoint _sp){
 		
 		if(!_sp.isTaken){
-		
+			
+			float distance = PApplet.dist(location.x, location.y, _sp.location.x, _sp.location.y);
+			//float distance = location.dist(_sp.location); // doesn't work ?!
+					
 			if(!isRect){
-				float distance = PApplet.dist(location.x, location.y, _sp.location.x, _sp.location.y);
 				if(distance <= width/2 && kprez.gi.isInPlace()) collisionWith(_sp);
 			} else {
+				//drag and drop scene
 				if(_sp.location.x > location.x &&  _sp.location.x < location.x + width &&
-				   _sp.location.y > location.y &&  _sp.location.y < location.y + height && kprez.gi.isInPlace()){
+				   _sp.location.y > location.y &&  _sp.location.y < location.y + height && kprez.gi.isInPlace() && isAvailable){
 					collisionWith(_sp);
+				} else if (distance >= width && _sp.id == spId && !isAvailable) {
+					//PApplet.println(kprez.random(10000));
+					isAvailable = true;
 				}
 			}
 		}

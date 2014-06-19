@@ -1,3 +1,4 @@
+
 import processing.core.PVector;
 
 public class SmartPoint {
@@ -7,6 +8,7 @@ public class SmartPoint {
 	private int couleur;
 	private int couleur3d;
 	private int alpha;
+	protected int id;
 	
 	protected boolean isTaken;
 	
@@ -16,8 +18,9 @@ public class SmartPoint {
 	
 	protected int width;
 	
-	public SmartPoint(KPrez _kprez){
+	public SmartPoint(KPrez _kprez, int _id){
 		kprez = _kprez;
+		id = _id;
 		alpha = 255;
 		couleur = kprez.colors.get(3);
 		couleur3d = kprez.colors.get(1);
@@ -25,7 +28,6 @@ public class SmartPoint {
 		cp_raw_location = new PVector();
 		location = cp_raw_location.get();
 		location3d = new PVector();
-		
 	}
 	protected void take(Bouton btn){
 		isTaken = true;

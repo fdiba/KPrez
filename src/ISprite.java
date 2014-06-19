@@ -1,3 +1,4 @@
+
 import processing.core.PApplet;
 import processing.core.PImage;
 import processing.core.PVector;
@@ -14,15 +15,15 @@ public class ISprite extends Bouton{
 	public ISprite(KPrez _kprez, float _x, float _y, String _path){
 		
 		super(_kprez, _x, _y, 75, 75, true);
-		
 		kprez = _kprez;
 		path = _path;
 		img = kprez.loadImage(path);
 		width = img.width;
 		height = img.height;
 		couleur = kprez.colors.get(4); //border
-		
 		lastLocation = location.get();
+		isAvailable = true;
+		spId = 9999;
 	}
 	protected void hasBeenSelected(){
 		
@@ -30,18 +31,21 @@ public class ISprite extends Bouton{
 			alpha += a_speed;
 		} else if (alpha >= 255){
 			isDragged = true;
+			isAvailable = false;
 			couleur = kprez.colors.get(3);
 			alpha = 0;
 			lastSelector.take(this);
+			spId = lastSelector.id;
 			timeToMove = 250;
 			followSmartPoint();
 		}		
 	}
 	protected void followSmartPoint() {
+		
 		location.x = lastSelector.location.x - width/2;
 		location.y = lastSelector.location.y - height/2;
 		
-		float distance = PApplet.dist(location.x, location.y, lastLocation.x, lastLocation.y);
+		float distance = location.dist(lastLocation);
 		//PApplet.println(distance + "    " + timeToMove);
 		
 		if(distance < 5 || !kprez.gi.isInPlace()){

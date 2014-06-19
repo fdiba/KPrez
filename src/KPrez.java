@@ -1,3 +1,4 @@
+
 import java.util.ArrayList;
 
 import ddf.minim.*;
@@ -20,6 +21,7 @@ public class KPrez extends PApplet {
 	private DDScene ddScene;
 	protected SoundScene soundScene;
 	private FaceScene fScene;
+	protected BlobScene bScene;
 	
 	protected Background bgrd;
 	protected BackgroundControllers bgrdCtrl;
@@ -73,11 +75,11 @@ public class KPrez extends PApplet {
 			context.enableRGB();
 			
 			setColors();
-			resolutionId = 1;
+			resolutionId = 0;
 			resolution = resolutions[resolutionId];
 			
-			//sceneId = 0;
-			sceneId = 4;
+			sceneId = 0;
+			//sceneId = 5;
 			
 			minim = new Minim(this);		
 			menu = new Menu(this);
@@ -91,11 +93,11 @@ public class KPrez extends PApplet {
 			//highestValue = 3300;
 			
 			//salon capture
-			//lowestValue = 1700;
+			//lowestValue = 1500;
 			//highestValue = 2500;
 			
-			//gi = new GesturalInterface(this, lowestValue, highestValue, "2D");
-			gi = new GesturalInterface(this, lowestValue, highestValue, "3D");
+			gi = new GesturalInterface(this, lowestValue, highestValue, "2D");
+			//gi = new GesturalInterface(this, lowestValue, highestValue, "3D");
 			
 			bgrd = new Background(this, "userImage");
 			bgrdCtrl = new BackgroundControllers(this, new PVector(450, 50));
@@ -108,6 +110,8 @@ public class KPrez extends PApplet {
 			ptp = new PointsToPics(this);
 			//scene 4
 			fScene = new FaceScene(this);
+			//scene 4
+			bScene = new BlobScene(this);
 		
 			PApplet.println("depthmap controllers : UP | DOWN | l to toggle" + "\n" +
 							"press n for next resolution");
@@ -190,6 +194,10 @@ public class KPrez extends PApplet {
 				gi.display();
 			popMatrix();
 			bgrdCtrl.display();
+			break;
+		case 5:
+			bScene.update();
+			bScene.display();
 			break;
 		default:
 			firstScene();

@@ -1,3 +1,4 @@
+
 public class HandControl {
 	
 	private int alpha;
@@ -11,9 +12,9 @@ public class HandControl {
 		
 		kprez = _kprez;
 		
-		rightSP = new SmartPoint(kprez);
-		leftSP = new SmartPoint(kprez);
-		cp = new SmartPoint(kprez);
+		rightSP = new SmartPoint(kprez, 0);
+		leftSP = new SmartPoint(kprez, 1);
+		cp = new SmartPoint(kprez, 2);
 	}
 	protected void update() {
 		if (kprez.gi.getWorld() == "2D") {

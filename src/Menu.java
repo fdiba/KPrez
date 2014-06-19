@@ -1,3 +1,4 @@
+
 import processing.core.PVector;
 
 public class Menu {
@@ -7,13 +8,13 @@ public class Menu {
 	private int offset;
 	private PVector location;
 	
-	private MBouton[] menu = new MBouton[4];
+	private MBouton[] menu = new MBouton[5];
 		
 	public Menu(KPrez _parent){
 		
 		parent = _parent;
 		offset = 25;
-		location = new PVector(260, 160);
+		location = new PVector(160, 160);
 		
 		for (int i=0; i<menu.length; i++){
 			
@@ -29,6 +30,9 @@ public class Menu {
 				break;
 			case 3:
 				menu[i] = new MBouton(this, menu[0].location.x + menu[0].width + offset,  menu[0].location.y + menu[0].width + offset, menu[0].width, i+1, "3D");
+				break;
+			case 4:
+				menu[i] = new MBouton(this, menu[0].location.x + menu[0].width*2 + offset*2,  menu[0].location.y + menu[0].width + offset, menu[0].width, i+1, "2D");
 				break;
 			default:
 				break;

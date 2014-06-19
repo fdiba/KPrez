@@ -1,3 +1,4 @@
+
 import processing.core.PApplet;
 import processing.core.PVector;
 
@@ -26,7 +27,7 @@ public class SoundBox {
 	}
 	protected void update(){
 		angleRotation++;
-		alpha = (int) PApplet.map(hits, 0, 50, 0, 255);
+		alpha = (int) PApplet.map(hits, 0, 40, 0, 255);
 		//PApplet.println(hits);
 		if(kprez.player.isPlaying()){
 			position = kprez.player.position();
