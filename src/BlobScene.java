@@ -15,7 +15,7 @@ public class BlobScene {
 	public BlobScene(KPrez _kprez) {
 		
 		kprez = _kprez;
-		image = new PImage(640/2, 480/2);
+		image = new PImage(640/5, 480/5);
 		blobDetection = new BlobDetection(image.width, image.height);
 		blobDetection.setPosDiscrimination(true);
 		blobDetection.setThreshold(0.2f); //between 0.0f and 1.0f 
@@ -43,13 +43,13 @@ public class BlobScene {
 			if(blob != null){
 				
 				if(drawEdges){
-					kprez.strokeWeight(1);
-					kprez.stroke(kprez.colors.get(1));
+					kprez.strokeWeight(3);
+					kprez.stroke(kprez.colors.get(2));
 					
 					for(int m=0; m<blob.getEdgeNb(); m++){
 						eA = blob.getEdgeVertexA(m);
 						eB = blob.getEdgeVertexB(m);
-						if(eA != null && eB != null) kprez.line(eA.x*width, eA.y*height, eB.x*width, eB.x*height);
+						if(eA != null && eB != null) kprez.line(eA.x*width, eA.y*height, eB.x*width, eB.y*height);
 					}	
 				}
 				

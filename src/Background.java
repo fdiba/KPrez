@@ -38,6 +38,9 @@ public class Background {
 			case "userImage":
 				img = kprez.context.userImage();
 				break;
+			case "rgbImage":
+				img = kprez.context.rgbImage();
+				break;
 			default:
 				img = kprez.context.depthImage();
 				break;

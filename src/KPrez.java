@@ -75,11 +75,11 @@ public class KPrez extends PApplet {
 			context.enableRGB();
 			
 			setColors();
-			resolutionId = 0;
+			resolutionId = 1;
 			resolution = resolutions[resolutionId];
 			
-			sceneId = 0;
-			//sceneId = 5;
+			//sceneId = 0;
+			sceneId = 5;
 			
 			minim = new Minim(this);		
 			menu = new Menu(this);
