@@ -47,6 +47,9 @@ public class Background {
 			depthMapRealWorld = kprez.context.depthMapRealWorld();
 		}
 	}
+	protected PImage getImg(){
+		return img;
+	}
 	private void draw2DBackground(){
 		
 		int[] depthValues = kprez.context.depthMap();

@@ -85,7 +85,7 @@ public class KPrez extends PApplet {
 			menu = new Menu(this);
 			
 			//bureau
-			lowestValue = 600;
+			lowestValue = 950;
 			highestValue = 2300;
 			
 			//salon
@@ -196,8 +196,14 @@ public class KPrez extends PApplet {
 			bgrdCtrl.display();
 			break;
 		case 5:
+			gi.update();
+			bgrd.update("depthImage");
 			bScene.update();
-			bScene.display();
+
+			bgrd.display();
+			bScene.display(true, true);
+			
+			gi.display();
 			break;
 		default:
 			firstScene();
