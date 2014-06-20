@@ -1,5 +1,9 @@
+import java.util.ArrayList;
+
 import processing.core.PApplet;
 import processing.core.PImage;
+import shiffman.box2d.Box2DProcessing;
+import toxi.processing.ToxiclibsSupport;
 import blobDetection.Blob;
 import blobDetection.BlobDetection;
 import blobDetection.EdgeVertex;
@@ -12,16 +16,29 @@ public class BlobScene {
 	private int width;
 	private int height;
 	
+	private Box2DProcessing box2dProcessing;
+	private ArrayList<CustomShape> polygons;
+	
+	private ToxiclibsSupport toxiclibsSupport;
+	
 	public BlobScene(KPrez _kprez) {
 		
 		kprez = _kprez;
-		image = new PImage(640/5, 480/5);
+		image = new PImage(640/5, 480/5); //param /5
 		blobDetection = new BlobDetection(image.width, image.height);
 		blobDetection.setPosDiscrimination(true);
-		blobDetection.setThreshold(0.2f); //between 0.0f and 1.0f 
+		blobDetection.setThreshold(0.2f); //param between 0.0f and 1.0f 
 		
 		width = 640;
 		height = 480;
+		
+		toxiclibsSupport = new ToxiclibsSupport(kprez);
+		
+		box2dProcessing = new Box2DProcessing(kprez);
+		box2dProcessing.createWorld();
+		box2dProcessing.setGravity(0, -20);
+		
+		polygons = new ArrayList<CustomShape>();
 		
 	}
 	protected void update(){
@@ -40,7 +57,7 @@ public class BlobScene {
 		
 		for(int n=0; n<blobDetection.getBlobNb(); n++){
 			blob = blobDetection.getBlob(n);
-			if(blob != null){
+			if(blob != null){ //param && blob.getEdgeNb(); > 100
 				
 				if(drawEdges){
 					kprez.strokeWeight(3);
@@ -59,6 +76,35 @@ public class BlobScene {
 					kprez.rect(blob.xMin*width, blob.yMin*height, blob.w*width, blob.h*height);
 				}
 			
+			}
+		}
+	}
+	protected void updateAndDrawBox2D(){
+		
+		//PApplet.println(kprez.frameRate);
+		if (kprez.frameRate > 15) { //param 29
+			polygons.add(new CustomShape(kprez, toxiclibsSupport, box2dProcessing, width/2, -50, -1));
+		    polygons.add(new CustomShape(kprez, toxiclibsSupport, box2dProcessing, width/2, -50, kprez.random((float) 2.5, 20)));
+		}
+		
+		box2dProcessing.step();
+		
+		
+		//display user
+		
+		
+		//display shapes
+		updateAndDisplayShapes();
+		
+	}
+	private void updateAndDisplayShapes(){
+		for (int i = polygons.size()-1; i>0; i--) {
+			CustomShape customShape = polygons.get(i);
+			if(customShape.done()){
+				polygons.remove(i);
+			} else {
+				customShape.update();
+				customShape.display();
 			}
 		}
 	}

@@ -201,7 +201,10 @@ public class KPrez extends PApplet {
 			bScene.update();
 
 			bgrd.display();
+			
 			bScene.display(true, true);
+			
+			bScene.updateAndDrawBox2D();
 			
 			gi.display();
 			break;
