@@ -58,7 +58,7 @@ public class KPrez extends PApplet {
 		return sceneId;
 	}
 	public void setup(){
-		size(640, 480, OPENGL);
+		size(640+200, 480 +100, OPENGL);
 		//frameRate(1);
 		//size(displayWidth, displayHeight);
 		
@@ -198,13 +198,14 @@ public class KPrez extends PApplet {
 		case 5:
 			gi.update();
 			bgrd.update("depthImage");
-			bScene.update();
+			bScene.update(); //1
 
 			bgrd.display();
 			
-			bScene.display(true, true);
+			bScene.displayUser();
+			bScene.display(false, true);
 			
-			bScene.updateAndDrawBox2D();
+			bScene.updateAndDrawBox2D(); //2
 			
 			gi.display();
 			break;

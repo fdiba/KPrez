@@ -20,6 +20,8 @@ public class BlobScene {
 	private ArrayList<CustomShape> polygons;
 	
 	private ToxiclibsSupport toxiclibsSupport;
+	private PolygonBlob polygonBlob;
+
 	
 	public BlobScene(KPrez _kprez) {
 		
@@ -47,6 +49,11 @@ public class BlobScene {
 		image.copy(cam, 0, 0, cam.width, cam.height, 0, 0, image.width, image.height);
 		fastblur(image, 2);
 		blobDetection.computeBlobs(image.pixels);
+		
+		polygonBlob = new PolygonBlob();
+		polygonBlob.create(blobDetection);
+		polygonBlob.createBody(box2dProcessing);
+		polygonBlob.destroyBody(box2dProcessing);
 	}
 	protected void display(boolean drawBlobs, boolean drawEdges){
 	
@@ -87,15 +94,19 @@ public class BlobScene {
 		    polygons.add(new CustomShape(kprez, toxiclibsSupport, box2dProcessing, width/2, -50, kprez.random((float) 2.5, 20)));
 		}
 		
-		box2dProcessing.step();
+		box2dProcessing.step();	
 		
 		
-		//display user
-		
+		//displayUser();
 		
 		//display shapes
 		updateAndDisplayShapes();
 		
+	}
+	protected void displayUser(){
+		kprez.noStroke();
+		kprez.fill(kprez.colors.get(0));
+		toxiclibsSupport.polygon2D(polygonBlob);
 	}
 	private void updateAndDisplayShapes(){
 		for (int i = polygons.size()-1; i>0; i--) {
@@ -103,7 +114,7 @@ public class BlobScene {
 			if(customShape.done()){
 				polygons.remove(i);
 			} else {
-				customShape.update();
+				customShape.update(polygonBlob);
 				customShape.display();
 			}
 		}

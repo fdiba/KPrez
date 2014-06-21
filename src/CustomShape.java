@@ -20,6 +20,7 @@ public class CustomShape {
 	private Box2DProcessing box2dProcessing;
 	private Body body;
 	private Polygon2D polygon2d; //toxi polygon
+	private int[] colors = {-1117720,-13683658,-8410437,-9998215,-1849945,-5517090,-4250587,-14178341,-5804972,-3498634};
 	
 	private ToxiclibsSupport toxiclibsSupport;
 	
@@ -29,36 +30,52 @@ public class CustomShape {
 		box2dProcessing = _box2dProcessing;
 		radius = _radius;
 		makeBody(x, y);
-		color = kprez.color(255, 0, 0);
-		
+		//color = kprez.color(255, 0, 0);
+		color = colors[(int) kprez.random(0, colors.length-1)];
 		toxiclibsSupport = _toxiclibsSupport;
 		
 	}
 	protected boolean done(){
 		Vec2 posScreen = box2dProcessing.getBodyPixelCoord(body); //jbox2d
-		boolean offscreen = posScreen.y > 640; //----- edit it ---------//
+		boolean offscreen = posScreen.y > 480; //----- edit it ---------//
 		if(offscreen) {
 			box2dProcessing.destroyBody(body);
 			return true;
 		}
 		return false;
 	}
-	protected void update(){
+	protected void update(PolygonBlob poly){
 		
 		
 		Vec2 posScreen = box2dProcessing.getBodyPixelCoord(body);
 		
 		Vec2D toxiScreen = new Vec2D(posScreen.x, posScreen.y);
 		
-		// to do edit position based on the user position
-		//Vec2D closestPoint = toxiScreen;
+		// check if this shape's position is inside the person's polygon
+		boolean inBody = poly.containsPoint(toxiScreen);
 		
-		Vec2 contourPos = new Vec2(toxiScreen.x, toxiScreen.y);
-	    Vec2 posWorld = box2dProcessing.coordPixelsToWorld(contourPos);
+	    if (inBody) {
 	    
-	    float angle = body.getAngle();
+	    	// find the closest point on the polygon to the current position
+	    	Vec2D closestPoint = toxiScreen;
+	    	float closestDistance = 9999999;
+	      
+	    	for (Vec2D v : poly.vertices) {
+	    		float distance = v.distanceTo(toxiScreen);
+	    		
+	    		if (distance < closestDistance) {
+	    			closestDistance = distance;
+	    			closestPoint = v;
+	    		}
+	    	}
+		
+	    	Vec2 contourPos = new Vec2(closestPoint.x, closestPoint.y);
+	    	Vec2 posWorld = box2dProcessing.coordPixelsToWorld(contourPos);
 	    
-	    body.setTransform(posWorld, angle);
+	    	float angle = body.getAngle();
+	    
+	    	body.setTransform(posWorld, angle);
+	    }
 		
 	}
 	protected void display(){
