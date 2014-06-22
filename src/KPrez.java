@@ -28,18 +28,23 @@ public class KPrez extends PApplet {
 	private DDScene ddScene;
 	protected SoundScene soundScene;
 	private FaceScene fScene;
+	
 	protected BlobScene bScene;
+	protected BlobControllers blobCtrl;
 	
 	protected Background bgrd;
 	protected BackgroundControllers bgrdCtrl;
 	
 	protected GesturalInterface gi;
 	private PointsToPics ptp;
-		
+	
 	protected float rotateYangle;
 	protected float rotateXangle;
 	protected float zTrans;
 	protected float xTrans;
+
+	//protected float distance;
+	protected int frameRateValue = 15;
 
 	//private int[] resolutions = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 	private int[] resolutions = {1, 2, 4, 5, 7, 9};
@@ -71,8 +76,8 @@ public class KPrez extends PApplet {
 		PApplet.main( new String[] { "--display=1", KPrez.class.getSimpleName() });
 		//PApplet.main( new String[] { "--present", KPrez.class.getSimpleName() });
 		
-		String libPathProperty = System.getProperty("java.library.path");
-        System.out.println(libPathProperty);
+		//String libPathProperty = System.getProperty("java.library.path");
+        //System.out.println(libPathProperty);
 		
 	}
 	public void editScene(int _sceneId, String _mode) {
@@ -112,8 +117,8 @@ public class KPrez extends PApplet {
 			resolutionId = 1;
 			resolution = resolutions[resolutionId];
 			
-			//sceneId = 0;
-			sceneId = 6;
+			sceneId = 0;
+			//sceneId = 5;
 			
 			minim = new Minim(this);		
 			menu = new Menu(this);
@@ -129,7 +134,7 @@ public class KPrez extends PApplet {
 			//salon capture
 			//lowestValue = 1500;
 			//highestValue = 2500;
-			
+						
 			gi = new GesturalInterface(this, lowestValue, highestValue, "2D");
 			//gi = new GesturalInterface(this, lowestValue, highestValue, "3D");
 			
@@ -146,8 +151,9 @@ public class KPrez extends PApplet {
 			fScene = new FaceScene(this);
 			//scene 4
 			bScene = new BlobScene(this);
+			blobCtrl = new BlobControllers(this, new PVector(450, 50));
 		
-			PApplet.println("depthmap controllers : UP | DOWN | l to toggle" + "\n" +
+			System.out.println("depthmap controllers : UP | DOWN | l to toggle" + "\n" +
 							"press n for next resolution");
 		}
 	}
@@ -245,13 +251,17 @@ public class KPrez extends PApplet {
 		case 5:
 			gi.update();
 			bgrd.update("depthImage");
+			
 			bScene.updateK(); //1
+			blobCtrl.update();
 			
 			bgrd.display();
 
 			bScene.displayK(false, true);
-						
+			blobCtrl.display();			
+		
 			gi.display();
+			
 			break;
 		case 6:
 			gi.update();
@@ -259,7 +269,7 @@ public class KPrez extends PApplet {
 			bScene.update(); //1
 
 			//bgrd.display();
-			//bScene.displayK(false, true);
+			bScene.displayK(false, true);
 						
 			bScene.displayUser();
 			
@@ -335,6 +345,7 @@ public class KPrez extends PApplet {
 	//---- mouse ----//
 	public void mouseReleased(){
 		bgrdCtrl.resetSliders();
+		blobCtrl.resetSliders();
 	}
 	// SimpleOpenNI events
 	public void onNewUser(SimpleOpenNI curContext, int userId) {

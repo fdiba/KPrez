@@ -45,9 +45,13 @@ public class Slider {
 		} 
 		
 	}
-	/*protected void editSliderCtrlPosition(int _x){
-		sliderCtrl.location.x = location.x + _x;
-	}*/
+	protected void initValue(int _value){
+		
+		float value = PApplet.map(_value, lowValue, maxValue, location.x, location.x+width);
+		sliderCtrl.location.x = value;
+		
+		//sliderCtrl.location.x = location.x + _x;
+	}
 	protected void followMouse(){
 		if(dragging) {
 			sliderCtrl.location.x = kprez.mouseX;
@@ -62,7 +66,6 @@ public class Slider {
 	private void editValue(){
 		
 		value = PApplet.map(sliderCtrl.location.x, lowXPos, maxYPos, lowValue, maxValue);
-		//PApplet.println(param + ": " + value);
 		
 		switch (param) {
 		case "rotateY":
@@ -77,9 +80,18 @@ public class Slider {
 		case "xTrans":
 			kprez.xTrans = value;
 			break;
+		//blob scene
+		case "frameRateValue":
+			kprez.frameRateValue = (int) value;
+			break;
+		/*case "distance":
+			kprez.distance = value;
+			break;*/
 		default:
 			break;
 		}
+		
+		PApplet.println(param + ": " + value);
 		
 	}
 	protected void reset(){

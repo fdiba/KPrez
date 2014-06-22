@@ -31,7 +31,8 @@ public class BlobScene {
 		height = 480;
 		
 		kprez = _kprez;
-		image = new PImage(width/5, height/5); //---------- param /5
+		int value = 5;
+		image = new PImage(width/value, height/value); //---------- param /5
 		
 		blobDetection = new BlobDetection(image.width, image.height);
 		blobDetection.setPosDiscrimination(true);
@@ -130,7 +131,7 @@ public class BlobScene {
 	protected void updateAndDrawBox2D(){
 		
 		//PApplet.println(kprez.frameRate);
-		if (kprez.frameRate > 15) { //-------------param 29
+		if (kprez.frameRate > kprez.frameRateValue) { //15
 			polygons.add(new CustomShape(kprez, toxiclibsSupport, box2dProcessing, width/2, -50, -1));
 		    polygons.add(new CustomShape(kprez, toxiclibsSupport, box2dProcessing, width/2, -50, kprez.random((float) 2.5, 20)));
 		}
