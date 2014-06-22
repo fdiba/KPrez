@@ -1,5 +1,12 @@
 
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Rectangle;
 import java.util.ArrayList;
+
+import javax.lang.model.element.Element;
+import javax.management.monitor.Monitor;
 
 import ddf.minim.*;
 import SimpleOpenNI.SimpleOpenNI;
@@ -43,12 +50,30 @@ public class KPrez extends PApplet {
 	protected AudioPlayer player;
 	
 	protected ArrayList<Integer> colors;
+	
+	private boolean fs;
+	private static Rectangle monitor;
 
 	public static void main(String[] args) {
+		
+		GraphicsEnvironment gEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+		GraphicsDevice[] graphicsDevices = gEnvironment.getScreenDevices();
+		
+		
+		if(graphicsDevices.length>1){
+				
+			GraphicsDevice graphicsDevice = graphicsDevices[1];
+			GraphicsConfiguration[] gConfigurations = graphicsDevice.getConfigurations();
+			monitor = gConfigurations[0].getBounds();
+		}
 		
 		//PApplet.main(KPrez.class.getSimpleName());
 		PApplet.main( new String[] { "--display=1", KPrez.class.getSimpleName() });
 		//PApplet.main( new String[] { "--present", KPrez.class.getSimpleName() });
+		
+		String libPathProperty = System.getProperty("java.library.path");
+        System.out.println(libPathProperty);
+		
 	}
 	public void editScene(int _sceneId, String _mode) {
 		sceneId = _sceneId;
@@ -58,7 +83,16 @@ public class KPrez extends PApplet {
 		return sceneId;
 	}
 	public void setup(){
-		size(640+200, 480 +100, OPENGL);
+		
+		fs = false;
+		
+		if(fs){
+			size(monitor.width, monitor.height, OPENGL);
+		} else {
+			size(640, 480, OPENGL);
+		}
+		
+		//size(640, 480, OPENGL);
 		//frameRate(1);
 		//size(displayWidth, displayHeight);
 		
@@ -79,7 +113,7 @@ public class KPrez extends PApplet {
 			resolution = resolutions[resolutionId];
 			
 			//sceneId = 0;
-			sceneId = 5;
+			sceneId = 6;
 			
 			minim = new Minim(this);		
 			menu = new Menu(this);
@@ -125,7 +159,20 @@ public class KPrez extends PApplet {
 		colors.add(color(252, 177, 135)); //orange
 		colors.add(color(15, 65, 85)); //dark blue
 	}
+	public void init() {
+		frame.removeNotify();
+		frame.setUndecorated(true);
+		super.init();
+	} 
 	public void draw() {
+		
+		if(fs){
+			frame.setLocation(monitor.x, monitor.y);
+		} else {
+			frame.setLocation(monitor.x+monitor.width/2-width/2, monitor.y+monitor.height/2-height/2);
+		}
+		frame.setAlwaysOnTop(true); 
+		  
 		background(0);
 		context.update();
 		
@@ -198,12 +245,23 @@ public class KPrez extends PApplet {
 		case 5:
 			gi.update();
 			bgrd.update("depthImage");
+			bScene.updateK(); //1
+			
+			bgrd.display();
+
+			bScene.displayK(false, true);
+						
+			gi.display();
+			break;
+		case 6:
+			gi.update();
+			bgrd.update("depthImage");
 			bScene.update(); //1
 
-			bgrd.display();
-			
+			//bgrd.display();
+			//bScene.displayK(false, true);
+						
 			bScene.displayUser();
-			bScene.display(false, true);
 			
 			bScene.updateAndDrawBox2D(); //2
 			

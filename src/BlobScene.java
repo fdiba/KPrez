@@ -1,20 +1,18 @@
 import java.util.ArrayList;
 
+import blobDetection.Blob;
+import blobDetection.BlobDetection;
+import blobDetection.EdgeVertex;
 import processing.core.PApplet;
 import processing.core.PImage;
 import shiffman.box2d.Box2DProcessing;
 import toxi.processing.ToxiclibsSupport;
-import blobDetection.Blob;
-import blobDetection.BlobDetection;
-import blobDetection.EdgeVertex;
 
 public class BlobScene {
 	
 	private KPrez kprez;
-	private BlobDetection blobDetection;
+	
 	private PImage image;
-	private int width;
-	private int height;
 	
 	private Box2DProcessing box2dProcessing;
 	private ArrayList<CustomShape> polygons;
@@ -22,17 +20,23 @@ public class BlobScene {
 	private ToxiclibsSupport toxiclibsSupport;
 	private PolygonBlob polygonBlob;
 
+	private BlobDetection blobDetection;	
+	
+	private int width;
+	private int height;
 	
 	public BlobScene(KPrez _kprez) {
 		
-		kprez = _kprez;
-		image = new PImage(640/5, 480/5); //param /5
-		blobDetection = new BlobDetection(image.width, image.height);
-		blobDetection.setPosDiscrimination(true);
-		blobDetection.setThreshold(0.2f); //param between 0.0f and 1.0f 
-		
 		width = 640;
 		height = 480;
+		
+		kprez = _kprez;
+		image = new PImage(width/5, height/5); //---------- param /5
+		
+		blobDetection = new BlobDetection(image.width, image.height);
+		blobDetection.setPosDiscrimination(true);
+		blobDetection.setThreshold(0.2f); //--------------- param between 0.0f and 1.0f
+		
 		
 		toxiclibsSupport = new ToxiclibsSupport(kprez);
 		
@@ -41,21 +45,38 @@ public class BlobScene {
 		box2dProcessing.setGravity(0, -20);
 		
 		polygons = new ArrayList<CustomShape>();
-		
+				
 	}
 	protected void update(){
 		
 		PImage cam = kprez.bgrd.getImg();
 		image.copy(cam, 0, 0, cam.width, cam.height, 0, 0, image.width, image.height);
-		fastblur(image, 2);
+		fastblur(image, 2);	
+		
 		blobDetection.computeBlobs(image.pixels);
 		
 		polygonBlob = new PolygonBlob();
 		polygonBlob.create(blobDetection);
 		polygonBlob.createBody(box2dProcessing);
 		polygonBlob.destroyBody(box2dProcessing);
+		
 	}
-	protected void display(boolean drawBlobs, boolean drawEdges){
+	protected void updateK(){
+		
+		PImage cam = kprez.bgrd.getImg();
+		
+		image.copy(cam, 0, 0, cam.width, cam.height, 0, 0, image.width, image.height);
+		fastblur(image, 2);
+				
+		blobDetection.computeBlobs(image.pixels);
+				
+		//openCV.copy(image);
+		//openCV.threshold(80); //PARAM
+		//blobs = openCV.blobs(10, width*height/2, 10, false);
+		
+	}
+
+	protected void displayK(boolean drawBlobs, boolean drawEdges){
 	
 		Blob blob;
 		EdgeVertex eA, eB;
@@ -68,7 +89,7 @@ public class BlobScene {
 				
 				if(drawEdges){
 					kprez.strokeWeight(3);
-					kprez.stroke(kprez.colors.get(2));
+					kprez.stroke(kprez.colors.get(1));
 					
 					for(int m=0; m<blob.getEdgeNb(); m++){
 						eA = blob.getEdgeVertexA(m);
@@ -86,26 +107,47 @@ public class BlobScene {
 			}
 		}
 	}
+	protected void display(){
+		
+		//kprez.image( testImage, 0, 0);
+		
+		/*kprez.noFill();
+		kprez.stroke(kprez.colors.get(1));
+		
+		for( int i=0; i<blobs.length; i++ ) {
+			
+		    kprez.beginShape();
+		        
+	        for( int j=0; j<blobs[i].points.length; j++ ) {
+	        	
+	            kprez.vertex(blobs[i].points[j].x, blobs[i].points[j].y);
+	            
+	        }
+	        
+	        kprez.endShape(PApplet.CLOSE);
+	    }*/
+	}
 	protected void updateAndDrawBox2D(){
 		
 		//PApplet.println(kprez.frameRate);
-		if (kprez.frameRate > 15) { //param 29
+		if (kprez.frameRate > 15) { //-------------param 29
 			polygons.add(new CustomShape(kprez, toxiclibsSupport, box2dProcessing, width/2, -50, -1));
 		    polygons.add(new CustomShape(kprez, toxiclibsSupport, box2dProcessing, width/2, -50, kprez.random((float) 2.5, 20)));
 		}
 		
 		box2dProcessing.step();	
-		
-		
-		//displayUser();
-		
-		//display shapes
+				
 		updateAndDisplayShapes();
 		
 	}
 	protected void displayUser(){
+		
 		kprez.noStroke();
-		kprez.fill(kprez.colors.get(0));
+		
+		kprez.fill(kprez.color(238, 241, 232)); //soft blue
+		kprez.rect(0, 0, width, height);
+		
+		kprez.fill(kprez.color(47, 52, 54));
 		toxiclibsSupport.polygon2D(polygonBlob);
 	}
 	private void updateAndDisplayShapes(){
