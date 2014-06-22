@@ -52,7 +52,12 @@ public class BlobScene {
 		
 		PImage cam = kprez.bgrd.getImg();
 		image.copy(cam, 0, 0, cam.width, cam.height, 0, 0, image.width, image.height);
+		
 		fastblur(image, 2);	
+		
+		for (int i = image.pixels.length - image.width*kprez.yOffset; i < image.pixels.length; i++) {
+			image.pixels[i] = kprez.color(0);
+		}
 		
 		blobDetection.computeBlobs(image.pixels);
 		
@@ -65,8 +70,12 @@ public class BlobScene {
 	protected void updateK(){
 		
 		PImage cam = kprez.bgrd.getImg();
-		
 		image.copy(cam, 0, 0, cam.width, cam.height, 0, 0, image.width, image.height);
+		
+		for (int i = image.pixels.length - image.width*kprez.yOffset; i < image.pixels.length; i++) {
+			image.pixels[i] = kprez.color(0);
+		}
+		
 		fastblur(image, 2);
 				
 		blobDetection.computeBlobs(image.pixels);
@@ -144,7 +153,7 @@ public class BlobScene {
 	protected void displayUser(){
 		
 		kprez.noStroke();
-		
+		kprez.rectMode(PApplet.CORNER);
 		kprez.fill(kprez.color(238, 241, 232)); //soft blue
 		kprez.rect(0, 0, width, height);
 		

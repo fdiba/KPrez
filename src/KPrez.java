@@ -45,6 +45,7 @@ public class KPrez extends PApplet {
 
 	//protected float distance;
 	protected int frameRateValue = 15;
+	protected int yOffset = 1;
 
 	//private int[] resolutions = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 	private int[] resolutions = {1, 2, 4, 5, 7, 9};
@@ -64,17 +65,18 @@ public class KPrez extends PApplet {
 		GraphicsEnvironment gEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] graphicsDevices = gEnvironment.getScreenDevices();
 		
-		
 		if(graphicsDevices.length>1){
-				
 			GraphicsDevice graphicsDevice = graphicsDevices[1];
 			GraphicsConfiguration[] gConfigurations = graphicsDevice.getConfigurations();
 			monitor = gConfigurations[0].getBounds();
+			PApplet.main( new String[] { "--display=1", KPrez.class.getSimpleName() });
+			//PApplet.main( new String[] { "--present", KPrez.class.getSimpleName() });
+		} else {
+			GraphicsDevice graphicsDevice = graphicsDevices[0];
+			GraphicsConfiguration[] gConfigurations = graphicsDevice.getConfigurations();
+			monitor = gConfigurations[0].getBounds();
+			PApplet.main(KPrez.class.getSimpleName());
 		}
-		
-		//PApplet.main(KPrez.class.getSimpleName());
-		PApplet.main( new String[] { "--display=1", KPrez.class.getSimpleName() });
-		//PApplet.main( new String[] { "--present", KPrez.class.getSimpleName() });
 		
 		//String libPathProperty = System.getProperty("java.library.path");
         //System.out.println(libPathProperty);
@@ -118,7 +120,7 @@ public class KPrez extends PApplet {
 			resolution = resolutions[resolutionId];
 			
 			sceneId = 0;
-			//sceneId = 5;
+			//sceneId = 6;
 			
 			minim = new Minim(this);		
 			menu = new Menu(this);
@@ -267,14 +269,15 @@ public class KPrez extends PApplet {
 			gi.update();
 			bgrd.update("depthImage");
 			bScene.update(); //1
+			blobCtrl.update();
 
 			//bgrd.display();
-			bScene.displayK(false, true);
+			//bScene.displayK(false, true);
 						
 			bScene.displayUser();
 			
 			bScene.updateAndDrawBox2D(); //2
-			
+			blobCtrl.display();	
 			gi.display();
 			break;
 		default:

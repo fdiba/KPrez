@@ -84,9 +84,9 @@ public class Slider {
 		case "frameRateValue":
 			kprez.frameRateValue = (int) value;
 			break;
-		/*case "distance":
-			kprez.distance = value;
-			break;*/
+		case "yOffset":
+			kprez.yOffset = (int) value;
+			break;
 		default:
 			break;
 		}
