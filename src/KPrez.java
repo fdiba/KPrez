@@ -5,9 +5,13 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 
+import javax.sound.midi.MidiMessage;
+
 import ddf.minim.*;
 import SimpleOpenNI.SimpleOpenNI;
 import processing.core.*;
+import themidibus.MidiBus;
+import webodrome.App;
 import webodrome.ctrl.BehringerBCF;
 import webodrome.scene.StrokeScene;
 
@@ -65,7 +69,9 @@ public class KPrez extends PApplet {
 	private boolean fs;
 	private static Rectangle monitor;
 	
-	private BehringerBCF behringerBCF;
+	private BehringerBCF behringer;
+	private MidiBus midiBus;
+	
 
 	public static void main(String[] args) {		
 		
@@ -132,19 +138,23 @@ public class KPrez extends PApplet {
 			
 			minim = new Minim(this);		
 			
-			behringerBCF = new BehringerBCF();
+			//------------- behringerBCF2000 -----------//
+			
+			if(App.BCF2000){		
+				MidiBus.list();
+			    midiBus = new MidiBus(this, "BCF2000", "BCF2000");
+			    behringer = new BehringerBCF(midiBus);
+			    App.behringer = behringer;
+			}
+			  
+			//------------------------------------------//
 			
 			menu = new Menu(this);
 			
 			//bureau
-			//lowestValue = 950;
-			//highestValue = 2300;
-			
-			//upem
-			lowestValue = 1050;
-			highestValue = 2050;
-			
-			
+			lowestValue = 950;
+			highestValue = 2300;
+	
 			//salon
 			//lowestValue = 1700;
 			//highestValue = 3300;
@@ -285,7 +295,10 @@ public class KPrez extends PApplet {
 			break;
 		case 5:
 			
-			if (sceneId != oldSceneId) strokeScene = new StrokeScene(this, 640, 480);
+			if (sceneId != oldSceneId) {
+				strokeScene = new StrokeScene(this, 640, 480);
+				App.setActualScene(strokeScene);
+			}
 			
 			gi.update();
 			bgrd.update("depthImage");
@@ -307,7 +320,6 @@ public class KPrez extends PApplet {
 		oldSceneId = sceneId;
 	}
 	private void pointAndMoveInTheRightDirection(){
-		
 		translate(width/2 + xTrans, height/2, zTrans);
 		rotateX(radians(180));
 		rotateY(radians(rotateYangle));
@@ -347,11 +359,9 @@ public class KPrez extends PApplet {
 		}
 	}
 	private void nextResolution(){
-		
 		resolutionId++;
 		if(resolutionId >= resolutions.length) resolutionId = 0;
 		resolution = resolutions[resolutionId];
-		
 	}
 	//---- key ----//
 	public void keyPressed() {
@@ -364,6 +374,17 @@ public class KPrez extends PApplet {
 		} else if (keyCode == DOWN) {
 			setSelectedValue(-50);
 		}
+	}
+	//------------- MIDI ------------------//
+	public void midiMessage(MidiMessage message, long timestamp, String bus_name) {
+	  
+	   int channel = message.getMessage()[0] & 0xFF;
+	   int number = message.getMessage()[1] & 0xFF;
+	   int value = message.getMessage()[2] & 0xFF;
+	   
+	   //PApplet.println("bus " + bus_name + " | channel " + channel + " | num " + number + " | val " + value);
+	   if(App.BCF2000) behringer.midiMessage(channel, number, value);
+	   
 	}
 	//---- mouse ----//
 	public void mouseReleased(){
@@ -385,11 +406,9 @@ public class KPrez extends PApplet {
 	  println("\tstart tracking skeleton");
 	  curContext.startTrackingSkeleton(userId);
 	}
-
 	public void onLostUser(SimpleOpenNI curContext, int userId) {
 	  println("onLostUser - userId: " + userId);
 	}
-
 	public void onVisibleUser(SimpleOpenNI curContext, int userId) {
 	  //println("onVisibleUser - userId: " + userId);
 	}

@@ -2,15 +2,14 @@ package webodrome.ctrl;
 
 import processing.core.PApplet;
 import processing.core.PVector;
+import webodrome.App;
 import webodrome.scene.Scene;
 
 public class Menu {
 	
-	private final boolean BCF2000 = true;
-	
 	public final static int[] colors = {-8410437,-9998215,-1849945,-5517090,-4250587,-14178341,-5804972,-3498634};
 	
-	private Slider[] sliders;
+	public Slider[] sliders;
 	private PVector location;
 	private Scene scene;
 	private int showTime;
@@ -34,13 +33,16 @@ public class Menu {
 			int sliderId = (int) objects[i][5];
 			int value = (int) objects[i][6];	
 			
-			if(BCF2000) sliders[i].setbehSlider(row, sliderId);
+			if(App.BCF2000) sliders[i].setbehSlider(row, sliderId);
 			sliders[i].initValue(value);
 			
 			scene.params.put(param, value);
 			
 		}
 		
+	}
+	public void reveal(){
+		showTime = 24*2;    
 	}
 	public void display(PApplet p){
 
@@ -54,6 +56,12 @@ public class Menu {
 	    	drawBorders(p, mx, my, mwidth, mheight);
 	    	for (Slider s: sliders) s.display(p);
 	    }
+	}
+	public int getSlidersLength(){
+		return sliders.length;
+	}
+	public void resetBSliders(){	
+		for (Slider s: sliders) s.editBehSliderPos();
 	}
 	private void drawBorders(PApplet p, float mx, float my, float mwidth, float mheight){
 		p.noFill();

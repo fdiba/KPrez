@@ -2,6 +2,7 @@ package webodrome.ctrl;
 
 import processing.core.PApplet;
 import processing.core.PVector;
+import webodrome.App;
 import webodrome.scene.Scene;
 
 public class Slider {
@@ -39,18 +40,25 @@ public class Slider {
 	    color = _color;
 		
 	}
-	void initValue(float val){
+	protected void initValue(float val){
 	    
 		float value = PApplet.map(val, lowValue, maxValue, location.x, location.x+WIDTH);
 		sliderCtrl.setXLocation(value);
-    
-		/*if(menu.BCF2000){
-      
+		    
+		if(App.BCF2000){     
 			int behValue = (int) PApplet.map(val, lowValue, maxValue, 0, 127);
-			behringer.setSliderPosition(row, id, behValue);
-      
-		}*/
+			App.behringer.setSliderPosition(row, id, behValue);
+		}
     
+	}
+	public void editValWithBeh(int value){
+		float xPos = PApplet.map(value, 0, 127, lowXPos, maxYPos);
+	    sliderCtrl.location.x = xPos;
+	    editValue();
+	}
+	protected void editBehSliderPos(){
+		int behValue = (int) PApplet.map(sliderCtrl.location.x, lowXPos, maxYPos, 0, 127);
+	    App.behringer.setSliderPosition(row, id, behValue);
 	}
 	protected void setbehSlider(int _row, int _id){
 	    row = _row;

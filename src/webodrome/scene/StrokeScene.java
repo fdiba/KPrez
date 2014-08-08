@@ -41,9 +41,9 @@ public class StrokeScene extends Scene {
 	}
 	private void createMenu(){	
 		
-		Object[][] objects = { {"blurRadius", 1, 200, menu.colors[0], 0, 0, 2},
-							   {"edgeMinNumber", 0, 500, menu.colors[1], 0, 1, 375},
-							   {"distMin", 0, 100, menu.colors[2], 0, 2, 10} };
+		Object[][] objects = { {"blurRadius", 1, 200, Menu.colors[0], 0, 0, 2},
+							   {"edgeMinNumber", 0, 500, Menu.colors[1], 0, 1, 375},
+							   {"distMin", 0, 100, Menu.colors[2], 0, 2, 10} };
 		
 		menu = new Menu(this, new PVector(450, 50), objects);
 		
