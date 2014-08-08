@@ -76,9 +76,9 @@ public class KPrez extends PApplet {
 	public static void main(String[] args) {		
 		
 		//------- opencv -----------------------//
-		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+		/*System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         Mat m  = Mat.eye(3, 3, CvType.CV_8UC1);
-        System.out.println("m = " + m.dump());
+        System.out.println("m = " + m.dump());*/
 		
 		GraphicsEnvironment gEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] graphicsDevices = gEnvironment.getScreenDevices();
