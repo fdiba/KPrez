@@ -1,8 +1,6 @@
 import java.util.ArrayList;
 
-import blobDetection.Blob;
 import blobDetection.BlobDetection;
-import blobDetection.EdgeVertex;
 import processing.core.PApplet;
 import processing.core.PImage;
 import shiffman.box2d.Box2DProcessing;
@@ -35,7 +33,7 @@ public class BlobScene {
 		image = new PImage(width/value, height/value); //---------- param /5
 		
 		blobDetection = new BlobDetection(image.width, image.height);
-		blobDetection.setPosDiscrimination(true);
+		blobDetection.setPosDiscrimination(true); //find bright areas
 		blobDetection.setThreshold(0.2f); //--------------- param between 0.0f and 1.0f
 		
 		
@@ -66,76 +64,6 @@ public class BlobScene {
 		polygonBlob.createBody(box2dProcessing);
 		polygonBlob.destroyBody(box2dProcessing);
 		
-	}
-	protected void updateK(){
-		
-		PImage cam = kprez.bgrd.getImg();
-		image.copy(cam, 0, 0, cam.width, cam.height, 0, 0, image.width, image.height);
-		
-		for (int i = image.pixels.length - image.width*kprez.yOffset; i < image.pixels.length; i++) {
-			image.pixels[i] = kprez.color(0);
-		}
-		
-		fastblur(image, 2);
-				
-		blobDetection.computeBlobs(image.pixels);
-				
-		//openCV.copy(image);
-		//openCV.threshold(80); //PARAM
-		//blobs = openCV.blobs(10, width*height/2, 10, false);
-		
-	}
-
-	protected void displayK(boolean drawBlobs, boolean drawEdges){
-	
-		Blob blob;
-		EdgeVertex eA, eB;
-		
-		kprez.noFill();
-		
-		for(int n=0; n<blobDetection.getBlobNb(); n++){
-			blob = blobDetection.getBlob(n);
-			if(blob != null){ //param && blob.getEdgeNb(); > 100
-				
-				if(drawEdges){
-					kprez.strokeWeight(3);
-					kprez.stroke(kprez.colors.get(1));
-					
-					for(int m=0; m<blob.getEdgeNb(); m++){
-						eA = blob.getEdgeVertexA(m);
-						eB = blob.getEdgeVertexB(m);
-						if(eA != null && eB != null) kprez.line(eA.x*width, eA.y*height, eB.x*width, eB.y*height);
-					}	
-				}
-				
-				if(drawBlobs){
-					kprez.strokeWeight(1);
-					kprez.stroke(kprez.colors.get(0));
-					kprez.rect(blob.xMin*width, blob.yMin*height, blob.w*width, blob.h*height);
-				}
-			
-			}
-		}
-	}
-	protected void display(){
-		
-		//kprez.image( testImage, 0, 0);
-		
-		/*kprez.noFill();
-		kprez.stroke(kprez.colors.get(1));
-		
-		for( int i=0; i<blobs.length; i++ ) {
-			
-		    kprez.beginShape();
-		        
-	        for( int j=0; j<blobs[i].points.length; j++ ) {
-	        	
-	            kprez.vertex(blobs[i].points[j].x, blobs[i].points[j].y);
-	            
-	        }
-	        
-	        kprez.endShape(PApplet.CLOSE);
-	    }*/
 	}
 	protected void updateAndDrawBox2D(){
 		

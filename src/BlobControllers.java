@@ -10,9 +10,11 @@ public class BlobControllers extends Controllers {
 		super(_kprez, _location);
 		sliders = new ArrayList<Slider>();
 		sliders.add(new Slider(kprez, new PVector(location.x, location.y + 15*sliders.size()), "frameRateValue", 0, 30, colors[0]));
-		sliders.get(0).initValue(15);
+		sliders.get(sliders.size()-1).initValue(15);
+		kprez.frameRateValue = 15;
 		sliders.add(new Slider(kprez, new PVector(location.x, location.y + 15*sliders.size()), "yOffset", 0, 10, colors[1]));
-		sliders.get(0).initValue(1);
+		sliders.get(sliders.size()-1).initValue(1);
+		kprez.yOffset = 1;
 	}
 
 }

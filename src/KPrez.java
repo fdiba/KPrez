@@ -5,12 +5,15 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 
-import javax.lang.model.element.Element;
-import javax.management.monitor.Monitor;
-
 import ddf.minim.*;
 import SimpleOpenNI.SimpleOpenNI;
 import processing.core.*;
+import webodrome.ctrl.BehringerBCF;
+import webodrome.scene.StrokeScene;
+
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
+import org.opencv.core.Mat;
 
 @SuppressWarnings("serial")
 public class KPrez extends PApplet {
@@ -31,6 +34,8 @@ public class KPrez extends PApplet {
 	
 	protected BlobScene bScene;
 	protected BlobControllers blobCtrl;
+	
+	protected StrokeScene strokeScene;
 	
 	protected Background bgrd;
 	protected BackgroundControllers bgrdCtrl;
@@ -59,8 +64,15 @@ public class KPrez extends PApplet {
 	
 	private boolean fs;
 	private static Rectangle monitor;
+	
+	private BehringerBCF behringerBCF;
 
-	public static void main(String[] args) {
+	public static void main(String[] args) {		
+		
+		//------- opencv -----------------------//
+		System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+        Mat m  = Mat.eye(3, 3, CvType.CV_8UC1);
+        System.out.println("m = " + m.dump());
 		
 		GraphicsEnvironment gEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
 		GraphicsDevice[] graphicsDevices = gEnvironment.getScreenDevices();
@@ -99,10 +111,6 @@ public class KPrez extends PApplet {
 			size(640, 480, OPENGL);
 		}
 		
-		//size(640, 480, OPENGL);
-		//frameRate(1);
-		//size(displayWidth, displayHeight);
-		
 		context = new SimpleOpenNI(this);
 		if (context.isInit() == false) {
 			println("Can't init SimpleOpenNI, maybe the camera is not connected!"); 
@@ -116,18 +124,26 @@ public class KPrez extends PApplet {
 			context.enableRGB();
 			
 			setColors();
-			resolutionId = 1;
+			resolutionId = 0;
 			resolution = resolutions[resolutionId];
 			
-			sceneId = 0;
-			//sceneId = 6;
+			//sceneId = 0;
+			sceneId = 5;
 			
 			minim = new Minim(this);		
+			
+			behringerBCF = new BehringerBCF();
+			
 			menu = new Menu(this);
 			
 			//bureau
-			lowestValue = 950;
-			highestValue = 2300;
+			//lowestValue = 950;
+			//highestValue = 2300;
+			
+			//upem
+			lowestValue = 1050;
+			highestValue = 2050;
+			
 			
 			//salon
 			//lowestValue = 1700;
@@ -218,7 +234,9 @@ public class KPrez extends PApplet {
 			break;
 		case 3:
 			gi.update();
+			
 			if (sceneId != oldSceneId) ptp.init();
+			
 			if(gi.isTracked && ptp.counter <= 0) ptp.testScreenDisplay();
 			bgrd.update("3D");
 			bgrdCtrl.update();
@@ -250,35 +268,37 @@ public class KPrez extends PApplet {
 			popMatrix();
 			bgrdCtrl.display();
 			break;
-		case 5:
-			gi.update();
-			bgrd.update("depthImage");
-			
-			bScene.updateK(); //1
-			blobCtrl.update();
-			
-			bgrd.display();
-
-			bScene.displayK(false, true);
-			blobCtrl.display();			
-		
-			gi.display();
-			
-			break;
 		case 6:
 			gi.update();
 			bgrd.update("depthImage");
+			
 			bScene.update(); //1
 			blobCtrl.update();
 
 			//bgrd.display();
-			//bScene.displayK(false, true);
 						
 			bScene.displayUser();
 			
 			bScene.updateAndDrawBox2D(); //2
 			blobCtrl.display();	
 			gi.display();
+			break;
+		case 5:
+			
+			if (sceneId != oldSceneId) strokeScene = new StrokeScene(this, 640, 480);
+			
+			gi.update();
+			bgrd.update("depthImage");
+			
+			strokeScene.update(bgrd.getImg()); //1
+						
+			bgrd.display();
+			
+			strokeScene.display();
+			strokeScene.displayMiniature();
+		
+			gi.display();
+			
 			break;
 		default:
 			firstScene();
@@ -349,6 +369,15 @@ public class KPrez extends PApplet {
 	public void mouseReleased(){
 		bgrdCtrl.resetSliders();
 		blobCtrl.resetSliders();
+		
+		switch (sceneId) {
+		case 5:
+			strokeScene.menu.resetSliders();
+			break;
+		default:
+			break;
+		}
+		
 	}
 	// SimpleOpenNI events
 	public void onNewUser(SimpleOpenNI curContext, int userId) {

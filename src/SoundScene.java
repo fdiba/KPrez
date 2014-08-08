@@ -8,9 +8,9 @@ public class SoundScene {
 	
 	public SoundScene(KPrez _parent) {
 		kprez = _parent;
-		PVector[]pvectors = {new PVector(-300, 0, kprez.gi.getLowestValue() + 1000),
-							 new PVector(0, 0, kprez.gi.getLowestValue() + 1000),
-							 new PVector(300, 0, kprez.gi.getLowestValue() + 1000)};
+		PVector[]pvectors = {new PVector(-300, -150, kprez.gi.getLowestValue() + 1000),
+							 new PVector(0, -150, kprez.gi.getLowestValue() + 1000),
+							 new PVector(300, -150, kprez.gi.getLowestValue() + 1000)};
 		
 		/*PVector[]pvectors = {new PVector(-300, 200, kprez.gi.getLowestValue() + 120),
 				 new PVector(0, 200, kprez.gi.getLowestValue() + 120),

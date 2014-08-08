@@ -16,7 +16,7 @@ public class PointsToPics {
 	public PointsToPics(KPrez _parent){
 		
 		parent = _parent;
-		
+		counter = 48;
 		boardId = 0;
 		
 		boards = new ArrayList<Board>();

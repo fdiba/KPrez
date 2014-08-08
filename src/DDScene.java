@@ -12,7 +12,8 @@ public class DDScene {
 
 		for(int i=0; i<paths.length; i++){
 			String path = "assets/" + paths[i];
-			images[i] = new ISprite(kprez, 100+100*i, 100, path);
+			//images[i] = new ISprite(kprez, 100+100*i, 100, path);
+			images[i] = new ISprite(kprez, 100+100*i, 200, path);
 		}
 	
 	}

@@ -45,9 +45,9 @@ public class Slider {
 		} 
 		
 	}
-	protected void initValue(int _value){
+	protected void initValue(float f){
 		
-		float value = PApplet.map(_value, lowValue, maxValue, location.x, location.x+width);
+		float value = PApplet.map(f, lowValue, maxValue, location.x, location.x+width);
 		sliderCtrl.location.x = value;
 		
 		//sliderCtrl.location.x = location.x + _x;
