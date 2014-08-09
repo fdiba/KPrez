@@ -15,10 +15,6 @@ import webodrome.App;
 import webodrome.ctrl.BehringerBCF;
 import webodrome.scene.StrokeScene;
 
-import org.opencv.core.Core;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-
 @SuppressWarnings("serial")
 public class KPrez extends PApplet {
 	
@@ -35,11 +31,9 @@ public class KPrez extends PApplet {
 	private DDScene ddScene;
 	protected SoundScene soundScene;
 	private FaceScene fScene;
-	
-	protected BlobScene bScene;
-	protected BlobControllers blobCtrl;
-	
+
 	protected StrokeScene strokeScene;
+	protected StrokeScene box2DScene;
 	
 	protected Background bgrd;
 	protected BackgroundControllers bgrdCtrl;
@@ -133,8 +127,8 @@ public class KPrez extends PApplet {
 			resolutionId = 0;
 			resolution = resolutions[resolutionId];
 			
-			//sceneId = 0;
-			sceneId = 5;
+			sceneId = 0;
+			//sceneId = 6;
 			
 			minim = new Minim(this);		
 			
@@ -177,9 +171,6 @@ public class KPrez extends PApplet {
 			ptp = new PointsToPics(this);
 			//scene 4
 			fScene = new FaceScene(this);
-			//scene 4
-			bScene = new BlobScene(this);
-			blobCtrl = new BlobControllers(this, new PVector(450, 50));
 		
 			System.out.println("depthmap controllers : UP | DOWN | l to toggle" + "\n" +
 							"press n for next resolution");
@@ -214,9 +205,21 @@ public class KPrez extends PApplet {
 		
 		switch (sceneId) {
 		case 0:
+			
+			if (sceneId != oldSceneId) {
+				oldSceneId = sceneId;
+			}
+			
+			
 			firstScene();
 			break;
 		case 1:	
+			
+			if (sceneId != oldSceneId) {
+				oldSceneId = sceneId;
+			}
+			
+			
 			gi.update();
 			bgrd.update("depthImage");
 			ddScene.testCollision();
@@ -226,6 +229,11 @@ public class KPrez extends PApplet {
 			gi.display();
 			break;
 		case 2:
+			
+			if (sceneId != oldSceneId) {
+				oldSceneId = sceneId;
+			}
+			
 			gi.update();
 			soundScene.reinit(); //1
 			bgrd.update("3D"); //2
@@ -243,9 +251,16 @@ public class KPrez extends PApplet {
 			
 			break;
 		case 3:
-			gi.update();
 			
-			if (sceneId != oldSceneId) ptp.init();
+			if (sceneId != oldSceneId) {
+				oldSceneId = sceneId;
+			}
+			
+			gi.update();
+				
+			if (sceneId != oldSceneId) {
+				ptp.init();
+			}
 			
 			if(gi.isTracked && ptp.counter <= 0) ptp.testScreenDisplay();
 			bgrd.update("3D");
@@ -268,6 +283,12 @@ public class KPrez extends PApplet {
 			bgrdCtrl.display();
 			break;
 		case 4:
+			
+			
+			if (sceneId != oldSceneId) {	
+				oldSceneId = sceneId;
+			}
+			
 			gi.update();
 			fScene.update();
 			bgrdCtrl.update();
@@ -278,26 +299,19 @@ public class KPrez extends PApplet {
 			popMatrix();
 			bgrdCtrl.display();
 			break;
-		case 6:
-			gi.update();
-			bgrd.update("depthImage");
-			
-			bScene.update(); //1
-			blobCtrl.update();
-
-			//bgrd.display();
-						
-			bScene.displayUser();
-			
-			bScene.updateAndDrawBox2D(); //2
-			blobCtrl.display();	
-			gi.display();
-			break;
 		case 5:
 			
 			if (sceneId != oldSceneId) {
-				strokeScene = new StrokeScene(this, 640, 480);
+				
+				Object[][] objects = { {"blurRadius", 1, 200, App.colors[0], 0, 0, 2},
+						   {"edgeMinNumber", 0, 1000, App.colors[1], 0, 1, 375},
+						   {"distMin", 1, 100, App.colors[2], 0, 2, 10},
+						   {"borderOffset", 0, 100, App.colors[3], 0, 3, 1} };
+				
+				strokeScene = new StrokeScene(this, objects, false);
 				App.setActualScene(strokeScene);
+								
+				oldSceneId = sceneId;
 			}
 			
 			gi.update();
@@ -308,16 +322,52 @@ public class KPrez extends PApplet {
 			bgrd.display();
 			
 			strokeScene.display();
+			strokeScene.displayMenu();
 			strokeScene.displayMiniature();
 		
 			gi.display();
 			
 			break;
+			
+		case 6:
+			
+			if (sceneId != oldSceneId) {
+				
+				Object[][] objects = { {"blurRadius", 1, 200, App.colors[0], 0, 0, 2},
+						   {"edgeMinNumber", 0, 1000, App.colors[1], 0, 1, 375},
+						   {"distMin", 1, 100, App.colors[2], 0, 2, 10},
+						   {"borderOffset", 0, 100, App.colors[3], 0, 3, 1},
+						   {"frameRateValue", 0, 30, App.colors[4], 0, 4, 17} };
+				
+				box2DScene = new StrokeScene(this, objects, true);
+				App.setActualScene(box2DScene);
+				
+				oldSceneId = sceneId;
+			}
+			
+			gi.update();
+			bgrd.update("depthImage");
+			
+			box2DScene.update(bgrd.getImg()); //1
+			
+			box2DScene.displayUser();
+			
+			box2DScene.updateAndDrawBox2D();
+			
+			box2DScene.displayMenu();
+
+			box2DScene.displayMiniature();
+			
+			gi.display();
+			
+			break;
+			
 		default:
 			firstScene();
 			break;
 		}
-		oldSceneId = sceneId;
+		
+		
 	}
 	private void pointAndMoveInTheRightDirection(){
 		translate(width/2 + xTrans, height/2, zTrans);
@@ -388,12 +438,15 @@ public class KPrez extends PApplet {
 	}
 	//---- mouse ----//
 	public void mouseReleased(){
+		
 		bgrdCtrl.resetSliders();
-		blobCtrl.resetSliders();
 		
 		switch (sceneId) {
 		case 5:
 			strokeScene.menu.resetSliders();
+			break;
+		case 6:
+			box2DScene.menu.resetSliders();
 			break;
 		default:
 			break;

@@ -1,7 +1,10 @@
 package webodrome.scene;
 
+import webodrome.App;
+import webodrome.PolygonBlob;
+import webodrome.CustomShape;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import blobDetection.Blob;
 import blobDetection.BlobDetection;
@@ -9,28 +12,29 @@ import blobDetection.EdgeVertex;
 import processing.core.PApplet;
 import processing.core.PImage;
 import processing.core.PVector;
-import webodrome.ctrl.Menu;
+import shiffman.box2d.Box2DProcessing;
+import toxi.processing.ToxiclibsSupport;
 
 public class StrokeScene extends Scene {
 	
 	private PImage bImg;
 	private BlobDetection blobDetection;
 	private ArrayList<ArrayList<PVector>> contours;
+	private boolean box2D;
 	
-	public StrokeScene(PApplet p, int w, int h) {
+	//----- box2D & Toxiclibs ----------//
+	private ToxiclibsSupport toxiclibsSupport;
+	private Box2DProcessing box2dProcessing;
+	private ArrayList<CustomShape> polygons;
+	private PolygonBlob polygonBlob;
+	
+	public StrokeScene(PApplet p, Object[][] objects, boolean _box2D) {
 		
-		PApplet.println("init StrokeScene");
-		
-		params = new HashMap<String, Integer>();
-		params.put("blurRadius", 0);
-		params.put("edgeMinNumber", 0);
-		params.put("distMin", 0);
-		
-		createMenu();
+		super(objects);
 		
 		pApplet = p;
-		width = w;
-		height = h;
+		width = App.width;
+		height = App.height;
 		
 		bImg = new PImage(width/2, height/2);
 		
@@ -38,15 +42,18 @@ public class StrokeScene extends Scene {
 		blobDetection.setPosDiscrimination(true); //find bright areas
 		blobDetection.setThreshold(0.2f); //between 0.0f and 1.0f
 		
-	}
-	private void createMenu(){	
+		box2D = _box2D;
 		
-		Object[][] objects = { {"blurRadius", 1, 200, Menu.colors[0], 0, 0, 2},
-							   {"edgeMinNumber", 0, 500, Menu.colors[1], 0, 1, 375},
-							   {"distMin", 0, 100, Menu.colors[2], 0, 2, 10} };
-		
-		menu = new Menu(this, new PVector(450, 50), objects);
-		
+		if(box2D){
+			
+			toxiclibsSupport = new ToxiclibsSupport(p);
+			box2dProcessing = new Box2DProcessing(p);
+			box2dProcessing.createWorld();
+			box2dProcessing.setGravity(0, -20); //--------------------------- param
+			
+			polygons = new ArrayList<CustomShape>();
+			
+		}
 		
 	}
 	public void display(){
@@ -70,36 +77,123 @@ public class StrokeScene extends Scene {
 		    
 		    pApplet.endShape(PApplet.CLOSE);
 		}
-		
-		menu.display(pApplet);
 
 	}
+	public void displayMenu(){
+		menu.display(pApplet);
+	}
 	public void displayMiniature(){
+		
+		int alpha = 0;
+		
+		if(menu.showTime > 0){
+			alpha = 255;
+		} else {
+			alpha = 0;
+		}
+		
+		pApplet.tint(255, alpha);
+		
 		pApplet.image(bImg, 0, 0);
+		
+		pApplet.tint(255, 255);
 	}
 	public void update(PImage depthImg){
 		
 		bImg.copy(depthImg, 0, 0, depthImg.width, depthImg.height, 0, 0, bImg.width, bImg.height);
 		fastblur(bImg, params.get("blurRadius"));
 		
-		createBlackBorder();
+		createBlackBorders();
 		
 		blobDetection.computeBlobs(bImg.pixels);
+		
 		createContours();
+		
+		if(box2D){
+			// WARNING only the biggest shape is displayed
+			polygonBlob = new PolygonBlob();
+			polygonBlob.create(blobDetection, contours);
+			polygonBlob.createBody(box2dProcessing);
+			polygonBlob.destroyBody(box2dProcessing);	
+		}
 		
 		menu.update(pApplet);
 		
 	}
-	private void createBlackBorder(){
+	public void updateAndDrawBox2D(){
+		
+		if(box2D){
+		
+			if (pApplet.frameRate > params.get("frameRateValue")) {
+				polygons.add(new CustomShape(pApplet, toxiclibsSupport, box2dProcessing, width/2, -50, -1));
+			    polygons.add(new CustomShape(pApplet, toxiclibsSupport, box2dProcessing, width/2, -50, pApplet.random((float) 2.5, 20)));
+			}
+			
+			box2dProcessing.step();	
+				
+			updateAndDisplayShapes();
+		
+		}
+		
+	}
+	private void updateAndDisplayShapes(){
+		for (int i = polygons.size()-1; i>0; i--) {
+			CustomShape customShape = polygons.get(i);
+			if(customShape.done()){
+				polygons.remove(i);
+			} else {
+				customShape.update(polygonBlob);
+				customShape.display();
+			}
+		}
+	}
+	public void displayUser(){
+		
+		if(box2D){
+		
+			pApplet.noStroke();
+			pApplet.rectMode(PApplet.CORNER);
+			pApplet.fill(pApplet.color(238, 241, 232)); //beige
+			pApplet.rect(0, 0, width, height);
+			
+			pApplet.fill(pApplet.color(47, 52, 54));
+			toxiclibsSupport.polygon2D(polygonBlob);
+			
+		}
+	}
+	private void createBlackBorders(){
 		  
 	  bImg.loadPixels();
 	  
-	  for(int j=bImg.height-1; j<bImg.height; j++){
-		  
+	  int offset = params.get("borderOffset");
+	  int color = (0 << 16) | (0 << 8) | 0;
+	  
+	  //top border
+	  for(int j=0; j<offset; j++){
 		  for(int i=0; i<bImg.width; i++){
-			  bImg.pixels[i+j*bImg.width] = pApplet.color(0);    
+			  bImg.pixels[i+j*bImg.width] = color;    
 		  }
-	    
+	  }
+	
+	  //right border
+	  for(int i=0; i<offset; i++){
+		  for(int j=0; j<bImg.height; j++){
+			  bImg.pixels[i+j*bImg.width] = color;    
+		  }
+	  }
+	  
+	  //bottom border
+	  for(int j=bImg.height-offset; j<bImg.height; j++){
+		  for(int i=0; i<bImg.width; i++){
+			  bImg.pixels[i+j*bImg.width] = color;    
+		  }
+	  }
+	
+	  //left border
+	  for(int i=bImg.width-offset; i<bImg.width; i++){
+		  for(int j=0; j<bImg.height; j++){
+			  bImg.pixels[i+j*bImg.width] = color;    
+		  }
 	  }
 	  
 	  bImg.updatePixels();

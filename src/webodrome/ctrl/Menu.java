@@ -7,12 +7,13 @@ import webodrome.scene.Scene;
 
 public class Menu {
 	
-	public final static int[] colors = {-8410437,-9998215,-1849945,-5517090,-4250587,-14178341,-5804972,-3498634};
-	
 	public Slider[] sliders;
+	
 	private PVector location;
 	private Scene scene;
-	private int showTime;
+	
+	public int showTime;
+	private final int SHOWTIME_MAX = 24*2;
 	
 	public Menu(Scene _scene, PVector _loc, Object[][] objects){
 		
@@ -42,7 +43,7 @@ public class Menu {
 		
 	}
 	public void reveal(){
-		showTime = 24*2;    
+		showTime = SHOWTIME_MAX;    
 	}
 	public void display(PApplet p){
 
@@ -67,7 +68,7 @@ public class Menu {
 		p.noFill();
 		p.rectMode(PApplet.CORNER);
 		p.strokeWeight(1);
-		p.stroke(colors[4], 127);
+		p.stroke(App.colors[4], 127);
 		p.rect(mx, my, mwidth,  15*(sliders.length+1));  
 	}
 	public void resetSliders(){

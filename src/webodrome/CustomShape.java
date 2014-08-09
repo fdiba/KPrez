@@ -1,3 +1,5 @@
+package webodrome;
+
 import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
@@ -6,6 +8,7 @@ import org.jbox2d.dynamics.BodyDef;
 import org.jbox2d.dynamics.BodyType;
 import org.jbox2d.dynamics.FixtureDef;
 
+import processing.core.PApplet;
 import shiffman.box2d.Box2DProcessing;
 import toxi.geom.Circle;
 import toxi.geom.Polygon2D;
@@ -14,28 +17,27 @@ import toxi.processing.ToxiclibsSupport;
 
 public class CustomShape {
 	
-	private KPrez kprez;
+	private PApplet pApplet;
 	private float radius;
 	private int color;
 	private Box2DProcessing box2dProcessing;
 	private Body body;
 	private Polygon2D polygon2d; //toxi polygon
-	private int[] colors = {-1117720,-13683658,-8410437,-9998215,-1849945,-5517090,-4250587,-14178341,-5804972,-3498634};
+	private int[] colors = {-8410437,-9998215,-1849945,-5517090,-4250587,-14178341,-5804972,-3498634};
 	
 	private ToxiclibsSupport toxiclibsSupport;
 	
-	public CustomShape(KPrez _kprez, ToxiclibsSupport _toxiclibsSupport, Box2DProcessing _box2dProcessing, float x, float y, float _radius) {
+	public CustomShape(PApplet _pApplet, ToxiclibsSupport _toxiclibsSupport, Box2DProcessing _box2dProcessing, float x, float y, float _radius){
 		
-		kprez = _kprez;
+		pApplet = _pApplet;
 		box2dProcessing = _box2dProcessing;
 		radius = _radius;
 		makeBody(x, y);
-		//color = kprez.color(255, 0, 0);
-		color = colors[(int) kprez.random(0, colors.length-1)];
+		color = colors[(int) pApplet.random(0, colors.length-1)];
 		toxiclibsSupport = _toxiclibsSupport;
 		
 	}
-	protected boolean done(){
+	public boolean done(){
 		Vec2 posScreen = box2dProcessing.getBodyPixelCoord(body); //jbox2d
 		boolean offscreen = posScreen.y > 480; //----- edit it ---------//
 		if(offscreen) {
@@ -44,7 +46,7 @@ public class CustomShape {
 		}
 		return false;
 	}
-	protected void update(PolygonBlob poly){
+	public void update(PolygonBlob poly){
 		
 		
 		Vec2 posScreen = box2dProcessing.getBodyPixelCoord(body);
@@ -78,27 +80,27 @@ public class CustomShape {
 	    }
 		
 	}
-	protected void display(){
+	public void display(){
 		
 		Vec2 pos = box2dProcessing.getBodyPixelCoord(body);
 		
-		kprez.pushMatrix();
+		pApplet.pushMatrix();
 		
-			kprez.translate(pos.x, pos.y);
-			kprez.noStroke();
-			kprez.fill(color);
+			pApplet.translate(pos.x, pos.y);
+			pApplet.noStroke();
+			pApplet.fill(color);
 			
 			if(radius == -1){ //polygon
 				
 				float a = body.getAngle();
-				kprez.rotate(-a);
+				pApplet.rotate(-a);
 				toxiclibsSupport.polygon2D(polygon2d);
 				
 			} else {
-				kprez.ellipse(0, 0, radius*2, radius*2);
+				pApplet.ellipse(0, 0, radius*2, radius*2);
 			}
 		
-		kprez.popMatrix();
+			pApplet.popMatrix();
 		
 	}
 	private void makeBody(float x, float y){
@@ -108,13 +110,13 @@ public class CustomShape {
 		bodyDef.position.set(box2dProcessing.coordPixelsToWorld(new Vec2(x, y)));
 		
 		body = box2dProcessing.createBody(bodyDef);
-		body.setLinearVelocity(new Vec2(kprez.random(-8, 8), kprez.random(2, 8)));
-		body.setAngularVelocity(kprez.random(-5, 5));
+		body.setLinearVelocity(new Vec2(pApplet.random(-8, 8), pApplet.random(2, 8)));
+		body.setAngularVelocity(pApplet.random(-5, 5));
 		
 		if(radius == -1){ //polygon
 		
 			PolygonShape polygonShape = new PolygonShape();
-			polygon2d = new Circle(kprez.random(5, 20)).toPolygon2D((int) kprez.random(3, 6));
+			polygon2d = new Circle(pApplet.random(5, 20)).toPolygon2D((int) pApplet.random(3, 6));
 			
 			Vec2[] vertices = new Vec2[polygon2d.getNumPoints()]; //jbox2d
 			
@@ -141,5 +143,4 @@ public class CustomShape {
 		}
 		
 	}
-
 }
