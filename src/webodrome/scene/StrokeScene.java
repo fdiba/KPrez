@@ -129,8 +129,7 @@ public class StrokeScene extends Scene {
 			    polygons.add(new CustomShape(pApplet, toxiclibsSupport, box2dProcessing, width/2, -50, pApplet.random((float) 2.5, 20)));
 			}
 			
-			box2dProcessing.step();	
-				
+			box2dProcessing.step();		
 			updateAndDisplayShapes();
 		
 		}
@@ -148,18 +147,20 @@ public class StrokeScene extends Scene {
 		}
 	}
 	public void displayUser(){
-		
 		if(box2D){
-		
+			//drawBackground();
 			pApplet.noStroke();
-			pApplet.rectMode(PApplet.CORNER);
 			pApplet.fill(pApplet.color(238, 241, 232)); //beige
-			pApplet.rect(0, 0, width, height);
-			
-			pApplet.fill(pApplet.color(47, 52, 54));
 			toxiclibsSupport.polygon2D(polygonBlob);
-			
 		}
+	}
+	@SuppressWarnings("unused")
+	private void drawBackground(){	
+		pApplet.noStroke();
+		pApplet.rectMode(PApplet.CORNER);
+		int c =  (255 << 24) | (47 << 16) | (52 << 8) | 54;
+		pApplet.fill(c);
+		pApplet.rect(0, 0, width, height);
 	}
 	private void createBlackBorders(){
 		  

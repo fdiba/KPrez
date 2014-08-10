@@ -23,7 +23,8 @@ public class CustomShape {
 	private Box2DProcessing box2dProcessing;
 	private Body body;
 	private Polygon2D polygon2d; //toxi polygon
-	private int[] colors = {-8410437,-9998215,-1849945,-5517090,-4250587,-14178341,-5804972,-3498634};
+	
+	private int[] colors = {-1117720,-13683658,-8410437,-9998215,-1849945,-5517090,-4250587,-14178341,-5804972,-3498634};
 	
 	private ToxiclibsSupport toxiclibsSupport;
 	
@@ -33,7 +34,7 @@ public class CustomShape {
 		box2dProcessing = _box2dProcessing;
 		radius = _radius;
 		makeBody(x, y);
-		color = colors[(int) pApplet.random(0, colors.length-1)];
+		color = colors[(int) pApplet.random(1, colors.length-1)];
 		toxiclibsSupport = _toxiclibsSupport;
 		
 	}

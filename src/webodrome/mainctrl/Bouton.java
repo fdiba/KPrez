@@ -1,12 +1,15 @@
+package webodrome.mainctrl;
+
 import processing.core.PApplet;
 import processing.core.PVector;
+import webodrome.App;
 
 public class Bouton {
 	
-	private KPrez kprez;
-	protected int hits;
-	protected PVector location;
-	protected int width;
+	protected PApplet pApplet;
+	public int hits;
+	public PVector location;
+	public int width;
 	protected int height;
 	protected int alpha;
 	protected int a_speed;
@@ -18,49 +21,40 @@ public class Bouton {
 	protected boolean isAvailable;
 	protected int spId;
 	
-	public Bouton(KPrez _kprez, float _x, float _y, int _width) {
-		kprez = _kprez;
-		location = new PVector(_x, _y);
+	public Bouton(PApplet _pApplet, PVector loc, int _width) { //cercle
+		pApplet = _pApplet;	
+		location = loc.get();
 		width = _width;
-		couleur = kprez.colors.get(3);
+		couleur = App.colorsPanel[3];
 		alpha = 0;
 		a_speed = 5;
 		isAvailable = true;
 	}
-	
-	public Bouton(KPrez _kprez, float _x, float _y, int _width, int _height, boolean _isRect) {
-		
-		kprez = _kprez;
-				
+	public Bouton(PApplet _pApplet, float _x, float _y, int _width, int _height, boolean _isRect) {
+		pApplet = _pApplet;
 		location = new PVector(_x, _y);
 		width = _width;
 		height = _height;
-		
-		couleur = kprez.color(255, 133, 18);
-		
+		couleur = pApplet.color(255, 133, 18);
 		alpha = 0;
 		a_speed = 5;
-		
 		isRect = _isRect;
-		
 	}
 	
-	protected void testCollision(SmartPoint _sp){
+	public void testCollision(GesturalInterface gi, SmartPoint _sp){
 		
 		if(!_sp.isTaken){
 			
 			float distance = PApplet.dist(location.x, location.y, _sp.location.x, _sp.location.y);
-			//float distance = location.dist(_sp.location); // doesn't work ?!
-					
+			
 			if(!isRect){
-				if(distance <= width/2 && kprez.gi.isInPlace()) collisionWith(_sp);
+				if(distance <= width/2 && gi.isInPlace()) collisionWith(_sp);
 			} else {
 				//drag and drop scene
 				if(_sp.location.x > location.x &&  _sp.location.x < location.x + width &&
-				   _sp.location.y > location.y &&  _sp.location.y < location.y + height && kprez.gi.isInPlace() && isAvailable){
+				   _sp.location.y > location.y &&  _sp.location.y < location.y + height && gi.isInPlace() && isAvailable){
 					collisionWith(_sp);
 				} else if (distance >= width && _sp.id == spId && !isAvailable) {
-					//PApplet.println(kprez.random(10000));
 					isAvailable = true;
 				}
 			}
@@ -74,15 +68,15 @@ public class Bouton {
 		if(alpha>0)alpha -= a_speed;
 		if(alpha<0)alpha = 0;
 	}
-	protected void update(){
+	public void update(GesturalInterface gi){ //watch class that extend it!!
 		
 		if(hits>0) {
-			hasBeenSelected();
+			hasBeenSelected(gi);
 		} else {
 			deactivate();
 		}		
 	}
-	protected void hasBeenSelected(){
+	protected void hasBeenSelected(GesturalInterface gi){
 		
 		if(alpha < 255){
 			alpha += a_speed;
@@ -92,9 +86,10 @@ public class Bouton {
 		}
 	}
 	protected void display() {
-		kprez.strokeWeight(3);
-		kprez.stroke(couleur);
-		kprez.fill(255, 255, 255, alpha);
-		kprez.ellipse(location.x, location.y, width, width);
+		pApplet.strokeWeight(3);
+		pApplet.stroke(couleur);
+		pApplet.fill(255, 255, 255, alpha);
+		pApplet.ellipse(location.x, location.y, width, width);
 	}
 }
+

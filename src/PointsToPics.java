@@ -1,7 +1,10 @@
 
 import java.util.ArrayList;
+
+import SimpleOpenNI.SimpleOpenNI;
 import processing.core.PApplet;
 import processing.core.PVector;
+import webodrome.mainctrl.GesturalInterface;
 
 public class PointsToPics {
 	
@@ -28,16 +31,16 @@ public class PointsToPics {
 	protected void init(){
 		counter = 48;
 	}
-	protected void testScreenDisplay() {
+	protected void testScreenDisplay(SimpleOpenNI context, GesturalInterface gi) {
 		
-		PVector rightHand = parent.gi.rightHand();
-		PVector leftHand = parent.gi.leftHand();
-		PVector torso = parent.gi.torso();
+		PVector rightHand = gi.getRightHand();
+		PVector leftHand = gi.getLeftHand();
+		PVector torso = gi.getTorsoPos(context, gi);
 		
 		float distBetweenHands = PApplet.dist(rightHand.x, rightHand.y, rightHand.z, leftHand.x, leftHand.y, leftHand.z);
 		//PApplet.println(distance);
 		
-		PVector pointBetweenHands = parent.gi.middlePoint(rightHand, leftHand);
+		PVector pointBetweenHands = gi.middlePoint(rightHand, leftHand);
 		
 		float distFromTorso = PApplet.dist(pointBetweenHands.x, pointBetweenHands.y, pointBetweenHands.z, torso.x, torso.y, torso.z);
 		
@@ -79,12 +82,12 @@ public class PointsToPics {
 	protected void display() {
 		
 	}
-	public void displayScreen() {
+	public void displayScreen(GesturalInterface gi) {
 		
 		Board board = boards.get(boardId);
 		
 		if(timeToBeDisplayed >= 255-55){
-			board.setLocation3d(parent.gi.getMiddlePoint());
+			board.setLocation3d(gi.getMiddlePoint());
 		}
 		board.display(timeToBeDisplayed);
 	}

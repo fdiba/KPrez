@@ -1,46 +1,47 @@
+package webodrome;
 
 import processing.core.PApplet;
 import processing.core.PImage;
 import processing.core.PVector;
+import webodrome.mainctrl.GesturalInterface;
 
-public class ISprite extends Bouton{
+public class ISprite extends webodrome.mainctrl.Bouton {
 	
 	private String path;
 	private PImage img;
-	protected boolean isDragged;
+	public boolean isDragged;
 	private int timeToMove;
 	private PVector lastLocation;
-	private KPrez kprez;
 	
-	public ISprite(KPrez _kprez, float _x, float _y, String _path){
+	public ISprite(PApplet _pApplet, float _x, float _y, String _path, int c){
 		
-		super(_kprez, _x, _y, 75, 75, true);
-		kprez = _kprez;
+		super(_pApplet, _x, _y, 75, 75, true);
+				
 		path = _path;
-		img = kprez.loadImage(path);
+		img = pApplet.loadImage(path);
 		width = img.width;
 		height = img.height;
-		couleur = kprez.colors.get(4); //border
+		couleur = c; //border
 		lastLocation = location.get();
 		isAvailable = true;
 		spId = 9999;
 	}
-	protected void hasBeenSelected(){
+	protected void hasBeenSelected(GesturalInterface gi){
 		
 		if(alpha < 255){
 			alpha += a_speed;
 		} else if (alpha >= 255){
 			isDragged = true;
 			isAvailable = false;
-			couleur = kprez.colors.get(3);
+			couleur = App.colorsPanel[3];
 			alpha = 0;
-			lastSelector.take(this);
+			lastSelector.take();
 			spId = lastSelector.id;
 			timeToMove = 250;
-			followSmartPoint();
+			followSmartPoint(gi);
 		}		
 	}
-	protected void followSmartPoint() {
+	public void followSmartPoint(GesturalInterface gi) {
 		
 		location.x = lastSelector.location.x - width/2;
 		location.y = lastSelector.location.y - height/2;
@@ -48,7 +49,7 @@ public class ISprite extends Bouton{
 		float distance = location.dist(lastLocation);
 		//PApplet.println(distance + "    " + timeToMove);
 		
-		if(distance < 5 || !kprez.gi.isInPlace()){
+		if(distance < 5 || !gi.isInPlace()){
 			timeToMove -=5;
 		} else {
 			timeToMove +=5;
@@ -64,15 +65,14 @@ public class ISprite extends Bouton{
 	}
 	protected void stopfollowSmartPoint() {
 		timeToMove = 0;
-		lastSelector.free(this);
+		lastSelector.free();
 		isDragged = false;
-		couleur = kprez.colors.get(4);
+		couleur = App.colorsPanel[4];
 	}
-	protected void display(){
-		kprez.image(img, location.x, location.y);
+	public void display(){
+		pApplet.image(img, location.x, location.y);
 		
-		//pApplet.noFill();
-		kprez.fill(kprez.colors.get(0), alpha);
+		pApplet.fill(App.colorsPanel[0], alpha);
 		
 		int strokeWeight;
 		
@@ -82,9 +82,9 @@ public class ISprite extends Bouton{
 			strokeWeight = 1;
 		}
 		
-		kprez.strokeWeight(strokeWeight);
-		kprez.stroke(couleur);
-		kprez.rect(location.x, location.y, width, height);
+		pApplet.strokeWeight(strokeWeight);
+		pApplet.stroke(couleur);
+		pApplet.rect(location.x, location.y, width, height);
 		
 	}
 }

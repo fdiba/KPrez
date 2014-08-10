@@ -3,7 +3,6 @@ import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
-import java.util.ArrayList;
 
 import javax.sound.midi.MidiMessage;
 
@@ -13,6 +12,8 @@ import processing.core.*;
 import themidibus.MidiBus;
 import webodrome.App;
 import webodrome.ctrl.BehringerBCF;
+import webodrome.mainctrl.GesturalInterface;
+import webodrome.scene.DragAndDropScene;
 import webodrome.scene.StrokeScene;
 
 @SuppressWarnings("serial")
@@ -25,15 +26,16 @@ public class KPrez extends PApplet {
 	protected SimpleOpenNI context;
 	protected Menu menu;
 	
-	private int sceneId;
 	private int oldSceneId;
 	
 	private DDScene ddScene;
 	protected SoundScene soundScene;
 	private FaceScene fScene;
 
-	protected StrokeScene strokeScene;
-	protected StrokeScene box2DScene;
+	//--------- scenes --------------//
+	protected DragAndDropScene dragAndDropScene; //scene 1
+	protected StrokeScene strokeScene; //scene 5
+	protected StrokeScene box2DScene; //scene 6
 	
 	protected Background bgrd;
 	protected BackgroundControllers bgrdCtrl;
@@ -57,8 +59,6 @@ public class KPrez extends PApplet {
 	
 	protected Minim minim;
 	protected AudioPlayer player;
-	
-	protected ArrayList<Integer> colors;
 	
 	private boolean fs;
 	private static Rectangle monitor;
@@ -94,13 +94,6 @@ public class KPrez extends PApplet {
         //System.out.println(libPathProperty);
 		
 	}
-	public void editScene(int _sceneId, String _mode) {
-		sceneId = _sceneId;
-		gi.setWorld(_mode);
-	}
-	protected int sceneId(){
-		return sceneId;
-	}
 	public void setup(){
 		
 		fs = false;
@@ -123,12 +116,8 @@ public class KPrez extends PApplet {
 			context.enableUser();
 			context.enableRGB();
 			
-			setColors();
 			resolutionId = 0;
 			resolution = resolutions[resolutionId];
-			
-			sceneId = 0;
-			//sceneId = 6;
 			
 			minim = new Minim(this);		
 			
@@ -176,14 +165,6 @@ public class KPrez extends PApplet {
 							"press n for next resolution");
 		}
 	}
-	private void setColors(){
-		colors = new ArrayList<Integer>();
-		colors.add(color(240, 65, 50)); //red
-		colors.add(color(135, 205, 137)); //green
-		colors.add(color(40, 135, 145)); //blue green
-		colors.add(color(252, 177, 135)); //orange
-		colors.add(color(15, 65, 85)); //dark blue
-	}
 	public void init() {
 		frame.removeNotify();
 		frame.setUndecorated(true);
@@ -203,6 +184,8 @@ public class KPrez extends PApplet {
 		
 		translate(width/2-640/2, height/2-480/2);
 		
+		int sceneId = App.getSceneId();
+		
 		switch (sceneId) {
 		case 0:
 			
@@ -213,20 +196,8 @@ public class KPrez extends PApplet {
 			
 			firstScene();
 			break;
-		case 1:	
-			
-			if (sceneId != oldSceneId) {
-				oldSceneId = sceneId;
-			}
-			
-			
-			gi.update();
-			bgrd.update("depthImage");
-			ddScene.testCollision();
-			
-			bgrd.display();
-			ddScene.display();
-			gi.display();
+		case 1:
+			scene1(sceneId); //drag and drop scene
 			break;
 		case 2:
 			
@@ -234,9 +205,9 @@ public class KPrez extends PApplet {
 				oldSceneId = sceneId;
 			}
 			
-			gi.update();
+			gi.update(context);
 			soundScene.reinit(); //1
-			bgrd.update("3D"); //2
+			bgrd.update(gi, "3D"); //2
 			bgrdCtrl.update();
 			
 			pushMatrix();
@@ -244,7 +215,7 @@ public class KPrez extends PApplet {
 				bgrd.display(); //1
 				soundScene.update(); //2 update
 				soundScene.display(); //2
-				gi.display();
+				gi.display(context, gi);
 			popMatrix();
 						
 			bgrdCtrl.display();
@@ -256,14 +227,14 @@ public class KPrez extends PApplet {
 				oldSceneId = sceneId;
 			}
 			
-			gi.update();
+			gi.update(context);
 				
 			if (sceneId != oldSceneId) {
 				ptp.init();
 			}
 			
-			if(gi.isTracked && ptp.counter <= 0) ptp.testScreenDisplay();
-			bgrd.update("3D");
+			if(App.userIsTracked && ptp.counter <= 0) ptp.testScreenDisplay(context, gi);
+			bgrd.update(gi, "3D");
 			bgrdCtrl.update();
 			ptp.update();
 			
@@ -273,9 +244,9 @@ public class KPrez extends PApplet {
 				
 				bgrd.display();
 				//ptp.display();
-				gi.display();
-				if(ptp.screenAvailable() && gi.isTracked) {
-					ptp.displayScreen();
+				gi.display(context, gi);
+				if(ptp.screenAvailable() && App.userIsTracked) {
+					ptp.displayScreen(gi);
 					gi.displayMiddlePoint();
 				}
 			
@@ -289,79 +260,25 @@ public class KPrez extends PApplet {
 				oldSceneId = sceneId;
 			}
 			
-			gi.update();
+			gi.update(context);
 			fScene.update();
 			bgrdCtrl.update();
 			pushMatrix();
 				pointAndMoveInTheRightDirection();
 				fScene.display();
-				gi.display();
+				gi.display(context, gi);
 			popMatrix();
 			bgrdCtrl.display();
 			break;
 		case 5:
-			
-			if (sceneId != oldSceneId) {
-				
-				Object[][] objects = { {"blurRadius", 1, 200, App.colors[0], 0, 0, 2},
-						   {"edgeMinNumber", 0, 1000, App.colors[1], 0, 1, 375},
-						   {"distMin", 1, 100, App.colors[2], 0, 2, 10},
-						   {"borderOffset", 0, 100, App.colors[3], 0, 3, 1} };
-				
-				strokeScene = new StrokeScene(this, objects, false);
-				App.setActualScene(strokeScene);
-								
-				oldSceneId = sceneId;
-			}
-			
-			gi.update();
-			bgrd.update("depthImage");
-			
-			strokeScene.update(bgrd.getImg()); //1
-						
-			bgrd.display();
-			
-			strokeScene.display();
-			strokeScene.displayMenu();
-			strokeScene.displayMiniature();
-		
-			gi.display();
-			
+			scene5(sceneId); //contour scene
 			break;
-			
 		case 6:
-			
-			if (sceneId != oldSceneId) {
-				
-				Object[][] objects = { {"blurRadius", 1, 200, App.colors[0], 0, 0, 2},
-						   {"edgeMinNumber", 0, 1000, App.colors[1], 0, 1, 375},
-						   {"distMin", 1, 100, App.colors[2], 0, 2, 10},
-						   {"borderOffset", 0, 100, App.colors[3], 0, 3, 1},
-						   {"frameRateValue", 0, 30, App.colors[4], 0, 4, 17} };
-				
-				box2DScene = new StrokeScene(this, objects, true);
-				App.setActualScene(box2DScene);
-				
-				oldSceneId = sceneId;
-			}
-			
-			gi.update();
-			bgrd.update("depthImage");
-			
-			box2DScene.update(bgrd.getImg()); //1
-			
-			box2DScene.displayUser();
-			
-			box2DScene.updateAndDrawBox2D();
-			
-			box2DScene.displayMenu();
-
-			box2DScene.displayMiniature();
-			
-			gi.display();
-			
+			scene6(sceneId); //box2D scene
 			break;
-			
+		case 7:
+			scene7(sceneId); //test scene
+			break;
 		default:
 			firstScene();
 			break;
@@ -376,13 +293,13 @@ public class KPrez extends PApplet {
 		rotateX(radians(rotateXangle));
 	}
 	private void firstScene(){
-		gi.update();
-		bgrd.update("userImage");
-		menu.testCollision();
+		gi.update(context);
+		bgrd.update(gi, "userImage");
+		menu.testCollision(gi);
 		
 		bgrd.display();
 		menu.display();
-		gi.display();
+		gi.display(context, gi);
 	}
 	protected void toggleValue() {
 		switchValue = !switchValue;
@@ -413,7 +330,137 @@ public class KPrez extends PApplet {
 		if(resolutionId >= resolutions.length) resolutionId = 0;
 		resolution = resolutions[resolutionId];
 	}
-	//---- key ----//
+	//--------------------------------------//
+	//------------ Scenes ------------------//
+	//--------------------------------------//
+	private void scene7(int sceneId){ //test scene
+		
+		gi.update(context);
+		bgrd.update(gi, "depthImage");
+		
+		//-------------- init ------------------//
+		
+		if (sceneId != oldSceneId) {
+			
+			dragAndDropScene = new DragAndDropScene(this);
+			App.setActualScene(dragAndDropScene);
+			
+			oldSceneId = sceneId;
+		}
+		
+		//-------------- draw ------------------//
+
+		dragAndDropScene.testCollision();
+		ddScene.testCollision(gi);
+		
+		bgrd.display();
+		
+		dragAndDropScene.display();
+		ddScene.display();
+		
+		//--------------------------------//
+		
+		gi.display(context, gi);
+		
+	}
+	private void scene1(int sceneId){ //drag and drop scene
+		
+		gi.update(context);
+		bgrd.update(gi, "depthImage");
+		
+		//-------------- init ------------------//
+		
+		if (sceneId != oldSceneId) {
+			oldSceneId = sceneId;
+		}
+		
+		//-------------- draw ------------------//
+
+		ddScene.testCollision(gi);
+		
+		bgrd.display();
+		ddScene.display();
+		
+		
+		//--------------------------------//
+		
+		gi.display(context, gi);
+		
+	}
+	private void scene5(int sceneId){ //contour scene
+		
+		gi.update(context);
+		bgrd.update(gi,"depthImage");
+		
+		//-------------- init ------------------//
+		
+		if (sceneId != oldSceneId) {
+			
+			Object[][] objects = { {"blurRadius", 1, 200, App.colors[0], 0, 0, 2},
+					   {"edgeMinNumber", 0, 1000, App.colors[1], 0, 1, 100},
+					   {"distMin", 1, 100, App.colors[2], 0, 2, 10},
+					   {"borderOffset", 0, 100, App.colors[3], 0, 3, 1} };
+			
+			strokeScene = new StrokeScene(this, objects, false);
+			App.setActualScene(strokeScene);
+							
+			oldSceneId = sceneId;
+		}
+		
+		//-------------- draw ------------------//
+		
+		strokeScene.update(bgrd.getImg()); //1
+					
+		bgrd.display();
+		
+		strokeScene.display();
+		strokeScene.displayMenu();
+		strokeScene.displayMiniature();
+		
+		//--------------------------------//
+	
+		gi.display(context, gi);
+		
+	}
+	private void scene6(int sceneId){ //box2D scene
+		
+		gi.update(context);
+		bgrd.update(gi, "depthImage");
+		
+		//-------------- init ------------------//
+		
+		if (sceneId != oldSceneId) {
+			
+			Object[][] objects = { {"blurRadius", 1, 200, App.colors[0], 0, 0, 2},
+					   {"edgeMinNumber", 0, 1000, App.colors[1], 0, 1, 100},
+					   {"distMin", 1, 100, App.colors[2], 0, 2, 10},
+					   {"borderOffset", 0, 100, App.colors[3], 0, 3, 1},
+					   {"frameRateValue", 0, 30, App.colors[4], 0, 4, 12} };
+			
+			box2DScene = new StrokeScene(this, objects, true);
+			App.setActualScene(box2DScene);
+			
+			oldSceneId = sceneId;
+		}
+		
+		//-------------- draw ------------------//
+		
+		box2DScene.update(bgrd.getImg()); //1
+		
+		box2DScene.displayUser();
+		
+		box2DScene.updateAndDrawBox2D();
+		
+		box2DScene.displayMenu();
+
+		box2DScene.displayMiniature();
+		
+		//--------------------------------//
+		
+		gi.display(context, gi);
+		
+	}
+	//------------- key -------------//
 	public void keyPressed() {
 		if (key == 'l') {
 			toggleValue();
@@ -433,20 +480,25 @@ public class KPrez extends PApplet {
 	   int value = message.getMessage()[2] & 0xFF;
 	   
 	   //PApplet.println("bus " + bus_name + " | channel " + channel + " | num " + number + " | val " + value);
-	   if(App.BCF2000) behringer.midiMessage(channel, number, value);
+	   if(App.BCF2000 && App.getActualScene().menu != null) behringer.midiMessage(channel, number, value);
 	   
 	}
-	//---- mouse ----//
+	//------------- mouse -------------//
 	public void mouseReleased(){
 		
 		bgrdCtrl.resetSliders();
 		
+		int sceneId = App.getSceneId();
+		
 		switch (sceneId) {
+		case 1:
+		
+			break;
 		case 5:
-			strokeScene.menu.resetSliders();
+			App.getActualScene().menu.resetSliders();
 			break;
 		case 6:
-			box2DScene.menu.resetSliders();
+			App.getActualScene().menu.resetSliders();
 			break;
 		default:
 			break;

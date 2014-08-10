@@ -20,6 +20,9 @@ public class Scene {
 		params = new HashMap<String, Integer>();
 		createMenu(objects);
 	}
+	public Scene(){
+		menu = null;
+	}
 	protected void createMenu(Object[][] objects){	
 		menu = new Menu(this, new PVector(450, 50), objects);
 	}

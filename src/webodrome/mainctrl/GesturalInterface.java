@@ -1,19 +1,20 @@
+package webodrome.mainctrl;
 
-import SimpleOpenNI.IntVector;
-import SimpleOpenNI.SimpleOpenNI;
 import processing.core.PApplet;
 import processing.core.PVector;
+import webodrome.App;
+import SimpleOpenNI.IntVector;
+import SimpleOpenNI.SimpleOpenNI;
 
 public class GesturalInterface {
 	
 	private boolean isTakingControl;
-	private KPrez kprez;
+	private PApplet pApplet;
 	private int takeControl;
 	protected int userId;
 	private int sl_user;
 	private PVector rightHand2dOutsider;
 	private PVector rightHandOutsider;
-	protected boolean isTracked;
 	private boolean isQuitting;
 	
 	private PVector rightHand;
@@ -33,11 +34,11 @@ public class GesturalInterface {
 	private int lowestValue;
 	private int highestValue;
 	
-	protected HandControl handControl;
+	public HandControl handControl;
 		
-	public GesturalInterface(KPrez _kprez, int _lowestValue, int _highestValue, String _world){
+	public GesturalInterface(PApplet _pApplet, int _lowestValue, int _highestValue, String _world){
 		
-		kprez = _kprez;
+		pApplet = _pApplet;
 		
 		initVectors();
 		
@@ -46,38 +47,38 @@ public class GesturalInterface {
 		
 		timeToExitMax = 24;
 		timeToExit = timeToExitMax;
-		handControl = new HandControl(kprez);
+		handControl = new HandControl(pApplet);
 		takeControl = 0;
 		sl_user = 0;
 		world = _world;
 	}
-	protected void setLowestValue(int _lowestValue) {
+	public void setLowestValue(int _lowestValue) {
 		lowestValue = _lowestValue;
 	}
-	protected void setHighestValue(int _highestValue) {
+	public void setHighestValue(int _highestValue) {
 		highestValue = _highestValue;
 	}
-	protected int getLowestValue() {
+	public int getLowestValue() {
 		return lowestValue;
 	}
-	protected int getHighestValue() {
+	public int getHighestValue() {
 		return highestValue;
 	}
-	protected PVector torso(){
-		kprez.context.getJointPositionSkeleton(kprez.gi.userId, SimpleOpenNI.SKEL_TORSO, torso);
+	public PVector getTorsoPos(SimpleOpenNI context, GesturalInterface gi){
+		context.getJointPositionSkeleton(gi.userId, SimpleOpenNI.SKEL_TORSO, torso);
 		return torso;
 	}
-	protected PVector middlePoint(PVector pvector1, PVector pvector2){
+	public PVector middlePoint(PVector pvector1, PVector pvector2){
 		middlePoint = pvector1.get();
 		PVector pVector = PVector.sub(pvector2, pvector1);
 		pVector.div(2);
 		middlePoint.add(pVector);
 		return middlePoint;
 	}
-	protected PVector rightHand(){
+	public PVector getRightHand(){
 		return rightHand;
 	}
-	protected PVector leftHand(){
+	public PVector getLeftHand(){
 		return leftHand;
 	}
 	private void initVectors(){
@@ -92,22 +93,23 @@ public class GesturalInterface {
 		//-- candidate -----------------//
 		rightHandOutsider = new PVector();
 	}
-	protected void update() {
-		selectAndTrackUsers();
+	public void update(SimpleOpenNI context) {
 		
-		if(isTracked){
-			kprez.context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_RIGHT_HAND, rightHand);
-			kprez.context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_LEFT_HAND, leftHand);
+		selectAndTrackUsers(context);
+		
+		if(App.userIsTracked){
+			context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_RIGHT_HAND, rightHand);
+			context.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_LEFT_HAND, leftHand);
 		}
 		
-		handControl.update();
+		handControl.update(context, this);
 		
-		if(isTracked) isInPlace();
+		if(App.userIsTracked) isInPlace();
 		
-		int sceneId = kprez.sceneId();
-		if(isTracked && sceneId!=0) isQuitting();
+		int sceneId = App.getSceneId();
+		if(App.userIsTracked && sceneId!=0) isQuitting();
 	}
-	protected boolean isInPlace(){
+	public boolean isInPlace(){
 		if(rightHand.z >= lowestValue && rightHand.z <= highestValue && leftHand.z >= lowestValue && leftHand.z <= highestValue){
 			isInPlace =  true;
 		} else {
@@ -118,7 +120,7 @@ public class GesturalInterface {
 	protected String getWorld() {
 		return world;
 	}
-	protected void setWorld(String _world) {
+	public void setWorld(String _world) {
 		world = _world;
 	}
 	private void isQuitting(){
@@ -144,7 +146,7 @@ public class GesturalInterface {
 				if (timeToExit <= 0) {
 					timeToExit = timeToExitMax;
 					isQuitting = false;
-					kprez.editScene(0, "2D");
+					App.setSceneId(this, 0, "2D");
 				}
 				
 			} else {
@@ -158,57 +160,57 @@ public class GesturalInterface {
 		isQuitting = false;
 		if(timeToExit < timeToExitMax) timeToExit++;
 	}
-	protected void display() {
+	public void display(SimpleOpenNI context, GesturalInterface gi) {
 		
 		if(isQuitting){
 			drawLine();
-			handControl.displayExit(timeToExit*3);
+			handControl.displayExit(gi, timeToExit*3);
 		} else {
-			handControl.display();
+			handControl.display(gi);
 		}
-		if(isTakingControl) displayControler();
+		if(isTakingControl) displayControler(context);
 		
 	}
 	private void drawLine(){
-		kprez.strokeWeight(2);
-		kprez.stroke(kprez.colors.get(0));
+		pApplet.strokeWeight(2);
+		pApplet.stroke(App.colorsPanel[0]);
 		if(world == "2D"){
-			kprez.line(rightHand2d.x, rightHand2d.y, leftHand2d.x, leftHand2d.y);
+			pApplet.line(rightHand2d.x, rightHand2d.y, leftHand2d.x, leftHand2d.y);
 		} else {
-			kprez.line(rightHand.x, rightHand.y, rightHand.z, leftHand.x, leftHand.y, leftHand.z);
+			pApplet.line(rightHand.x, rightHand.y, rightHand.z, leftHand.x, leftHand.y, leftHand.z);
 		}
 	}
-	private void displayControler(){
+	private void displayControler(SimpleOpenNI context){
 		
 		float diam = 35;
-		kprez.rectMode(PApplet.CENTER);
+		pApplet.rectMode(PApplet.CENTER);
 		
-		kprez.pushMatrix();
-		kprez.stroke(255, 0, 0);
-		kprez.noFill();
+		pApplet.pushMatrix();
+		pApplet.stroke(255, 0, 0);
+		pApplet.noFill();
 		
 		if(world == "2D"){
 			rightHand2dOutsider = new PVector();	
-			kprez.context.convertRealWorldToProjective(rightHandOutsider, rightHand2dOutsider);
-			kprez.translate(rightHand2dOutsider.x, rightHand2dOutsider.y);
+			context.convertRealWorldToProjective(rightHandOutsider, rightHand2dOutsider);
+			pApplet.translate(rightHand2dOutsider.x, rightHand2dOutsider.y);
 		} else {
-			kprez.translate(rightHandOutsider.x, rightHandOutsider.y, rightHandOutsider.z);
+			pApplet.translate(rightHandOutsider.x, rightHandOutsider.y, rightHandOutsider.z);
 		}
 		
-		kprez.rotate(takeControl);
-		kprez.rect(0, 0, diam, diam);
-		kprez.popMatrix();
+		pApplet.rotate(takeControl);
+		pApplet.rect(0, 0, diam, diam);
+		pApplet.popMatrix();
 		
 	}
-	private void isTakingControl(int _id, int i) {
+	private void isTakingControl(SimpleOpenNI context, int _id, int i) {
 		
 		PVector headOutsider = new PVector();
-		kprez.context.getJointPositionSkeleton(_id, SimpleOpenNI.SKEL_HEAD, headOutsider);
+		context.getJointPositionSkeleton(_id, SimpleOpenNI.SKEL_HEAD, headOutsider);
 		
-		kprez.context.getJointPositionSkeleton(_id, SimpleOpenNI.SKEL_RIGHT_HAND, rightHandOutsider);
+		context.getJointPositionSkeleton(_id, SimpleOpenNI.SKEL_RIGHT_HAND, rightHandOutsider);
 		
 		PVector leftHandOutsider = new PVector();
-		kprez.context.getJointPositionSkeleton(_id, SimpleOpenNI.SKEL_LEFT_HAND, leftHandOutsider);
+		context.getJointPositionSkeleton(_id, SimpleOpenNI.SKEL_LEFT_HAND, leftHandOutsider);
 		
 		int distance = 150;
 		
@@ -221,7 +223,7 @@ public class GesturalInterface {
 				sl_user = i;
 				
 				IntVector userList = new IntVector();	
-				kprez.context.getUsers(userList);
+				context.getUsers(userList);
 				userId = userList.get(sl_user);
 				
 				takeControl = 0;
@@ -232,10 +234,10 @@ public class GesturalInterface {
 			isTakingControl = false;
 		}
 	}
-	private void selectAndTrackUsers() {
+	private void selectAndTrackUsers(SimpleOpenNI context) {
 		
 		IntVector userList = new IntVector();	
-		kprez.context.getUsers(userList);
+		context.getUsers(userList);
 		
 		if(userList.size() > 0) {
 			 
@@ -243,33 +245,33 @@ public class GesturalInterface {
 			
 			userId = userList.get(sl_user);
 			
-			if(kprez.context.isTrackingSkeleton(userId)) {
-				isTracked = true;
+			if(context.isTrackingSkeleton(userId)) {
+				App.userIsTracked = true;
 			} else {
-				isTracked = false;
+				App.userIsTracked = false;
 			}
 						
 			for (int i = 0; i < userList.size(); i++) {
 				
 				int otherId = userList.get(i);
 				
-				if(kprez.context.isTrackingSkeleton(otherId)) {
+				if(context.isTrackingSkeleton(otherId)) {
 					
-					if(sl_user != i) isTakingControl(otherId, i);
+					if(sl_user != i) isTakingControl(context, otherId, i);
 					
 				}
 			}
 		}
 	}
-	protected PVector getMiddlePoint(){
+	public PVector getMiddlePoint(){
 		return middlePoint;
 	}
 	public void displayMiddlePoint() {
-		kprez.pushMatrix();
-			kprez.noStroke();
-			kprez.fill(kprez.colors.get(0));
-			kprez.translate(middlePoint.x, middlePoint.y, middlePoint.z);
-			kprez.ellipse(0, 0, 50, 50);
-		kprez.popMatrix();	
+		pApplet.pushMatrix();
+			pApplet.noStroke();
+			pApplet.fill(App.colorsPanel[0]);
+			pApplet.translate(middlePoint.x, middlePoint.y, middlePoint.z);
+			pApplet.ellipse(0, 0, 50, 50);
+		pApplet.popMatrix();	
 	}
 }

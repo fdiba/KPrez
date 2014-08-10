@@ -2,6 +2,8 @@
 import processing.core.PApplet;
 import processing.core.PImage;
 import processing.core.PVector;
+import webodrome.App;
+import webodrome.mainctrl.GesturalInterface;
 
 public class Background {
 	
@@ -25,7 +27,7 @@ public class Background {
 	protected void setImg(String _imgType) {
 		imgType = _imgType;
 	}
-	protected void update(String _imgType) {
+	protected void update(GesturalInterface gi, String _imgType) {
 		
 		imgType = _imgType;
 		
@@ -34,18 +36,21 @@ public class Background {
 			switch (imgType) {
 			case "depthImage":
 				img = kprez.context.depthImage();
+				drawDepthImg(gi, 0);
 				break;
 			case "userImage":
 				img = kprez.context.userImage();
+				draw2DBackground();
 				break;
 			case "rgbImage":
 				img = kprez.context.rgbImage();
+				draw2DBackground();
 				break;
 			default:
 				img = kprez.context.depthImage();
+				drawDepthImg(gi, 0);
 				break;
 			}
-			draw2DBackground();
 		} else {
 			depthMapRealWorld = kprez.context.depthMapRealWorld();
 		}
@@ -53,19 +58,68 @@ public class Background {
 	protected PImage getImg(){
 		return img;
 	}
+	private void drawDepthImg(GesturalInterface gi, int threshold){
+		
+		int[] depthValues = kprez.context.depthMap();
+		int mapWidth = kprez.context.depthWidth();
+		int mapHeight = kprez.context.depthHeight();
+		
+		int cValue;
+		int lValue = gi.getLowestValue();
+		int hValue = gi.getHighestValue();
+		
+		for (int x = 0; x < mapWidth; x++) {
+			
+			for (int y = 0; y < mapHeight; y++) {
+				
+				int pixId = x + y * mapWidth;
+				int currentDepthValue = depthValues[pixId];
+ 
+				if(currentDepthValue >= lValue && currentDepthValue <= hValue){
+
+					cValue = (int) PApplet.map(currentDepthValue, lValue, hValue, 255, threshold);
+					img.pixels[pixId] = (255 << 24) | (cValue << 16) | (cValue << 8) | cValue;
+				      
+				} else {
+
+					cValue = 0;
+					img.pixels[pixId] = (0 << 24) | (cValue << 16) | (cValue << 8) | cValue;
+	    
+				}
+				
+		    }
+		}
+		
+	}
 	private void draw2DBackground(){
 		
 		int[] depthValues = kprez.context.depthMap();
 		int mapWidth = kprez.context.depthWidth();
 		int mapHeight = kprez.context.depthHeight();
 		
+		int cValue;
+		int lValue = kprez.gi.getLowestValue();
+		int hValue = kprez.gi.getHighestValue();
+		
 		for (int x = 0; x < mapWidth; x++) {
+			
 			for (int y = 0; y < mapHeight; y++) {
-				int i = x + y * mapWidth;
-				int currentDepthValue = depthValues[i];
-				if (currentDepthValue < kprez.gi.getLowestValue() || currentDepthValue > kprez.gi.getHighestValue()) {
-					img.pixels[i] = 0;
+				
+				int pixId = x + y * mapWidth;
+				int currentDepthValue = depthValues[pixId];
+ 
+				if(currentDepthValue >= lValue && currentDepthValue <= hValue){
+
+					/*cValue = (int) PApplet.map(currentDepthValue, lValue, hValue, 255, 0);
+					img.pixels[pixId] = (255 << 24) | (cValue << 16) | (cValue << 8) | cValue;*/
+				      
+				} else {
+
+					cValue = 0;
+					img.pixels[pixId] = (0 << 24) | (cValue << 16) | (cValue << 8) | cValue;
+	    
 				}
+				
 		    }
 		}
 	}
@@ -125,7 +179,7 @@ public class Background {
 	        	kprez.point(currentPoint.x, currentPoint.y, currentPoint.z);
 	        	
 	        	//---- SCENE 2 FEATURE ----//
-	        	if(kprez.sceneId() == 2){
+	        	if(App.getSceneId() == 2){
 	        		for (SoundBox s: kprez.soundScene.boxes) {
 	        		     s.isHit(currentPoint);
 	        		}

@@ -2,6 +2,7 @@
 import processing.core.PApplet;
 import processing.core.PImage;
 import processing.core.PVector;
+import webodrome.App;
 
 public class Board {
 	
@@ -13,7 +14,7 @@ public class Board {
 	
 	public Board(KPrez _parent, String _imgName) {
 		parent = _parent;
-		couleur = parent.colors.get(3);
+		couleur = App.colorsPanel[3];
 		imgName = "assets/" + _imgName;
 		img = parent.loadImage(imgName);
 		float scale = 1.5f;

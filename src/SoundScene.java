@@ -1,5 +1,6 @@
 
 import processing.core.PVector;
+import webodrome.App;
 
 public class SoundScene {
 	
@@ -19,7 +20,7 @@ public class SoundScene {
 		boxes = new SoundBox[pvectors.length];
 		
 		for (int i=0; i<pvectors.length; i++) {
-		     boxes[i] = new SoundBox(_parent, pvectors[i], kprez.colors.get(i));
+		     boxes[i] = new SoundBox(_parent, pvectors[i], App.colorsPanel[i]);
 		}
 	}
 	protected void reinit(){
