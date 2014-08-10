@@ -28,11 +28,10 @@ public class StrokeScene extends Scene {
 	private ArrayList<CustomShape> polygons;
 	private PolygonBlob polygonBlob;
 	
-	public StrokeScene(PApplet p, Object[][] objects, boolean _box2D) {
+	public StrokeScene(PApplet _pApplet, Object[][] objects, boolean _box2D) {
 		
-		super(objects);
+		super(_pApplet, objects);
 		
-		pApplet = p;
 		width = App.width;
 		height = App.height;
 		
@@ -46,8 +45,8 @@ public class StrokeScene extends Scene {
 		
 		if(box2D){
 			
-			toxiclibsSupport = new ToxiclibsSupport(p);
-			box2dProcessing = new Box2DProcessing(p);
+			toxiclibsSupport = new ToxiclibsSupport(pApplet);
+			box2dProcessing = new Box2DProcessing(pApplet);
 			box2dProcessing.createWorld();
 			box2dProcessing.setGravity(0, -20); //--------------------------- param
 			
@@ -78,9 +77,6 @@ public class StrokeScene extends Scene {
 		    pApplet.endShape(PApplet.CLOSE);
 		}
 
-	}
-	public void displayMenu(){
-		menu.display(pApplet);
 	}
 	public void displayMiniature(){
 		

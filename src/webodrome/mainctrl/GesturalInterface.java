@@ -160,13 +160,13 @@ public class GesturalInterface {
 		isQuitting = false;
 		if(timeToExit < timeToExitMax) timeToExit++;
 	}
-	public void display(SimpleOpenNI context, GesturalInterface gi) {
+	public void display(SimpleOpenNI context) {
 		
 		if(isQuitting){
 			drawLine();
-			handControl.displayExit(gi, timeToExit*3);
+			handControl.displayExit(this, timeToExit*3);
 		} else {
-			handControl.display(gi);
+			handControl.display(this);
 		}
 		if(isTakingControl) displayControler(context);
 		

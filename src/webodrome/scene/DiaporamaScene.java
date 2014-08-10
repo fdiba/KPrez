@@ -1,37 +1,43 @@
+package webodrome.scene;
 
 import java.util.ArrayList;
 
 import SimpleOpenNI.SimpleOpenNI;
 import processing.core.PApplet;
 import processing.core.PVector;
+import webodrome.Board;
 import webodrome.mainctrl.GesturalInterface;
 
-public class PointsToPics {
+public class DiaporamaScene extends Scene {
 	
-	private KPrez parent;
+	public int counter;
+	
+	private int boardId;
 	private ArrayList<Board> boards;
 	private String[] images = {"ptp1.jpg", "ptp2.jpg"};
-	private int boardId;
 	private boolean screenAvailable;
 	private int timeToBeDisplayed;
-	protected int counter;
-
-	public PointsToPics(KPrez _parent){
+	
+	public DiaporamaScene(PApplet _pApplet, Object[][] objects){
 		
-		parent = _parent;
+		super(_pApplet, objects);
+		
 		counter = 48;
 		boardId = 0;
 		
 		boards = new ArrayList<Board>();
 		for (int i=0; i < images.length; i++){
-			Board board = new Board(parent, images[i]);
+			Board board = new Board(pApplet, images[i]);
 			boards.add(board);
 		}
 	}
-	protected void init(){
-		counter = 48;
+	public void pointAndMoveInTheRightDirection(){
+		pApplet.translate(params.get("xTrans"), params.get("yTrans"), params.get("zTrans"));
+		pApplet.rotateX(PApplet.radians(params.get("rotateXangle")));
+		pApplet.rotateY(PApplet.radians(params.get("rotateYangle")));
+		pApplet.rotateZ(PApplet.radians(params.get("rotateZangle")));
 	}
-	protected void testScreenDisplay(SimpleOpenNI context, GesturalInterface gi) {
+public void testScreenDisplay(SimpleOpenNI context, GesturalInterface gi) {
 		
 		PVector rightHand = gi.getRightHand();
 		PVector leftHand = gi.getLeftHand();
@@ -44,21 +50,22 @@ public class PointsToPics {
 		
 		float distFromTorso = PApplet.dist(pointBetweenHands.x, pointBetweenHands.y, pointBetweenHands.z, torso.x, torso.y, torso.z);
 		
-		if(parent.gi.isInPlace()){
-			//PApplet.println("ON");
+		if(gi.isInPlace()){
+
 			if(distBetweenHands > 750 && distBetweenHands > 850 && distFromTorso < 350 &&
 			  (rightHand.y - leftHand.y < 10 || leftHand.y - rightHand.y < 10)) {
+				
 				if(!screenAvailable){
 					screenAvailable = true;
 					timeToBeDisplayed = 255;
 				} else if (screenAvailable && timeToBeDisplayed < 255){
 					timeToBeDisplayed += 5;
 				}
+				
 			} else {
 				endingScreenDisplay();
 			}
 		} else {
-			//PApplet.println("OFF");
 			endingScreenDisplay();
 		}
 	}
@@ -73,14 +80,12 @@ public class PointsToPics {
 		boardId++;
 		if(boardId>=boards.size()) boardId=0;
 	}
-	protected boolean screenAvailable(){
+	public boolean screenAvailable(){
 		return screenAvailable;
 	}
-	protected void update() {
+	public void update(){
 		if(counter>0)counter--;
-	}
-	protected void display() {
-		
+		menu.update(pApplet);	
 	}
 	public void displayScreen(GesturalInterface gi) {
 		

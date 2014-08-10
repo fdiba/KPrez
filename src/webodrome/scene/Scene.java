@@ -16,15 +16,20 @@ public class Scene {
 	public Map<String, Integer> params;
 	public Menu menu;
 	
-	public Scene(Object[][] objects){
+	public Scene(PApplet _pApplet, Object[][] objects){
+		
+		pApplet = _pApplet;
 		params = new HashMap<String, Integer>();
 		createMenu(objects);
 	}
-	public Scene(){
+	public Scene(PApplet _pApplet){
+		pApplet = _pApplet;
 		menu = null;
 	}
 	protected void createMenu(Object[][] objects){	
 		menu = new Menu(this, new PVector(450, 50), objects);
 	}
-
+	public void displayMenu(){
+		menu.display(pApplet);
+	}
 }

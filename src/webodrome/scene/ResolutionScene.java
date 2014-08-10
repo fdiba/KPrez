@@ -1,48 +1,70 @@
+package webodrome.scene;
 
 import java.util.ArrayList;
+
+import SimpleOpenNI.SimpleOpenNI;
+import processing.core.PApplet;
 import processing.core.PImage;
 import processing.core.PVector;
+import webodrome.App;
+import webodrome.ColorPoint;
+import webodrome.mainctrl.GesturalInterface;
 
-public class FaceScene {
-	protected KPrez kprez;
+public class ResolutionScene extends Scene {
+	
 	private PVector[] depthMapRealWorld;
-	private int color;
-	private boolean hasJumpALine;
 	private PImage rgbImage;
-	private ArrayList<ColorPoint> cpoints;
-	private int width;
+	private boolean hasJumpALine;
 	private int resolution;
+	private int color;
+	private ArrayList<ColorPoint> cpoints;
 	private boolean useColor;
 	
-	public FaceScene(KPrez _kprez) {
-		kprez = _kprez;
-		color = kprez.color(255);
-		width = 20;
-		useColor = false;
-	}
-	protected void update(){
-		depthMapRealWorld = kprez.context.depthMapRealWorld();
-		rgbImage = kprez.context.rgbImage();
-		//PApplet.println(depthMapRealWorld.length + " " + rgbImage.pixels.length);
+	public ResolutionScene(PApplet _pApplet, Object[][] objects){
 		
-		updateColorPoints();
+		super(_pApplet, objects);
+		
 	}
-	protected void display(){
-		//PApplet.println(kprez.resolution);
-		//display3DPoints();
+	public void pointAndMoveInTheRightDirection(){
+		pApplet.translate(params.get("xTrans"), params.get("yTrans"), params.get("zTrans"));
+		pApplet.rotateX(PApplet.radians(params.get("rotateXangle")));
+		pApplet.rotateY(PApplet.radians(params.get("rotateYangle")));
+		pApplet.rotateZ(PApplet.radians(params.get("rotateZangle")));
+	}
+	public void update(SimpleOpenNI context, GesturalInterface gi){
+		depthMapRealWorld = context.depthMapRealWorld();
+		rgbImage = context.rgbImage();		
+		updateColorPoints(context, gi);
+		
+		menu.update(pApplet);
+	}
+	public void display(){
 		drawPointsAndLines();
 	}
+	private void drawPoints(ColorPoint cp){
+		pApplet.stroke(cp.color);
+		pApplet.point(cp.location.x, cp.location.y, cp.location.z);
+	}
+	private void drawEllipse(ColorPoint cp){
+		pApplet.noStroke();
+    	for (int k=0; k<5; k++) {
+    		pApplet.fill(cp.color, k*50);
+    		pApplet.pushMatrix();
+    			pApplet.translate(cp.location.x, cp.location.y, cp.location.z);
+    			pApplet.ellipse(0, 0, width-2*k, width-2*k);
+    		pApplet.popMatrix();
+    	}
+	}
 	private void drawPointsAndLines(){
-		
-		kprez.strokeWeight(1);
+
+		pApplet.strokeWeight(1);
 		
 		//need to be optimised
 		//PApplet.println(points.size());
 		for (int i=0; i<cpoints.size(); i++) {
 			
 			ColorPoint colorPoint = cpoints.get(i);
-			
-			
+						
 			int foobar = 0;
         	//int foobar = 2;
         	
@@ -65,14 +87,14 @@ public class FaceScene {
 		        	if(useColor){
 		        		couleur = pickColor(colorPoint.color, ncp.color);
 		        	} else {
-		        		couleur = kprez.color(255);
+		        		couleur = 255 << 24 | 255 << 16 | 255 << 8 | 255;
 		        	}
 		        	
-		        	kprez.stroke(couleur, 150);
-		        	kprez.line(colorPoint.location.x, colorPoint.location.y, colorPoint.location.z, ncp.location.x, ncp.location.y, ncp.location.z);
-		        }
+		        	pApplet.stroke(couleur, 150);
+		        	pApplet.line(colorPoint.location.x, colorPoint.location.y, colorPoint.location.z, ncp.location.x, ncp.location.y, ncp.location.z);
+		        }		
 		    }
-		 }
+		}
 	}
 	private int pickColor(int c1, int c2){
 		
@@ -89,28 +111,24 @@ public class FaceScene {
 	    int g = (g1+g2)/2;
 	    int b = (b1+b2)/2;
 		
-		return kprez.color(r, g, b);
+		return 255 << 24 | r << 16 | g << 8 | b;
 		
 	}
-	private void updateColorPoints(){
+	private void updateColorPoints(SimpleOpenNI context, GesturalInterface gi){
 		
-		resolution = kprez.resolution;
+		resolution = App.resolution;
 		int foo = 10*resolution; //10
 		int bar = foo/2; //5
 		
 		cpoints = new ArrayList<ColorPoint>();
 		
-		//kprez.stroke(color);
-	    kprez.strokeWeight(3);
-	    //kprez.strokeWeight(1);
+	    pApplet.strokeWeight(3);
 	    
-	    int mapWidth = kprez.context.depthWidth();
+	    int mapWidth = context.depthWidth();
 	    
 	    int oldLineId = 0;
 	    int j=0;
-	    
-	    //PApplet.println(depthMapRealWorld.length + " " + mapWidth*mapHeight);
-	    
+	    	    
 	    for (int i = 0; i < depthMapRealWorld.length; i += foo) {	
 	    
 	    	int newLineId = i/mapWidth;
@@ -135,7 +153,7 @@ public class FaceScene {
 	    				j = i;
 	    			}
 	    		} else {
-	    			//kprez.stroke(toogleColor());
+	    			//pApplet.stroke(toogleColor());
 	    		}
 	    		hasJumpALine();
 	    		//------------------------------------//
@@ -144,7 +162,7 @@ public class FaceScene {
 	    	oldLineId = newLineId;
 	    	
 	    	PVector currentPoint = depthMapRealWorld[j];
-	        if (currentPoint.z > kprez.gi.getLowestValue() && currentPoint.z < kprez.gi.getHighestValue()) {
+	        if (currentPoint.z > gi.getLowestValue() && currentPoint.z < gi.getHighestValue()) {
 	        	
 	        	color = rgbImage.pixels[i];
 	        	cpoints.add(new ColorPoint(currentPoint, color));
@@ -152,29 +170,7 @@ public class FaceScene {
 	        }
 	    }		
 	}
-	private void drawPoints(ColorPoint cp){
-		kprez.stroke(cp.color);
-    	kprez.point(cp.location.x, cp.location.y, cp.location.z);
-	}
-	private void drawEllipse(ColorPoint cp){
-		kprez.noStroke();
-    	for (int k=0; k<5; k++) {
-    		kprez.fill(cp.color, k*50);
-    		kprez.pushMatrix();
-    			kprez.translate(cp.location.x, cp.location.y, cp.location.z);
-    			kprez.ellipse(0, 0, width-2*k, width-2*k);
-    		kprez.popMatrix();
-    	}
-	}
 	private void hasJumpALine(){
 		hasJumpALine = !hasJumpALine;
 	}
-	/*private int toogleColor(){
-		if(color == color1){
-			color = color2;
-		} else if(color == color2){
-			color = color1;
-		}
-		return color;
-	}*/
 }

@@ -11,9 +11,13 @@ import SimpleOpenNI.SimpleOpenNI;
 import processing.core.*;
 import themidibus.MidiBus;
 import webodrome.App;
+import webodrome.Background;
+import webodrome.MakeSoundScene;
 import webodrome.ctrl.BehringerBCF;
 import webodrome.mainctrl.GesturalInterface;
+import webodrome.scene.DiaporamaScene;
 import webodrome.scene.DragAndDropScene;
+import webodrome.scene.ResolutionScene;
 import webodrome.scene.StrokeScene;
 
 @SuppressWarnings("serial")
@@ -28,20 +32,17 @@ public class KPrez extends PApplet {
 	
 	private int oldSceneId;
 	
-	private DDScene ddScene;
-	protected SoundScene soundScene;
-	private FaceScene fScene;
-
 	//--------- scenes --------------//
 	protected DragAndDropScene dragAndDropScene; //scene 1
+	protected MakeSoundScene makeSoundScene; //scene 2
+	protected DiaporamaScene diaporamaScene; //scene 3
+	protected ResolutionScene resolutionScene; //scene 4
 	protected StrokeScene strokeScene; //scene 5
 	protected StrokeScene box2DScene; //scene 6
 	
 	protected Background bgrd;
-	protected BackgroundControllers bgrdCtrl;
 	
 	protected GesturalInterface gi;
-	private PointsToPics ptp;
 	
 	protected float rotateYangle;
 	protected float rotateXangle;
@@ -55,7 +56,7 @@ public class KPrez extends PApplet {
 	//private int[] resolutions = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 	private int[] resolutions = {1, 2, 4, 5, 7, 9};
 	private int resolutionId;
-	protected int resolution;
+	
 	
 	protected Minim minim;
 	protected AudioPlayer player;
@@ -117,9 +118,11 @@ public class KPrez extends PApplet {
 			context.enableRGB();
 			
 			resolutionId = 0;
-			resolution = resolutions[resolutionId];
+			App.resolution = resolutions[resolutionId];
 			
-			minim = new Minim(this);		
+			minim = new Minim(this);
+			String sound = "assets/" + "kick.wav";
+			player = minim.loadFile(sound);
 			
 			//------------- behringerBCF2000 -----------//
 			
@@ -150,19 +153,9 @@ public class KPrez extends PApplet {
 			//gi = new GesturalInterface(this, lowestValue, highestValue, "3D");
 			
 			bgrd = new Background(this, "userImage");
-			bgrdCtrl = new BackgroundControllers(this, new PVector(450, 50));
-			
-			//scene 1
-			ddScene = new DDScene(this);
-			//scene 2
-			soundScene = new SoundScene(this);
-			//scene 3
-			ptp = new PointsToPics(this);
-			//scene 4
-			fScene = new FaceScene(this);
 		
 			System.out.println("depthmap controllers : UP | DOWN | l to toggle" + "\n" +
-							"press n for next resolution");
+							"press r for next resolution");
 		}
 	}
 	public void init() {
@@ -180,6 +173,7 @@ public class KPrez extends PApplet {
 		frame.setAlwaysOnTop(true); 
 		  
 		background(0);
+		
 		context.update();
 		
 		translate(width/2-640/2, height/2-480/2);
@@ -188,118 +182,38 @@ public class KPrez extends PApplet {
 		
 		switch (sceneId) {
 		case 0:
-			
-			if (sceneId != oldSceneId) {
-				oldSceneId = sceneId;
-			}
-			
-			
-			firstScene();
+			scene0(); //accueil
 			break;
 		case 1:
-			scene1(sceneId); //drag and drop scene
+			scene1(); //drag and drop scene
 			break;
 		case 2:
-			
-			if (sceneId != oldSceneId) {
-				oldSceneId = sceneId;
-			}
-			
-			gi.update(context);
-			soundScene.reinit(); //1
-			bgrd.update(gi, "3D"); //2
-			bgrdCtrl.update();
-			
-			pushMatrix();
-				pointAndMoveInTheRightDirection();
-				bgrd.display(); //1
-				soundScene.update(); //2 update
-				soundScene.display(); //2
-				gi.display(context, gi);
-			popMatrix();
-						
-			bgrdCtrl.display();
-			
+			scene2(); //sound scene			
 			break;
 		case 3:
-			
-			if (sceneId != oldSceneId) {
-				oldSceneId = sceneId;
-			}
-			
-			gi.update(context);
-				
-			if (sceneId != oldSceneId) {
-				ptp.init();
-			}
-			
-			if(App.userIsTracked && ptp.counter <= 0) ptp.testScreenDisplay(context, gi);
-			bgrd.update(gi, "3D");
-			bgrdCtrl.update();
-			ptp.update();
-			
-			pushMatrix();
-			
-				pointAndMoveInTheRightDirection();
-				
-				bgrd.display();
-				//ptp.display();
-				gi.display(context, gi);
-				if(ptp.screenAvailable() && App.userIsTracked) {
-					ptp.displayScreen(gi);
-					gi.displayMiddlePoint();
-				}
-			
-			popMatrix();
-			bgrdCtrl.display();
+			scene3(); //diaporama scene
 			break;
 		case 4:
-			
-			
-			if (sceneId != oldSceneId) {	
-				oldSceneId = sceneId;
-			}
-			
-			gi.update(context);
-			fScene.update();
-			bgrdCtrl.update();
-			pushMatrix();
-				pointAndMoveInTheRightDirection();
-				fScene.display();
-				gi.display(context, gi);
-			popMatrix();
-			bgrdCtrl.display();
+			scene4(); //user resolution scene
 			break;
 		case 5:
-			scene5(sceneId); //contour scene
+			scene5(); //contour scene
 			break;
 		case 6:
-			scene6(sceneId); //box2D scene
+			scene6(); //box2D scene
 			break;
 		case 7:
-			scene7(sceneId); //test scene
+			scene7(); //test sound scene
 			break;
 		default:
-			firstScene();
+			scene0();
 			break;
 		}
-		
-		
+			
 	}
-	private void pointAndMoveInTheRightDirection(){
-		translate(width/2 + xTrans, height/2, zTrans);
+	private void targetCloudOfPoints(){
+		translate(width/2, height/2, 0);
 		rotateX(radians(180));
-		rotateY(radians(rotateYangle));
-		rotateX(radians(rotateXangle));
-	}
-	private void firstScene(){
-		gi.update(context);
-		bgrd.update(gi, "userImage");
-		menu.testCollision(gi);
-		
-		bgrd.display();
-		menu.display();
-		gi.display(context, gi);
 	}
 	protected void toggleValue() {
 		switchValue = !switchValue;
@@ -328,18 +242,34 @@ public class KPrez extends PApplet {
 	private void nextResolution(){
 		resolutionId++;
 		if(resolutionId >= resolutions.length) resolutionId = 0;
-		resolution = resolutions[resolutionId];
+		App.resolution = resolutions[resolutionId];
 	}
 	//--------------------------------------//
 	//------------ Scenes ------------------//
 	//--------------------------------------//
-	private void scene7(int sceneId){ //test scene
+	private void scene0(){ //accueil
+		
+		int sceneId = App.getSceneId();
+		if (sceneId != oldSceneId) {
+			oldSceneId = sceneId;
+		}
 		
 		gi.update(context);
-		bgrd.update(gi, "depthImage");
+		bgrd.update(context, gi, "userImage");
+		menu.testCollision(gi);
+		
+		bgrd.display(context, gi);
+		menu.display();
+		gi.display(context);
+	}
+	private void scene1(){ //drag and drop scene
+		
+		gi.update(context);
+		bgrd.update(context, gi, "depthImage");
 		
 		//-------------- init ------------------//
 		
+		int sceneId = App.getSceneId();
 		if (sceneId != oldSceneId) {
 			
 			dragAndDropScene = new DragAndDropScene(this);
@@ -350,50 +280,165 @@ public class KPrez extends PApplet {
 		
 		//-------------- draw ------------------//
 
-		dragAndDropScene.testCollision();
-		ddScene.testCollision(gi);
+		dragAndDropScene.testCollision(gi);
 		
-		bgrd.display();
+		bgrd.display(context, gi);
 		
 		dragAndDropScene.display();
-		ddScene.display();
 		
 		//--------------------------------//
 		
-		gi.display(context, gi);
+		gi.display(context);
 		
 	}
-	private void scene1(int sceneId){ //drag and drop scene
+	private void scene2(){ //sound scene
 		
 		gi.update(context);
-		bgrd.update(gi, "depthImage");
 		
 		//-------------- init ------------------//
 		
+		int sceneId = App.getSceneId();
 		if (sceneId != oldSceneId) {
+			
+			Object[][] objects = { {"xTrans", -5000, 5000, App.colorsPanel[0], 0, 0, -520},
+					   {"yTrans", -5000, 5000, App.colorsPanel[1], 0, 1, 0},
+					   {"zTrans", -5000, 5000, App.colorsPanel[2], 0, 2, 300},
+					   {"rotateXangle", -360, 360, App.colorsPanel[0], 0, 3, 0},
+					   {"rotateYangle", -360, 360, App.colorsPanel[1], 0, 4, 21},
+					   {"rotateZangle", -360, 360, App.colorsPanel[2], 0, 5, 0} };
+			
+			makeSoundScene = new MakeSoundScene(this, minim, player, gi, objects);
+			App.setActualScene(makeSoundScene);
+			
+			
 			oldSceneId = sceneId;
 		}
 		
 		//-------------- draw ------------------//
+		
+		makeSoundScene.resetSoundBox();
 
-		ddScene.testCollision(gi);
+		bgrd.update(context, gi, "3D"); //2
 		
-		bgrd.display();
-		ddScene.display();
+		pushMatrix();
 		
+			targetCloudOfPoints();
+			makeSoundScene.pointAndMoveInTheRightDirection();
+			
+			makeSoundScene.update(minim, player, gi, bgrd.depthMapRealWorld);
+			
+			makeSoundScene.display();
+			bgrd.display(context, gi);
+			gi.display(context);
+			
+		popMatrix();
 		
 		//--------------------------------//
 		
-		gi.display(context, gi);
+		App.getActualScene().displayMenu();
 		
 	}
-	private void scene5(int sceneId){ //contour scene
+	private void scene3(){ //diaporama scene
 		
 		gi.update(context);
-		bgrd.update(gi,"depthImage");
 		
 		//-------------- init ------------------//
 		
+		int sceneId = App.getSceneId();
+		if (sceneId != oldSceneId) {
+			
+			Object[][] objects = { {"xTrans", -5000, 5000, App.colorsPanel[0], 0, 0, -520},
+					   {"yTrans", -5000, 5000, App.colorsPanel[1], 0, 1, 0},
+					   {"zTrans", -5000, 5000, App.colorsPanel[2], 0, 2, 300},
+					   {"rotateXangle", -360, 360, App.colorsPanel[0], 0, 3, 0},
+					   {"rotateYangle", -360, 360, App.colorsPanel[1], 0, 4, 21},
+					   {"rotateZangle", -360, 360, App.colorsPanel[2], 0, 5, 0} };
+			
+			diaporamaScene = new DiaporamaScene(this, objects);
+			App.setActualScene(diaporamaScene);
+			
+			oldSceneId = sceneId;
+						
+		}
+		
+		//-------------- draw ------------------//
+		
+		if(App.userIsTracked && diaporamaScene.counter <= 0) diaporamaScene.testScreenDisplay(context, gi);
+		
+		bgrd.update(context, gi, "3D");
+				
+		diaporamaScene.update();
+		
+		pushMatrix();
+		
+			targetCloudOfPoints();
+			diaporamaScene.pointAndMoveInTheRightDirection();
+			
+			bgrd.display(context, gi);
+			
+			gi.display(context);
+			
+			if(diaporamaScene.screenAvailable() && App.userIsTracked) {
+				diaporamaScene.displayScreen(gi);
+				//gi.displayMiddlePoint();
+			}
+		
+		popMatrix();
+		
+		//--------------------------------//
+		
+		App.getActualScene().displayMenu();
+		
+	}
+	private void scene4(){ //user resolution scene
+		
+		gi.update(context);
+		
+		//-------------- init ------------------//
+		
+		int sceneId = App.getSceneId();
+		if (sceneId != oldSceneId) {
+			
+			Object[][] objects = { {"xTrans", -5000, 5000, App.colorsPanel[0], 0, 0, -520},
+					   {"yTrans", -5000, 5000, App.colorsPanel[1], 0, 1, 0},
+					   {"zTrans", -5000, 5000, App.colorsPanel[2], 0, 2, 300},
+					   {"rotateXangle", -360, 360, App.colorsPanel[0], 0, 3, 0},
+					   {"rotateYangle", -360, 360, App.colorsPanel[1], 0, 4, 21},
+					   {"rotateZangle", -360, 360, App.colorsPanel[2], 0, 5, 0} };
+			
+			resolutionScene = new ResolutionScene(this, objects);
+			App.setActualScene(resolutionScene);
+			
+			oldSceneId = sceneId;
+		}
+		
+		//-------------- draw ------------------//
+				
+		resolutionScene.update(context, gi);
+				
+		pushMatrix();
+		
+			targetCloudOfPoints();
+			resolutionScene.pointAndMoveInTheRightDirection();
+			
+			resolutionScene.display();
+			gi.display(context);
+		
+		popMatrix();
+		
+		//--------------------------------//
+		
+		App.getActualScene().displayMenu();
+		
+	}
+	private void scene5(){ //contour scene
+		
+		gi.update(context);
+		bgrd.update(context, gi,"depthImage");
+		
+		//-------------- init ------------------//
+		
+		int sceneId = App.getSceneId();
 		if (sceneId != oldSceneId) {
 			
 			Object[][] objects = { {"blurRadius", 1, 200, App.colors[0], 0, 0, 2},
@@ -411,24 +456,25 @@ public class KPrez extends PApplet {
 		
 		strokeScene.update(bgrd.getImg()); //1
 					
-		bgrd.display();
+		bgrd.display(context, gi);
 		
 		strokeScene.display();
-		strokeScene.displayMenu();
+		App.getActualScene().displayMenu();
 		strokeScene.displayMiniature();
 		
 		//--------------------------------//
 	
-		gi.display(context, gi);
+		gi.display(context);
 		
 	}
-	private void scene6(int sceneId){ //box2D scene
+	private void scene6(){ //box2D scene
 		
 		gi.update(context);
-		bgrd.update(gi, "depthImage");
+		bgrd.update(context, gi, "depthImage");
 		
 		//-------------- init ------------------//
 		
+		int sceneId = App.getSceneId();
 		if (sceneId != oldSceneId) {
 			
 			Object[][] objects = { {"blurRadius", 1, 200, App.colors[0], 0, 0, 2},
@@ -451,13 +497,65 @@ public class KPrez extends PApplet {
 		
 		box2DScene.updateAndDrawBox2D();
 		
-		box2DScene.displayMenu();
+		App.getActualScene().displayMenu();
 
 		box2DScene.displayMiniature();
 		
 		//--------------------------------//
 		
-		gi.display(context, gi);
+		gi.display(context);
+		
+	}
+	private void scene7(){ //test scene
+		
+		gi.update(context);
+		
+		//-------------- init ------------------//
+		
+		int sceneId = App.getSceneId();
+		if (sceneId != oldSceneId) {
+			
+			Object[][] objects = { {"xTrans", -5000, 5000, App.colorsPanel[0], 0, 0, -520},
+					   {"yTrans", -5000, 5000, App.colorsPanel[1], 0, 1, 0},
+					   {"zTrans", -5000, 5000, App.colorsPanel[2], 0, 2, 300},
+					   {"rotateXangle", -360, 360, App.colorsPanel[0], 0, 3, 0},
+					   {"rotateYangle", -360, 360, App.colorsPanel[1], 0, 4, 21},
+					   {"rotateZangle", -360, 360, App.colorsPanel[2], 0, 5, 0} };
+			
+			diaporamaScene = new DiaporamaScene(this, objects);
+			App.setActualScene(diaporamaScene);
+			
+			oldSceneId = sceneId;
+						
+		}
+		
+		//-------------- draw ------------------//
+		
+		if(App.userIsTracked && diaporamaScene.counter <= 0) diaporamaScene.testScreenDisplay(context, gi);
+		
+		bgrd.update(context, gi, "3D");
+				
+		diaporamaScene.update();
+		
+		pushMatrix();
+		
+			targetCloudOfPoints();
+			diaporamaScene.pointAndMoveInTheRightDirection();
+			
+			bgrd.display(context, gi);
+			
+			gi.display(context);
+			
+			if(diaporamaScene.screenAvailable() && App.userIsTracked) {
+				diaporamaScene.displayScreen(gi);
+				//gi.displayMiddlePoint();
+			}
+		
+		popMatrix();
+		
+		//--------------------------------//
+		
+		App.getActualScene().displayMenu();
 		
 	}
 	//------------- key -------------//
@@ -486,23 +584,8 @@ public class KPrez extends PApplet {
 	//------------- mouse -------------//
 	public void mouseReleased(){
 		
-		bgrdCtrl.resetSliders();
-		
 		int sceneId = App.getSceneId();
-		
-		switch (sceneId) {
-		case 1:
-		
-			break;
-		case 5:
-			App.getActualScene().menu.resetSliders();
-			break;
-		case 6:
-			App.getActualScene().menu.resetSliders();
-			break;
-		default:
-			break;
-		}
+		if(sceneId > 1)App.getActualScene().menu.resetSliders();		
 		
 	}
 	// SimpleOpenNI events

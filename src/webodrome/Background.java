@@ -1,33 +1,34 @@
+package webodrome;
 
+import SimpleOpenNI.SimpleOpenNI;
 import processing.core.PApplet;
 import processing.core.PImage;
 import processing.core.PVector;
-import webodrome.App;
 import webodrome.mainctrl.GesturalInterface;
 
 public class Background {
 	
+	private PApplet pApplet;
 	protected String imgType;
-	protected KPrez kprez;
 	private PImage img;
 	//3D
-	private PVector[] depthMapRealWorld;
+	public PVector[] depthMapRealWorld;
 	private int couleur1;
 	private int couleur2;
 	private int couleur;
 	private boolean hasJumpALine;
 	
-	public Background(KPrez _kprez, String _imgType) {
-		kprez = _kprez;
+	public Background(PApplet _pApplet, String _imgType) {
+		pApplet = _pApplet;
 		imgType = _imgType;
-		couleur1 = kprez.color(255);
-		couleur2 = kprez.color(127);
+		couleur1 = pApplet.color(255);
+		couleur2 = pApplet.color(127);
 		couleur = couleur1;
 	}
 	protected void setImg(String _imgType) {
 		imgType = _imgType;
 	}
-	protected void update(GesturalInterface gi, String _imgType) {
+	public void update(SimpleOpenNI context, GesturalInterface gi, String _imgType) {
 		
 		imgType = _imgType;
 		
@@ -35,34 +36,34 @@ public class Background {
 		
 			switch (imgType) {
 			case "depthImage":
-				img = kprez.context.depthImage();
-				drawDepthImg(gi, 0);
+				img = context.depthImage();
+				drawDepthImg(context, gi, 0);
 				break;
 			case "userImage":
-				img = kprez.context.userImage();
-				draw2DBackground();
+				img = context.userImage();
+				draw2DBackground(context, gi);
 				break;
 			case "rgbImage":
-				img = kprez.context.rgbImage();
-				draw2DBackground();
+				img = context.rgbImage();
+				draw2DBackground(context, gi);
 				break;
 			default:
-				img = kprez.context.depthImage();
-				drawDepthImg(gi, 0);
+				img = context.depthImage();
+				drawDepthImg(context, gi, 0);
 				break;
 			}
 		} else {
-			depthMapRealWorld = kprez.context.depthMapRealWorld();
+			depthMapRealWorld = context.depthMapRealWorld();
 		}
 	}
-	protected PImage getImg(){
+	public PImage getImg(){
 		return img;
 	}
-	private void drawDepthImg(GesturalInterface gi, int threshold){
+	private void drawDepthImg(SimpleOpenNI context, GesturalInterface gi, int threshold){
 		
-		int[] depthValues = kprez.context.depthMap();
-		int mapWidth = kprez.context.depthWidth();
-		int mapHeight = kprez.context.depthHeight();
+		int[] depthValues = context.depthMap();
+		int mapWidth = context.depthWidth();
+		int mapHeight = context.depthHeight();
 		
 		int cValue;
 		int lValue = gi.getLowestValue();
@@ -91,15 +92,15 @@ public class Background {
 		}
 		
 	}
-	private void draw2DBackground(){
+	private void draw2DBackground(SimpleOpenNI context, GesturalInterface gi){
 		
-		int[] depthValues = kprez.context.depthMap();
-		int mapWidth = kprez.context.depthWidth();
-		int mapHeight = kprez.context.depthHeight();
+		int[] depthValues = context.depthMap();
+		int mapWidth = context.depthWidth();
+		int mapHeight = context.depthHeight();
 		
 		int cValue;
-		int lValue = kprez.gi.getLowestValue();
-		int hValue = kprez.gi.getHighestValue();
+		int lValue = gi.getLowestValue();
+		int hValue = gi.getHighestValue();
 		
 		for (int x = 0; x < mapWidth; x++) {
 			
@@ -123,19 +124,18 @@ public class Background {
 		    }
 		}
 	}
-	private void display3DPoints(){
+	private void display3DPoints(SimpleOpenNI context, GesturalInterface gi){
 		
 		couleur = couleur1;
-		int resolution = kprez.resolution;
+		int resolution = App.resolution;
 		int foo = 10*resolution; //10
 		int bar = foo/2; //5
 		
-		//kprez.pushMatrix();
 
-		kprez.stroke(couleur);
-	    kprez.strokeWeight(2);
+		pApplet.stroke(couleur);
+		pApplet.strokeWeight(2);
 	    
-	    int mapWidth = kprez.context.depthWidth();
+	    int mapWidth = context.depthWidth();
 	    
 	    int oldLineId = 0;
 	    int j=0;
@@ -166,7 +166,7 @@ public class Background {
 	    				j = i;
 	    			}
 	    		} else {
-	    			kprez.stroke(toogleColor());
+	    			pApplet.stroke(toogleColor());
 	    		}
 	    		hasJumpALine();
 	    		//------------------------------------//
@@ -175,16 +175,10 @@ public class Background {
 	    	oldLineId = newLineId;
 	    	
 	    	PVector currentPoint = depthMapRealWorld[j];
-	        if (currentPoint.z > kprez.gi.getLowestValue() && currentPoint.z < kprez.gi.getHighestValue()) {
-	        	kprez.point(currentPoint.x, currentPoint.y, currentPoint.z);
-	        	
-	        	//---- SCENE 2 FEATURE ----//
-	        	if(App.getSceneId() == 2){
-	        		for (SoundBox s: kprez.soundScene.boxes) {
-	        		     s.isHit(currentPoint);
-	        		}
-	        	}
-	       
+	        if (currentPoint.z > gi.getLowestValue() && currentPoint.z < gi.getHighestValue()) {
+	    
+	        	pApplet.point(currentPoint.x, currentPoint.y, currentPoint.z);
+	      
 	        }
 	    }	
 	}
@@ -199,17 +193,16 @@ public class Background {
 		}
 		return couleur;
 	}
-	protected void display() {
+	public void display(SimpleOpenNI context, GesturalInterface gi) {
 		
 		if(imgType != "3D") {
-			kprez.noFill();
-			kprez.stroke(255);
-			kprez.rectMode(PApplet.CORNER);
-			kprez.rect(0, 0, img.width, img.height);
-			
-			kprez.image(img, 0, 0);
+			pApplet.noFill();
+			pApplet.stroke(255);
+			pApplet.rectMode(PApplet.CORNER);
+			pApplet.rect(0, 0, img.width, img.height);
+			pApplet.image(img, 0, 0);
 		} else {
-			display3DPoints();
+			display3DPoints(context, gi);
 		}
 	}
 }
