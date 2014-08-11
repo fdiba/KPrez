@@ -1,11 +1,12 @@
-package webodrome;
+package webodrome.scene;
 
 import ddf.minim.AudioPlayer;
 import ddf.minim.Minim;
 import processing.core.PApplet;
 import processing.core.PVector;
+import webodrome.App;
+import webodrome.SoundBox;
 import webodrome.mainctrl.GesturalInterface;
-import webodrome.scene.Scene;
 
 public class MakeSoundScene extends Scene {
 	

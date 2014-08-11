@@ -12,11 +12,11 @@ import processing.core.*;
 import themidibus.MidiBus;
 import webodrome.App;
 import webodrome.Background;
-import webodrome.MakeSoundScene;
 import webodrome.ctrl.BehringerBCF;
 import webodrome.mainctrl.GesturalInterface;
 import webodrome.scene.DiaporamaScene;
 import webodrome.scene.DragAndDropScene;
+import webodrome.scene.MakeSoundScene;
 import webodrome.scene.ResolutionScene;
 import webodrome.scene.StrokeScene;
 
@@ -44,20 +44,6 @@ public class KPrez extends PApplet {
 	
 	protected GesturalInterface gi;
 	
-	protected float rotateYangle;
-	protected float rotateXangle;
-	protected float zTrans;
-	protected float xTrans;
-
-	//protected float distance;
-	protected int frameRateValue = 15;
-	protected int yOffset = 1;
-
-	//private int[] resolutions = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-	private int[] resolutions = {1, 2, 4, 5, 7, 9};
-	private int resolutionId;
-	
-	
 	protected Minim minim;
 	protected AudioPlayer player;
 	
@@ -66,7 +52,6 @@ public class KPrez extends PApplet {
 	
 	private BehringerBCF behringer;
 	private MidiBus midiBus;
-	
 
 	public static void main(String[] args) {		
 		
@@ -116,10 +101,7 @@ public class KPrez extends PApplet {
 			context.enableDepth();		
 			context.enableUser();
 			context.enableRGB();
-			
-			resolutionId = 0;
-			App.resolution = resolutions[resolutionId];
-			
+
 			minim = new Minim(this);
 			String sound = "assets/" + "kick.wav";
 			player = minim.loadFile(sound);
@@ -149,13 +131,12 @@ public class KPrez extends PApplet {
 			//lowestValue = 1500;
 			//highestValue = 2500;
 						
-			gi = new GesturalInterface(this, lowestValue, highestValue, "2D");
-			//gi = new GesturalInterface(this, lowestValue, highestValue, "3D");
+			//gi = new GesturalInterface(this, lowestValue, highestValue, "2D");
+			gi = new GesturalInterface(this, lowestValue, highestValue, "3D");
 			
 			bgrd = new Background(this, "userImage");
 		
-			System.out.println("depthmap controllers : UP | DOWN | l to toggle" + "\n" +
-							"press r for next resolution");
+			System.out.println("depthmap controllers : UP | DOWN | l to toggle");
 		}
 	}
 	public void init() {
@@ -239,11 +220,6 @@ public class KPrez extends PApplet {
 			return highestValue;
 		}
 	}
-	private void nextResolution(){
-		resolutionId++;
-		if(resolutionId >= resolutions.length) resolutionId = 0;
-		App.resolution = resolutions[resolutionId];
-	}
 	//--------------------------------------//
 	//------------ Scenes ------------------//
 	//--------------------------------------//
@@ -305,7 +281,8 @@ public class KPrez extends PApplet {
 					   {"zTrans", -5000, 5000, App.colorsPanel[2], 0, 2, 300},
 					   {"rotateXangle", -360, 360, App.colorsPanel[0], 0, 3, 0},
 					   {"rotateYangle", -360, 360, App.colorsPanel[1], 0, 4, 21},
-					   {"rotateZangle", -360, 360, App.colorsPanel[2], 0, 5, 0} };
+					   {"rotateZangle", -360, 360, App.colorsPanel[2], 0, 5, 0},
+					   {"resolution", 1, 9, App.colorsPanel[3], 0, 6, 2} };
 			
 			makeSoundScene = new MakeSoundScene(this, minim, player, gi, objects);
 			App.setActualScene(makeSoundScene);
@@ -328,7 +305,9 @@ public class KPrez extends PApplet {
 			makeSoundScene.update(minim, player, gi, bgrd.depthMapRealWorld);
 			
 			makeSoundScene.display();
+			
 			bgrd.display(context, gi);
+			
 			gi.display(context);
 			
 		popMatrix();
@@ -352,7 +331,8 @@ public class KPrez extends PApplet {
 					   {"zTrans", -5000, 5000, App.colorsPanel[2], 0, 2, 300},
 					   {"rotateXangle", -360, 360, App.colorsPanel[0], 0, 3, 0},
 					   {"rotateYangle", -360, 360, App.colorsPanel[1], 0, 4, 21},
-					   {"rotateZangle", -360, 360, App.colorsPanel[2], 0, 5, 0} };
+					   {"rotateZangle", -360, 360, App.colorsPanel[2], 0, 5, 0},
+					   {"resolution", 1, 9, App.colorsPanel[3], 0, 6, 1} };
 			
 			diaporamaScene = new DiaporamaScene(this, objects);
 			App.setActualScene(diaporamaScene);
@@ -401,10 +381,12 @@ public class KPrez extends PApplet {
 			
 			Object[][] objects = { {"xTrans", -5000, 5000, App.colorsPanel[0], 0, 0, -520},
 					   {"yTrans", -5000, 5000, App.colorsPanel[1], 0, 1, 0},
-					   {"zTrans", -5000, 5000, App.colorsPanel[2], 0, 2, 300},
+					   {"zTrans", -5000, 5000, App.colorsPanel[2], 0, 2, -118},
 					   {"rotateXangle", -360, 360, App.colorsPanel[0], 0, 3, 0},
 					   {"rotateYangle", -360, 360, App.colorsPanel[1], 0, 4, 21},
-					   {"rotateZangle", -360, 360, App.colorsPanel[2], 0, 5, 0} };
+					   {"rotateZangle", -360, 360, App.colorsPanel[2], 0, 5, 0},
+					   {"resolution", 4, 40, App.colorsPanel[3], 0, 6, 11},
+					   {"gridId", 0, 2, App.colorsPanel[4], 0, 7, 1}};
 			
 			resolutionScene = new ResolutionScene(this, objects);
 			App.setActualScene(resolutionScene);
@@ -422,6 +404,7 @@ public class KPrez extends PApplet {
 			resolutionScene.pointAndMoveInTheRightDirection();
 			
 			resolutionScene.display();
+			
 			gi.display(context);
 		
 		popMatrix();
@@ -562,9 +545,7 @@ public class KPrez extends PApplet {
 	public void keyPressed() {
 		if (key == 'l') {
 			toggleValue();
-		} else if (key == 'r') {
-			nextResolution();
-		}else if (keyCode == UP) {
+		} else if (keyCode == UP) {
 			setSelectedValue(+50);
 		} else if (keyCode == DOWN) {
 			setSelectedValue(-50);

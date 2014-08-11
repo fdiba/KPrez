@@ -27,7 +27,7 @@ public class SoundBox {
 		angleRotation = (int) pApplet.random(0, 360);
 		
 	}
-	protected void update(Minim minim, AudioPlayer player){
+	public void update(Minim minim, AudioPlayer player){
 		
 		angleRotation++;
 		alpha = (int) PApplet.map(hits, 0, 40, 0, 255);
@@ -40,7 +40,7 @@ public class SoundBox {
 			
 		
 	}
-	protected void display(){
+	public void display(){
 		pApplet.pushMatrix();
 			pApplet.fill(couleur, alpha);
 			pApplet.stroke(couleur);
@@ -49,10 +49,10 @@ public class SoundBox {
 			pApplet.box(width);
 		pApplet.popMatrix();
 	}
-	protected void reset(){
+	public void reset(){
 		hits = 0;
 	}
-	protected void isHit(PVector pvector){
+	public void isHit(PVector pvector){
 		if (pvector.x > location.x - width/2 && pvector.x < location.x + width/2) {
 			if (pvector.y > location.y - width/2 && pvector.y < location.y + width/2) {
 				if (pvector.z > location.z - width/2 && pvector.z < location.z + width/2) {

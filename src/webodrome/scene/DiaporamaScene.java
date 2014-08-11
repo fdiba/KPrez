@@ -37,14 +37,13 @@ public class DiaporamaScene extends Scene {
 		pApplet.rotateY(PApplet.radians(params.get("rotateYangle")));
 		pApplet.rotateZ(PApplet.radians(params.get("rotateZangle")));
 	}
-public void testScreenDisplay(SimpleOpenNI context, GesturalInterface gi) {
+	public void testScreenDisplay(SimpleOpenNI context, GesturalInterface gi) {
 		
 		PVector rightHand = gi.getRightHand();
 		PVector leftHand = gi.getLeftHand();
 		PVector torso = gi.getTorsoPos(context, gi);
 		
 		float distBetweenHands = PApplet.dist(rightHand.x, rightHand.y, rightHand.z, leftHand.x, leftHand.y, leftHand.z);
-		//PApplet.println(distance);
 		
 		PVector pointBetweenHands = gi.middlePoint(rightHand, leftHand);
 		

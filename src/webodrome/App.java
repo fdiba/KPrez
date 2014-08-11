@@ -17,9 +17,7 @@ public class App {
 											 255 << 24 | 15 << 16 | 65 << 8 | 85};
 	
 	public final static int[] colors = {-8410437,-9998215,-1849945,-5517090,-4250587,-14178341,-5804972,-3498634};
-	
-	public static int resolution;
-	
+		
 	private static Scene actualScene;
 	
 	public static Menu actualMenu;
@@ -30,7 +28,7 @@ public class App {
 	
 	public static boolean userIsTracked;
 
-	private static int sceneId = 0;
+	private static int sceneId = 4;
 	
 	public App() {
 		// TODO Auto-generated constructor stub

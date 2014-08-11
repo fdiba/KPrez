@@ -127,10 +127,10 @@ public class Background {
 	private void display3DPoints(SimpleOpenNI context, GesturalInterface gi){
 		
 		couleur = couleur1;
-		int resolution = App.resolution;
-		int foo = 10*resolution; //10
-		int bar = foo/2; //5
 		
+		int spaceBetweenPoints = App.getActualScene().params.get("resolution");
+		int foo = 10*spaceBetweenPoints;
+		int offset = foo/2;
 
 		pApplet.stroke(couleur);
 		pApplet.strokeWeight(2);
@@ -140,9 +140,9 @@ public class Background {
 	    int oldLineId = 0;
 	    int j=0;
 	    
-	    //PApplet.println(depthMapRealWorld.length + " " + mapWidth*mapHeight);
+	    int depthMapLength = depthMapRealWorld.length;
 	    
-	    for (int i = 0; i < depthMapRealWorld.length; i += foo) {
+	    for (int i = 0; i < depthMapLength; i += foo) {
 	    	
 	    	int newLineId = i/mapWidth;
 	    	//PApplet.println(newLineId);
@@ -151,7 +151,7 @@ public class Background {
 	    	if(newLineId % 2 == 1){
 	    		j = i;		    		
 	    	} else {
-	    		j = i+bar;
+	    		j = i+offset;
 	    	}
 	    	
 	    	//new line
@@ -161,10 +161,16 @@ public class Background {
 	    		if(!hasJumpALine){
 	    		
 	    			//jump a line
-	    			if(i+mapWidth*2*resolution < depthMapRealWorld.length){
-	    				i += mapWidth*2*resolution;
+	    			if(i+mapWidth*2*spaceBetweenPoints < depthMapLength){
+	    				
+	    				i += mapWidth*2*spaceBetweenPoints;
+	    				j = i;
+	    				
+	    			} else { //get last row
+	    				i = depthMapLength - mapWidth;
 	    				j = i;
 	    			}
+	    			
 	    		} else {
 	    			pApplet.stroke(toogleColor());
 	    		}
